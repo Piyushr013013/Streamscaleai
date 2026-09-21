@@ -48,7 +48,7 @@ const navLinks = [
       },
       {
         title: "Talent & Recruitment",
-        href: "/recruitment",
+        href: "/team",
         description: "Find the people who make AI work",
       },
     ],
@@ -63,7 +63,7 @@ const navLinks = [
       },
       {
         title: "Operations",
-        href: "/team#operations",
+        href: "/team",
         description: "Outreach, demos, and client relations",
       },
     ],

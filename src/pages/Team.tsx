@@ -78,8 +78,9 @@ function MemberDetailDialog({ member, onClose, onUpdate }: { member: any; onClos
 
 export default function Team() {
   const navigate = useNavigate();
-  const { userId, role, isAuthenticated } = useAuth();
-  const isAdmin = Boolean(isAuthenticated && role === "admin");
+  const { userId, role, isAuthenticated, user } = useAuth();
+  // Only show admin UI if the server-returned user object confirms admin role
+  const isAdmin = Boolean(isAuthenticated && user && (user as any).role === "admin");
   const members = useQuery(api.team.getTeamMembers);
   const addMember = useMutation(api.team.addTeamMember);
   const deleteMember = useMutation(api.team.deleteTeamMember);
@@ -111,7 +112,18 @@ export default function Team() {
 
   const handleMemberUpdate = (data: any) => { setMessage(`${data.name} updated.`); setViewingMember(null); setEditingMember(null); };
 
-  const sortedMembers = members ?? [];
+  // Default team data when DB is empty (seeded by initTeam mutation)
+  const defaultTeam = [
+    { _id: "1", name: "Vivikth Mantha", role: "CEO", bio: "Leading Streamscale's vision and strategy.", linkedin: "", avatarColor: "#10b981", order: 0 },
+    { _id: "2", name: "Jaiveer", role: "IT Manager & Board Member", bio: "Oversees technology infrastructure and serves on the board.", linkedin: "", avatarColor: "#1E293B", order: 1 },
+    { _id: "3", name: "Akash", role: "Chairman of Board", bio: "Chairman of the board, guiding long-term direction.", linkedin: "", avatarColor: "#3b82f6", order: 2 },
+    { _id: "4", name: "Piyush", role: "CTO", bio: "Builds the agents, benchmarks, and infrastructure.", linkedin: "", avatarColor: "#8b5cf6", order: 3 },
+    { _id: "5", name: "Zain", role: "Candidate Outreach", bio: "Finds and connects with strong candidates.", linkedin: "", avatarColor: "#ec4899", order: 4 },
+    { _id: "6", name: "Roni", role: "General Demo Leader", bio: "Leads demos of Streamscale's platform.", linkedin: "", avatarColor: "#f59e0b", order: 5 },
+    { _id: "7", name: "Pranit", role: "Client Relations Manager", bio: "Manages relationships with partner companies.", linkedin: "", avatarColor: "#10b981", order: 6 },
+    { _id: "8", name: "Yuva", role: "Recruitment and Demos", bio: "Handles recruitment outreach and runs demos.", linkedin: "", avatarColor: "#06b6d4", order: 7 },
+  ];
+  const sortedMembers = members && members.length > 0 ? members : defaultTeam;
   const leaders = sortedMembers.filter((m: any) => ["CEO", "Board", "Chairman", "CTO", "IT Manager"].some((r) => m.role.includes(r)));
   const operations = sortedMembers.filter((m: any) => !["CEO", "Board", "Chairman", "CTO", "IT Manager"].some((r) => m.role.includes(r)));
 
@@ -183,9 +195,9 @@ export default function Team() {
 
           {isAdmin && members && members.length > 0 && (
             <Card>
-              <CardHeader><CardTitle>Manage team</CardTitle><CardDescription>Edit details or remove members. Changes appear on the public team page.</CardDescription></CardHeader>
+              <CardHeader><CardTitle>Manage team</CardTitle><CardDescription>Edit details or remove members. Only admins can manage the team.</CardDescription></CardHeader>
               <CardContent className="space-y-3">
-                {members.map((member: any) => (
+                {members.filter((m: any) => (m as any)._creationTime).map((member: any) => (
                   <div key={member._id} className="flex items-center justify-between rounded-lg border border-border/30 p-3">
                     <div className="flex items-center gap-3">
                       <div className="flex size-10 items-center justify-center rounded-full text-white text-sm font-semibold" style={{ backgroundColor: member.avatarColor || "#1E293B" }}>{member.name.charAt(0)}</div>
