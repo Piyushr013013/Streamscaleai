@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { RecruitmentSection } from "@/components/RecruitmentSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { useState } from "react";
@@ -699,6 +700,7 @@ export default function Landing() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <HeroSection />
+      <RecruitmentSection />
       <StatsSection />
       <HowItWorksSection />
       <IndustriesSection />

@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 const services = [
   { value: "ai", label: "Build or deploy AI", description: "Explore an AI solution for your team." },
   { value: "testing_ai", label: "Test an AI system", description: "Evaluate an agent against real work." },
-  { value: "recruitment", label: "Recruitment", description: "Find the people needed to scale your AI work." },
+  { value: "recruitment", label: "Recruitment", description: "Hire the engineers, evaluators, operators, and AI talent needed to scale your team." },
 ] as const;
 
 export default function BookDemo() {

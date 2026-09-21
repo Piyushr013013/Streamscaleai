@@ -134,6 +134,7 @@ const footerLinks = [
       { title: "AI Work Diagnostics", href: "/services/ai-work-diagnostics" },
       { title: "Custom Agent Deployment", href: "/services/custom-agent-deployment" },
       { title: "Data Monetization", href: "/services/data-monetization" },
+      { title: "Talent & Recruitment", href: "/recruitment" },
     ],
   },
   {

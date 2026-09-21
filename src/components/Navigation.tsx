@@ -46,6 +46,11 @@ const navLinks = [
         href: "/services/data-monetization",
         description: "Broker your data to labs",
       },
+      {
+        title: "Talent & Recruitment",
+        href: "/recruitment",
+        description: "Find the people who make AI work",
+      },
     ],
   },
   {
