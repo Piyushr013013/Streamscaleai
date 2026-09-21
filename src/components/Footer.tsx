@@ -150,7 +150,7 @@ const footerLinks = [
     title: "Company",
     links: [
       { title: "About", href: "#about" },
-      { title: "Partner with us", href: "#partner" },
+      { title: "Partner with us", href: "/partner" },
       { title: "Contact", href: "#contact" },
     ],
   },

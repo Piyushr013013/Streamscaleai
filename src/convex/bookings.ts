@@ -27,7 +27,7 @@ export const updatePartnerRequestStatus = mutation({
   args: { requestId: v.id("partnerRequests"), status: v.union(v.literal("new"), v.literal("contacted")), editorId: v.id("users") },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.editorId);
-    if (!user || !("email" in user) || user.role !== "admin") throw new Error("Admin access required");
+    if (!user || !("email" in user) || (user.role !== "admin" && !(user.permissions ?? []).includes("view_partner_requests"))) throw new Error("Partner request access required");
     await ctx.db.patch(args.requestId, { status: args.status });
     return { success: true };
   },

@@ -143,8 +143,11 @@ export const adminCreateUser = mutation({
     linkedin: v.optional(v.string()),
     twitter: v.optional(v.string()),
     website: v.optional(v.string()),
+    creatorId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
+    const creator = args.creatorId ? await ctx.db.get(args.creatorId) : null;
+    if (creator && (!isRealUser(creator) || creator.role !== "admin")) throw new Error("Admin access required");
     const email = args.email.toLowerCase();
     const existing = await ctx.db.query("users").withIndex("by_email", (q) => q.eq("email", email)).first();
     if (existing) throw new Error("Email already registered");

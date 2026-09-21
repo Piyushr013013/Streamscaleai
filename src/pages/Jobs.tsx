@@ -23,6 +23,7 @@ export default function Jobs() {
   const [applicantEmail, setApplicantEmail] = useState("");
   const [applicantPhone, setApplicantPhone] = useState("");
   const [applyMessage, setApplyMessage] = useState("");
+  const [resumeUrl, setResumeUrl] = useState("");
   const [applyError, setApplyError] = useState("");
   const [applied, setApplied] = useState(false);
 
@@ -47,6 +48,7 @@ export default function Jobs() {
         email: applicantEmail,
         phone: applicantPhone || undefined,
         message: applyMessage || undefined,
+        resumeUrl: resumeUrl || undefined,
       });
 
       setApplied(true);
@@ -155,13 +157,14 @@ export default function Jobs() {
                       {job.title}
                     </CardTitle>
                     <CardDescription className="text-gray-500 mt-1">
-                      {job.salary}
+                      {job.companyName} · {job.jobType} · {job.salary}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-2">
                       {job.requirements}
                     </p>
+                    {job.benefits && <p className="text-xs text-emerald-700 mb-2">Benefits: {job.benefits}</p>}
                     {job.extraInfo && (
                       <p className="text-xs text-gray-400 mb-4">
                         {job.extraInfo}
@@ -257,6 +260,11 @@ export default function Jobs() {
                         className="pl-10 border-gray-300"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="resume" className="text-gray-700">Resume link (Optional)</Label>
+                    <Input id="resume" type="url" placeholder="https://drive.google.com/..." value={resumeUrl} onChange={(e) => setResumeUrl(e.target.value)} className="border-gray-300" />
                   </div>
 
                   <div className="space-y-2">

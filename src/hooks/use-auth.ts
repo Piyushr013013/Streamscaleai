@@ -1,20 +1,20 @@
 import { api } from "@/convex/_generated/api";
-import { useAuthActions } from "@convex-dev/auth/react";
-import { useConvexAuth, useQuery } from "convex/react";
+import { useQuery } from "convex/react";
+import { useCallback, useState } from "react";
+
+const SESSION_KEY = "streamscale_user_id";
 
 export function useAuth() {
-  const { isLoading: isAuthLoading, isAuthenticated } = useConvexAuth();
-  const user = useQuery(api.users.currentUser);
-  const { signIn, signOut } = useAuthActions();
-
-  // Derive isLoading directly from the dependencies instead of managing separate state
-  const isLoading = isAuthLoading || user === undefined;
-
-  return {
-    isLoading,
-    isAuthenticated,
-    user,
-    signIn,
-    signOut,
-  };
+  const [sessionId, setSessionId] = useState<string | null>(() => localStorage.getItem(SESSION_KEY));
+  const user = useQuery(api.auth.getUserById, sessionId ? { userId: sessionId as any } : "skip");
+  const signIn = useCallback((userId: string) => {
+    localStorage.setItem(SESSION_KEY, userId);
+    setSessionId(userId);
+  }, []);
+  const signOut = useCallback(() => {
+    localStorage.removeItem(SESSION_KEY);
+    setSessionId(null);
+    window.location.href = "/";
+  }, []);
+  return { isLoading: sessionId !== null && user === undefined, isAuthenticated: Boolean(sessionId && user), user, userId: sessionId, signIn, signOut };
 }

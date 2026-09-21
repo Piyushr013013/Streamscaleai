@@ -57,6 +57,11 @@ const navLinks = [
         description: "See pass rates by industry",
       },
       {
+        title: "Jobs",
+        href: "/jobs",
+        description: "Browse open positions",
+      },
+      {
         title: "FAQ",
         href: "#faq",
         description: "Common questions",
@@ -153,8 +158,8 @@ export function Navigation() {
               size="sm"
               className="hidden md:inline-flex gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              <Link to="/book-demo">
-                Book a Demo
+              <Link to="/partner">
+                Partner with us
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>
@@ -203,8 +208,8 @@ export function Navigation() {
                       asChild
                       className="mt-2 w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
-                      <Link to="/book-demo">
-                        Book a Demo
+                      <Link to="/partner">
+                        Partner with us
                         <ArrowRight className="size-3.5" />
                       </Link>
                     </Button>
