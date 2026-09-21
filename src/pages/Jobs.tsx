@@ -31,23 +31,27 @@ export default function Jobs() {
   const uploadUrlMutation = useMutation(api.jobs.generateUploadUrl);
   const resumeInputRef = useRef<HTMLInputElement>(null);
   const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  const [resumeError, setResumeError] = useState("");
 
   const handleResumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      setResumeError("Please select a PDF resume.");
+      return;
+    }
     if (file.type !== "application/pdf") {
-      setApplyError("Please upload a PDF resume.");
+      setResumeError("Only PDF files are accepted.");
       event.target.value = "";
       return;
     }
     if (file.size > MAX_FILE_SIZE) {
-      setApplyError("Resume must be 10 MB or smaller.");
+      setResumeError("Resume must be 10 MB or smaller.");
       event.target.value = "";
       return;
     }
     setResumeFile(file);
     setResumePreview({ name: file.name, size: file.size });
-    setApplyError("");
+    setResumeError("");
   };
 
   const handleApply = async (job: any) => {
@@ -63,6 +67,10 @@ export default function Jobs() {
 
     if (!applicantName || !applicantEmail) {
       setApplyError("Please fill in all required fields.");
+      return;
+    }
+    if (!resumeFile) {
+      setResumeError("Please upload a PDF resume to apply.");
       return;
     }
 
@@ -287,7 +295,7 @@ export default function Jobs() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="resume">Resume <span className="text-slate-400 text-xs font-normal">(PDF, optional)</span></Label>
+                    <Label htmlFor="resume">Resume <span className="text-red-500 text-xs font-normal">*</span></Label>
                     {resumePreview ? (
                       <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
                         <FileText className="flex-shrink-0 size-5 text-slate-500" />
@@ -302,6 +310,7 @@ export default function Jobs() {
                           onClick={() => {
                             setResumeFile(null);
                             setResumePreview(null);
+                            setResumeError("");
                             if (resumeInputRef.current) resumeInputRef.current.value = "";
                           }}
                         >
@@ -309,9 +318,14 @@ export default function Jobs() {
                         </Button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-4 py-3 transition hover:border-slate-400 hover:bg-slate-50">
-                        <Upload className="size-5 text-slate-400" />
-                        <span className="text-sm text-slate-600">Attach a PDF resume</span>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full justify-start gap-2 border-dashed border-slate-300 hover:border-slate-400 bg-slate-50/60 hover:bg-slate-50 text-slate-700"
+                        onClick={() => resumeInputRef.current?.click()}
+                      >
+                        <Upload className="size-4 text-slate-500" />
+                        <span className="text-sm">Choose a PDF resume</span>
                         <Input
                           ref={resumeInputRef}
                           id="resume-input"
@@ -320,7 +334,10 @@ export default function Jobs() {
                           onChange={handleResumeChange}
                           className="sr-only"
                         />
-                      </div>
+                      </Button>
+                    )}
+                    {resumeError && (
+                      <p className="text-xs text-red-600">{resumeError}</p>
                     )}
                   </div>
 

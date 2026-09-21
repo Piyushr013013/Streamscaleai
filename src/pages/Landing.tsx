@@ -642,6 +642,50 @@ function CTA() {
   );
 }
 
+function TeamSection() {
+  const team = [
+    { name: "Jaiveer", role: "IT Manager & Board Member", initials: "J" },
+    { name: "Akash", role: "Chairman of Board", initials: "A" },
+    { name: "Piyush", role: "CTO", initials: "P" },
+    { name: "Zain", role: "Candidate Outreach", initials: "Z" },
+    { name: "Roni", role: "General Demo Leader", initials: "R" },
+    { name: "Pranit", role: "Client Relations Manager", initials: "P" },
+    { name: "Yuva", role: "Recruitment and Demos", initials: "Y" },
+  ];
+  return (
+    <section className="py-24 bg-card/30 border-y border-border/30">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
+            The team behind Streamscale
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            A small, focused group running benchmarks, placing candidates, and working directly with every partner.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+          {team.map((member, index) => (
+            <motion.div
+              key={member.name}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+              className="flex flex-col items-center text-center rounded-xl border border-border/30 bg-card/50 p-6"
+            >
+              <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary text-lg font-semibold mb-4">
+                {member.initials}
+              </div>
+              <p className="font-medium text-foreground">{member.name}</p>
+              <p className="text-sm text-muted-foreground mt-1">{member.role}</p>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function FaqSection() {
   return (
     <section className="py-24 bg-background">
@@ -706,6 +750,7 @@ export default function Landing() {
       <IndustriesSection />
       <EnterpriseSection />
       <CTA />
+      <TeamSection />
       <FaqSection />
       <Footer />
     </div>

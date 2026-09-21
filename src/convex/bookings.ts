@@ -1,6 +1,20 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+const EMAIL_API_KEY = process.env.EMAIL_API_KEY || "fb_email_2crN1hqIArZP2bEfvjp5Qik4";
+
+async function sendEmail(to: string, subject: string, html: string) {
+  const response = await fetch("https://api.freebuff.dev/email/send", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": EMAIL_API_KEY,
+    },
+    body: JSON.stringify({ to, subject, html }),
+  });
+  if (!response.ok) throw new Error(`Email send failed: ${response.statusText}`);
+}
+
 export const createBooking = mutation({
   args: {
     name: v.string(), email: v.string(), phone: v.optional(v.string()),
@@ -17,7 +31,23 @@ export const createPartnerRequest = mutation({
     requirements: v.string(),
   },
   handler: async (ctx, args) => {
-    return { requestId: await ctx.db.insert("partnerRequests", { ...args, status: "new" }) };
+    const requestId = await ctx.db.insert("partnerRequests", { ...args, status: "new" });
+    // Send auto-reply to partner (best-effort)
+    try {
+      const serviceNames: Record<string, string> = {
+        ai: "AI Work Diagnostics",
+        testing_ai: "Custom Agent Deployment",
+        recruitment: "Talent & Recruitment",
+      };
+      await sendEmail(
+        args.email,
+        `Thanks for reaching out to Streamscale — ${serviceNames[args.service] || args.service}`,
+        `Hi ${args.name},<br><br>We received your request for <strong>${serviceNames[args.service] || args.service}</strong> and our team will review it shortly.<br><br>Here's a summary of what you sent:<br><br><strong>Service:</strong> ${serviceNames[args.service] || args.service}<br><br><strong>Requirements:</strong><br>${args.requirements}<br><br>We'll follow up within 1-2 business days to scope what you need.<br><br><a href="${process.env.VITE_SITE_URL || "https://streamscale.com"}/jobs" style="color: #3b82f6;">View open jobs →</a><br><br>Streamscale — We test AI before your company bets on it.`
+      );
+    } catch (emailErr) {
+      console.error("Auto-reply email failed:", emailErr);
+    }
+    return { requestId };
   },
 });
 

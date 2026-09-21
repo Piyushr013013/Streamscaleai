@@ -123,12 +123,12 @@ export function Navigation() {
                     {linkGroup.title}
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
-                    <ul className="grid gap-1 py-2 px-3">
+                    <ul className="grid gap-1 py-3 px-3">
                       {linkGroup.items.map((item) => (
                         <li key={item.title}>
                           <NavigationMenuLink
                             asChild
-                            className="block select-none space-y-1 rounded-md px-3 py-2 text-sm/6 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                            className="block select-none space-y-1 rounded-md px-4 py-3 text-sm/6 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                           >
                             <Link to={item.href}>
                               <div className="flex flex-col space-y-0.5">

@@ -1,6 +1,20 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+const EMAIL_API_KEY = process.env.EMAIL_API_KEY || "fb_email_2crN1hqIArZP2bEfvjp5Qik4";
+
+async function sendEmail(to: string, subject: string, html: string) {
+  const response = await fetch("https://api.freebuff.dev/email/send", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": EMAIL_API_KEY,
+    },
+    body: JSON.stringify({ to, subject, html }),
+  });
+  if (!response.ok) throw new Error(`Email send failed: ${response.statusText}`);
+}
+
 export const createJob = mutation({
   args: {
     title: v.string(),
@@ -92,17 +106,27 @@ export const applyToJob = mutation({
     if (!job) {
       throw new Error("Job not found");
     }
-    return {
-      applicationId: await ctx.db.insert("applications", {
-        jobId: args.jobId,
-        applicantName: args.name,
-        applicantEmail: args.email,
-        applicantPhone: args.phone,
-        message: args.message,
-        resumeStorageId: args.resumeStorageId,
-        status: "pending",
-      }),
-    };
+    const applicationId = await ctx.db.insert("applications", {
+      jobId: args.jobId,
+      applicantName: args.name,
+      applicantEmail: args.email,
+      applicantPhone: args.phone,
+      message: args.message,
+      resumeStorageId: args.resumeStorageId,
+      status: "pending",
+    });
+    // Send auto-reply to applicant (best-effort)
+    try {
+      await sendEmail(
+        args.email,
+        `Your application to Streamscale — ${job.title}`,
+        `Hi ${args.name},<br><br>Thanks for applying to the <strong>${job.title}</strong> position at Streamscale. We've received your application and resume.<br><br>Our team reviews applications as they come in. If your background looks like a match, we'll reach out within 5-7 business days.<br><br><a href="${process.env.VITE_SITE_URL || "https://streamscale.com"}/jobs" style="color: #3b82f6;">View all open positions →</a><br><br>Streamscale — We test AI before your company bets on it.`
+      );
+    } catch (emailErr) {
+      // Silently fail - don't block the application
+      console.error("Auto-reply email failed:", emailErr);
+    }
+    return { applicationId };
   },
 });
 
