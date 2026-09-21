@@ -1,8 +1,2 @@
-import { httpRouter } from "convex/server";
-import { auth } from "./auth";
-
-const http = httpRouter();
-
-auth.addHttpRoutes(http);
-
-export default http;
+// HTTP actions placeholder
+// This file is reserved for future HTTP endpoint implementations

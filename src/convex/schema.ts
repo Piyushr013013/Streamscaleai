@@ -1,47 +1,50 @@
-import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
-import { Infer, v } from "convex/values";
+import { v } from "convex/values";
 
-// default user roles. can add / remove based on the project as needed
-export const ROLES = {
-  ADMIN: "admin",
-  USER: "user",
-  MEMBER: "member",
-} as const;
+export default defineSchema({
+  users: defineTable(
+    v.union(
+      v.object({
+        email: v.string(),
+        name: v.string(),
+        passwordHash: v.string(),
+        role: v.union(v.literal("admin"), v.literal("user")),
+        emailVerified: v.boolean(),
+        otp: v.optional(v.string()),
+        otpExpiry: v.optional(v.number()),
+      }),
+      v.object({ isAnonymous: v.literal(true) })
+    )
+  ).index("by_email", ["email"]),
 
-export const roleValidator = v.union(
-  v.literal(ROLES.ADMIN),
-  v.literal(ROLES.USER),
-  v.literal(ROLES.MEMBER),
-);
-export type Role = Infer<typeof roleValidator>;
+  jobs: defineTable({
+    title: v.string(),
+    role: v.string(),
+    requirements: v.string(),
+    salary: v.string(),
+    extraInfo: v.optional(v.string()),
+    createdBy: v.string(),
+  }),
 
-const schema = defineSchema(
-  {
-    // default auth tables using convex auth.
-    ...authTables, // do not remove or modify
-
-    // the users table is the default users table that is brought in by the authTables
-    users: defineTable({
-      name: v.optional(v.string()), // name of the user. do not remove
-      image: v.optional(v.string()), // image of the user. do not remove
-      email: v.optional(v.string()), // email of the user. do not remove
-      emailVerificationTime: v.optional(v.number()), // email verification time. do not remove
-      isAnonymous: v.optional(v.boolean()), // is the user anonymous. do not remove
-
-      role: v.optional(roleValidator), // role of the user. do not remove
-    }).index("email", ["email"]), // index for the email. do not remove or modify
-
-    // add other tables here
-
-    // tableName: defineTable({
-    //   ...
-    //   // table fields
-    // }).index("by_field", ["field"])
-  },
-  {
-    schemaValidation: false,
-  },
-);
-
-export default schema;
+  applications: defineTable({
+    jobId: v.id("jobs"),
+    applicantName: v.string(),
+    applicantEmail: v.string(),
+    applicantPhone: v.optional(v.string()),
+    status: v.union(v.literal("pending"), v.literal("reviewed"), v.literal("contacted")),
+    message: v.optional(v.string()),
+  }),
+  bookings: defineTable({
+    name: v.string(),
+    email: v.string(),
+    phone: v.optional(v.string()),
+    bookingType: v.union(
+      v.literal("ai"),
+      v.literal("testing_ai"),
+      v.literal("recruitment")
+    ),
+    preferredTime: v.string(),
+    notes: v.optional(v.string()),
+    status: v.union(v.literal("pending"), v.literal("confirmed")),
+  }),
+});
