@@ -80,7 +80,7 @@ export function Navigation() {
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
-                <rect width="64" height="64" rx="14" fill="#09090B" />
+                <rect width="64" height="64" rx="14" fill="#1E293B" />
                 <path
                   d="M14 46L32 20L50 46H14Z"
                   fill="#FFFFFF"
@@ -93,7 +93,7 @@ export function Navigation() {
                 />
                 <path
                   d="M24 30H40"
-                  stroke="#09090B"
+                  stroke="#FFFFFF"
                   strokeWidth="3"
                   strokeLinecap="round"
                 />
@@ -142,14 +142,12 @@ export function Navigation() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
-            <nav className="hidden md:flex">
-              <Link
-                to="/book-demo"
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Book a Demo
-              </Link>
-            </nav>
+            <Link
+              to="/login"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Sign In
+            </Link>
             <Button
               asChild
               size="sm"
@@ -196,11 +194,20 @@ export function Navigation() {
                   ))}
                   <div className="pt-6 border-t border-border/30">
                     <Link
-                      to="#apply"
+                      to="/login"
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Apply to partner
+                      Sign In
                     </Link>
+                    <Button
+                      asChild
+                      className="mt-2 w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                    >
+                      <Link to="/book-demo">
+                        Book a Demo
+                        <ArrowRight className="size-3.5" />
+                      </Link>
+                    </Button>
                   </div>
                 </nav>
               </SheetContent>

@@ -173,8 +173,8 @@ function HeroSection() {
               size="lg"
               className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
             >
-              <Link to="/auth">
-                Start a Benchmark
+              <Link to="/book-demo">
+                Book a Demo
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -184,8 +184,8 @@ function HeroSection() {
               size="lg"
               className="text-base px-8 py-4 border-border hover:bg-accent"
             >
-              <Link to="#how-it-works">
-                See How It Works
+              <Link to="/login">
+                Sign In
               </Link>
             </Button>
           </motion.div>
@@ -603,18 +603,16 @@ function CTA() {
             up to scope the benchmark.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-            <Button
-              asChild
-              size="lg"
-              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
-            >
-              <Link to="/book-demo">
-                Book a Demo
-                <ArrowRight className="size-4" />
-              </Link>
-            </Button>
-          </div>
+          <Button
+            asChild
+            size="lg"
+            className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4 mx-auto"
+          >
+            <Link to="/book-demo">
+              Book a Demo
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
 
           <div className="grid grid-cols-3 gap-6 text-center">
             {[
