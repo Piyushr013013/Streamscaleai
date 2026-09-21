@@ -15,8 +15,8 @@ const permissions = ["manage_jobs", "view_applications", "view_partner_requests"
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { user, userId, signOut } = useAuth();
-  const isAdmin = Boolean(user && "role" in user && (user.role === "admin" || (user.permissions ?? []).includes("view_partner_requests")));
+  const { user, userId, role, signOut } = useAuth();
+  const isAdmin = Boolean((user && "role" in user && (user.role === "admin" || (user.permissions ?? []).includes("view_partner_requests"))) || role === "admin");
   const users = useQuery(api.auth.adminGetUsers);
   const jobs = useQuery(api.jobs.listJobs);
   const applications = useQuery(api.jobs.listApplications);

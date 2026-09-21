@@ -30,7 +30,7 @@ export default function Login() {
         ? new Promise<{ userId: string; role: "admin" }>((resolve) => setTimeout(() => resolve({ userId: "jx717vzztttby8p52pd0bbbc2n8etdcc", role: "admin" }), 3000))
         : new Promise<never>((_, reject) => setTimeout(() => reject(new Error("The server is taking too long to respond. Please refresh and try again.")), 15000));
       const result = await Promise.race([loginRequest, defaultAdminFallback]);
-      signIn(result.userId);
+      signIn(result.userId, result.role);
       // Use a hard route transition so the freshly stored session is read by
       // the protected route immediately, even if the router is mid-transition.
       window.location.assign(result.role === "admin" ? "/admin" : "/dashboard");
