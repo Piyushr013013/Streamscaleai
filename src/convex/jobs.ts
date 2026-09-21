@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "convex/server";
 
 export const createJob = mutation({
   args: {
@@ -10,8 +10,6 @@ export const createJob = mutation({
     extraInfo: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    // For demo, we'll use a simple admin check via context
-    // In real implementation, use proper auth
     const jobId = await ctx.db.insert("jobs", {
       ...args,
       createdBy: "admin",
@@ -84,7 +82,6 @@ export const applyToJob = mutation({
       message: args.message,
       status: "pending",
     });
-    // In production, send email to admin here
     console.log(`New application for job ${args.jobId}:`, args);
     return { applicationId };
   },
@@ -99,7 +96,7 @@ export const getApplications = query({
       .query("applications")
       .collect();
     return applications
-      .filter((app) => app.jobId === args.jobId)
+      .filter((app: any) => app.jobId === args.jobId)
       .sort((a, b) => b._creationTime - a._creationTime);
   },
 });

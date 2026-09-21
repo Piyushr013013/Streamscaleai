@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "convex/server";
 
 // Type guard to check if a user document is a real user (not anonymous)
 function isRealUser(user: any): user is {
@@ -45,9 +45,8 @@ export const register = mutation({
       otp,
       otpExpiry: Date.now() + 5 * 60 * 1000, // 5 minutes
     });
-    // In production, send email here. For now, we'll console.log
     console.log(`OTP for ${args.email}: ${otp}`);
-    return { userId, otp }; // Return otp for demo purposes
+    return { userId, otp };
   },
 });
 
@@ -92,7 +91,6 @@ export const login = mutation({
     if (!user || !isRealUser(user)) {
       throw new Error("User not found");
     }
-    // Simple hash comparison
     const storedHash = atob(user.passwordHash);
     if (storedHash !== args.password) {
       throw new Error("Invalid password");
@@ -126,8 +124,7 @@ export const requestOtp = mutation({
   },
 });
 
-// Admin: Update user email/password
- export const adminUpdateUser = mutation({
+export const adminUpdateUser = mutation({
   args: {
     userId: v.id("users"),
     email: v.optional(v.string()),
@@ -141,7 +138,7 @@ export const requestOtp = mutation({
     }
     if (args.password !== undefined) {
       updates.passwordHash = btoa(args.password);
-      updates.emailVerified = true; // Reset verification on password change
+      updates.emailVerified = true;
     }
     if (args.name !== undefined) {
       updates.name = args.name;
@@ -151,7 +148,6 @@ export const requestOtp = mutation({
   },
 });
 
-// Admin: Get all users
 export const adminGetUsers = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
@@ -172,10 +168,9 @@ export const adminGetUsers = query({
   },
 });
 
-// Initialize default admin
 export const initAdmin = mutation({
   args: {},
-  handler: async (ctx, _args) => {
+  handler: async (ctx) => {
     const existingAdmin = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", "piyushr013013@gmail.com"))

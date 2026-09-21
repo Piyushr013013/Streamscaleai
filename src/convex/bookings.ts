@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation, query } from "convex/server";
 
 export const createBooking = mutation({
   args: {
@@ -19,7 +19,6 @@ export const createBooking = mutation({
       ...args,
       status: "pending",
     });
-    // In production, send confirmation email here
     console.log("New booking:", args);
     return { bookingId };
   },
