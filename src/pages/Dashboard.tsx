@@ -27,7 +27,7 @@ export default function Dashboard() {
                 Streamscale Dashboard
               </p>
               <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                Welcome{user?.name ? `, ${user.name}` : "User"}
+                Welcome{user && 'name' in user ? `, ${user.name}` : "User"}
               </h1>
               <p className="text-muted-foreground mt-1">
                 Manage your streaming infrastructure and monitor your data flows.

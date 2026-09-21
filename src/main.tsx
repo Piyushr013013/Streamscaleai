@@ -11,8 +11,12 @@ import "./index.css";
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
+const Login = lazy(() => import("./pages/Login.tsx"));
+const Jobs = lazy(() => import("./pages/Jobs.tsx"));
+const BookDemo = lazy(() => import("./pages/BookDemo.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard.tsx"));
 
 // Simple loading fallback for route transitions
 function RouteLoading() {
@@ -128,6 +132,17 @@ createRoot(document.getElementById("root")!).render(
                 element={
                   <RequireAuth>
                     <Dashboard />
+                  </RequireAuth>
+                }
+              />
+              <Route path="/login" element={<Login />} />
+              <Route path="/jobs" element={<Jobs />} />
+              <Route path="/book-demo" element={<BookDemo />} />
+              <Route
+                path="/admin"
+                element={
+                  <RequireAuth>
+                    <AdminDashboard />
                   </RequireAuth>
                 }
               />

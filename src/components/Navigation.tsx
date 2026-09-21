@@ -144,10 +144,10 @@ export function Navigation() {
           <div className="flex items-center gap-3">
             <nav className="hidden md:flex">
               <Link
-                to="#apply"
+                to="/book-demo"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Apply
+                Book a Demo
               </Link>
             </nav>
             <Button
@@ -155,8 +155,8 @@ export function Navigation() {
               size="sm"
               className="hidden md:inline-flex gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
-              <Link to="/auth">
-                Partner with us
+              <Link to="/book-demo">
+                Book a Demo
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>

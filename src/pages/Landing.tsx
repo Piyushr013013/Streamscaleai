@@ -590,13 +590,13 @@ const deploymentData = [
 function CTA() {
   return (
     <section
-      id="partner"
+      id="demo"
       className="py-24 bg-card/30 border-y border-border/30"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-            Partner with Streamscale
+            Book a Demo with Streamscale
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Tell us about the role or process you want tested, and we'll follow
@@ -609,8 +609,8 @@ function CTA() {
               size="lg"
               className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
             >
-              <Link to="/auth">
-                Apply to Partner
+              <Link to="/book-demo">
+                Book a Demo
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
