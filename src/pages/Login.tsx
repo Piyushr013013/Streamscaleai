@@ -13,7 +13,6 @@ export default function Login() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const loginMutation = useMutation(api.auth.login);
-  const initAdminMutation = useMutation(api.auth.initAdmin);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -25,8 +24,6 @@ export default function Login() {
     setError("");
     setIsSubmitting(true);
     try {
-      // Keep the seeded administrator available in a fresh deployment.
-      await initAdminMutation({});
       const result = await loginMutation({ email: email.trim().toLowerCase(), password });
       signIn(result.userId);
       navigate(result.role === "admin" ? "/admin" : "/dashboard");
