@@ -184,9 +184,10 @@ function HeroSection() {
               size="lg"
               className="text-base px-8 py-4 border-border hover:bg-accent"
             >
-              <Link to="/login">
-                Sign In
-              </Link>
+              <Link to="/login">Sign In</Link>
+            </Button>
+            <Button asChild variant="ghost" size="lg" className="text-base px-5 py-4 text-muted-foreground hover:text-foreground">
+              <Link to="/jobs">View open jobs</Link>
             </Button>
           </motion.div>
         </div>

@@ -147,6 +147,9 @@ export function Navigation() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
+            <Link to="/jobs" className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline-flex">
+              Jobs
+            </Link>
             <Link
               to="/login"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -198,6 +201,9 @@ export function Navigation() {
                     </div>
                   ))}
                   <div className="pt-6 border-t border-border/30">
+                    <Link to="/jobs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                      View jobs
+                    </Link>
                     <Link
                       to="/login"
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
