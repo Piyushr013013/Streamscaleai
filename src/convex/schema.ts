@@ -42,7 +42,7 @@ export default defineSchema({
     applicantPhone: v.optional(v.string()),
     status: v.union(v.literal("pending"), v.literal("reviewed"), v.literal("contacted")),
     message: v.optional(v.string()),
-    resumeUrl: v.optional(v.string()),
+    resumePdfId: v.optional(v.id("resumes")),
   }),
   partnerRequests: defineTable({
     name: v.string(),
@@ -59,6 +59,8 @@ export default defineSchema({
     accountRecipients: v.array(v.string()),
     updatedBy: v.id("users"),
   }).index("by_key", ["key"]),
+
+  resumes: defineTable({}),
 
   bookings: defineTable({
     name: v.string(),
