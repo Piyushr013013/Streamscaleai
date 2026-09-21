@@ -3,16 +3,16 @@ import { Link } from "react-router";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card/50 mt-24">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
+    <footer className="border-t border-border/30 mt-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Column */}
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center gap-2 mb-4">
               <div className="flex items-center justify-center">
                 <svg
-                  width="28"
-                  height="28"
+                  width="24"
+                  height="24"
                   viewBox="0 0 64 64"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -36,14 +36,13 @@ export function Footer() {
                   />
                 </svg>
               </div>
-              <span className="text-lg font-semibold tracking-tight text-foreground">
+              <span className="text-base font-medium tracking-tight text-foreground">
                 Streamscale
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              The platform for building and scaling real-time data streams
-              with ease. Power your applications with reliable, fast, and
-              scalable infrastructure.
+              We test AI before your company bets on it. Real prompts against
+              real agents, then we hand back exactly what we found.
             </p>
 
             {/* Social Links */}
@@ -54,7 +53,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Github className="size-5" />
+                <Github className="size-4" />
               </a>
               <a
                 href="https://linkedin.com"
@@ -62,7 +61,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Linkedin className="size-5" />
+                <Linkedin className="size-4" />
               </a>
               <a
                 href="https://twitter.com"
@@ -70,13 +69,13 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Twitter className="size-5" />
+                <Twitter className="size-4" />
               </a>
               <a
                 href="mailto:hello@streamscale.com"
                 className="text-muted-foreground hover:text-foreground transition-colors"
               >
-                <Mail className="size-5" />
+                <Mail className="size-4" />
               </a>
             </div>
           </div>
@@ -84,7 +83,7 @@ export function Footer() {
           {/* Link Columns */}
           {footerLinks.map((column) => (
             <div key={column.title}>
-              <h4 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">
+              <h4 className="text-xs font-semibold text-foreground uppercase tracking-wider mb-4">
                 {column.title}
               </h4>
               <ul className="space-y-3">
@@ -104,28 +103,22 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-12 pt-6 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
+        <div className="mt-10 pt-6 border-t border-border/30 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-muted-foreground">
             &copy; 2026 Streamscale. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
               to="#privacy"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Privacy Policy
+              Privacy
             </Link>
             <Link
               to="#terms"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Terms of Service
-            </Link>
-            <Link
-              to="#cookies"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Cookie Policy
+              Terms
             </Link>
           </div>
         </div>
@@ -136,37 +129,37 @@ export function Footer() {
 
 const footerLinks = [
   {
-    title: "Platform",
+    title: "Service",
     links: [
-      { title: "Overview", href: "#overview" },
-      { title: "Features", href: "#features" },
-      { title: "Integrations", href: "#integrations" },
-      { title: "Pricing", href: "#pricing" },
+      { title: "AI Work Diagnostics", href: "#enterprise" },
+      { title: "Custom Agent Deployment", href: "#enterprise" },
+      { title: "Data Monetization", href: "#enterprise" },
     ],
   },
   {
-    title: "Solutions",
+    title: "Industries",
     links: [
-      { title: "Developers", href: "#developers" },
-      { title: "Enterprises", href: "#enterprises" },
-      { title: "Startups", href: "#startups" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { title: "Documentation", href: "#docs" },
-      { title: "API Reference", href: "#api" },
-      { title: "Blog", href: "#blog" },
+      { title: "Software Engineering", href: "#industries" },
+      { title: "Legal & Big Law", href: "#industries" },
+      { title: "Medicine & Healthcare", href: "#industries" },
+      { title: "Management Consulting", href: "#industries" },
+      { title: "Finance & Banking", href: "#industries" },
     ],
   },
   {
     title: "Company",
     links: [
       { title: "About", href: "#about" },
-      { title: "Careers", href: "#careers" },
+      { title: "Partner with us", href: "#partner" },
       { title: "Contact", href: "#contact" },
-      { title: "Legal", href: "#legal" },
+    ],
+  },
+  {
+    title: "Resources",
+    links: [
+      { title: "How it works", href: "#how-it-works" },
+      { title: "FAQ", href: "#faq" },
+      { title: "Benchmarks", href: "#industries" },
     ],
   },
 ];

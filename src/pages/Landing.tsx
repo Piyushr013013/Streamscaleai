@@ -1,289 +1,172 @@
 import { motion } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { FeaturesSection } from "@/components/FeatureSection";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
+import { useState } from "react";
 import {
   ArrowRight,
-  CheckCircle2,
   ChevronRight,
-  Globe,
-  Zap,
-  Shield,
-  BarChart3,
-  Users,
-  Code,
-  Layers,
-  ArrowRightCircle,
 } from "lucide-react";
-import { useState } from "react";
 
 const stats = [
-  { value: "99.99%", label: "Uptime SLA" },
-  { value: "50M+", label: "Events/Second" },
-  { value: "10K+", label: "Developers" },
-  { value: "150+", label: "Countries" },
+  { value: "247", label: "Agents Benchmarked" },
+  { value: "38", label: "Companies Partnered" },
+  { value: "5", label: "Industries Covered" },
+  { value: "$410K", label: "Sandbox Placement Revenue" },
 ];
 
-const testimonials = [
+const industries = [
   {
-    quote:
-      "Streamscale transformed how we handle real-time data. The latency is incredible and the developer experience is unmatched.",
-    name: "Sarah Chen",
-    role: "VP of Engineering, DataFlow",
-    avatar: "SC",
+    name: "Software Engineering",
+    passRate: "83%",
+    description:
+      "We hand the agent real tickets and bug reports and check whether it reproduces the issue, ships a correct fix, and writes tests that actually cover it.",
+    scores: [
+      { label: "Human baseline", value: "91%" },
+      { label: "Agent v1", value: "58%" },
+      { label: "Agent v2", value: "74%" },
+      { label: "Agent v3", value: "83%" },
+    ],
   },
   {
-    quote:
-      "We migrated our entire streaming infrastructure to Streamscale in under a week. The SDKs are beautifully designed and the docs are excellent.",
-    name: "Marcus Johnson",
-    role: "CTO, StreamLine Technologies",
-    avatar: "MJ",
+    name: "Legal & Big Law",
+    passRate: "77%",
+    description:
+      "We run it against real contract review and redlining work and measure precision against the clauses a human reviewer flagged.",
+    scores: [
+      { label: "Human baseline", value: "95%" },
+      { label: "Agent v1", value: "41%" },
+      { label: "Agent v2", value: "62%" },
+      { label: "Agent v3", value: "77%" },
+    ],
   },
   {
-    quote:
-      "The auto-scaling features alone saved us months of DevOps work. We can now focus on building features instead of managing infrastructure.",
-    name: "Emily Rodriguez",
-    role: "Lead Developer, ScaleUp Inc",
-    avatar: "ER",
+    name: "Medicine & Healthcare",
+    passRate: "69%",
+    description:
+      "We test it against real case documentation and triage-style tasks and score it against outcomes a clinician already reviewed.",
+    scores: [
+      { label: "Human baseline", value: "97%" },
+      { label: "Agent v1", value: "33%" },
+      { label: "Agent v2", value: "55%" },
+      { label: "Agent v3", value: "69%" },
+    ],
+  },
+  {
+    name: "Management Consulting",
+    passRate: "79%",
+    description:
+      "We give it real client deliverables — analysis decks, frameworks, recommendations — and compare its output against what a consulting team actually delivered.",
+    scores: [
+      { label: "Human baseline", value: "88%" },
+      { label: "Agent v1", value: "47%" },
+      { label: "Agent v2", value: "66%" },
+      { label: "Agent v3", value: "79%" },
+    ],
+  },
+  {
+    name: "Finance & Banking",
+    passRate: "85%",
+    description:
+      "We run it against real modeling, reconciliation, or diligence tasks and track its error rate against a human analyst's baseline.",
+    scores: [
+      { label: "Human baseline", value: "93%" },
+      { label: "Agent v1", value: "52%" },
+      { label: "Agent v2", value: "71%" },
+      { label: "Agent v3", value: "85%" },
+    ],
   },
 ];
 
-const pricingPlans = [
-  {
-    name: "Starter",
-    description: "Perfect for small projects and prototyping",
-    price: "0",
-    period: "forever",
-    features: [
-      "Up to 10K events/second",
-      "1GB storage",
-      "Community support",
-      "Basic analytics",
-      "Single region",
-    ],
-    cta: "Get Started Free",
-    popular: false,
-  },
-  {
-    name: "Pro",
-    description: "For growing teams with production workloads",
-    price: "49",
-    period: "/month",
-    features: [
-      "Up to 100K events/second",
-      "100GB storage",
-      "Priority support",
-      "Advanced analytics",
-      "Multi-region deployment",
-      "Custom domains",
-      "Webhooks & integrations",
-    ],
-    cta: "Start Pro Trial",
-    popular: true,
-  },
-  {
-    name: "Enterprise",
-    description: "For large-scale deployments with advanced needs",
-    price: "Custom",
-    period: "",
-    features: [
-      "Unlimited events/second",
-      "Unlimited storage",
-      "Dedicated support",
-      "Custom analytics",
-      "Global deployment",
-      "SSO & SAML",
-      "SLA guarantee",
-      "Dedicated instance",
-    ],
-    cta: "Contact Sales",
-    popular: false,
-  },
+const workflowData = [
+  { department: "Support", automatable: "76%" },
+  { department: "Operations", automatable: "58%" },
+  { department: "Sales", automatable: "41%" },
+  { department: "Legal & Compliance", automatable: "29%" },
+];
+
+const dataValues = [
+  { category: "Support transcripts", value: "$280K" },
+  { category: "Code repositories", value: "$400K" },
+  { category: "Sales call logs", value: "$180K" },
+  { category: "Ops & workflow logs", value: "$130K" },
 ];
 
 const faqs = [
   {
-    question: "How does Streamscale handle data persistence?",
+    question: "What exactly are you testing?",
     answer:
-      "Streamscale offers flexible persistence options including in-memory caching for ultra-low latency, SSD-backed storage for durability, and archive storage for long-term retention. You can configure retention policies per stream to balance performance and cost.",
+      "We take the AI agent you're evaluating and run it against real prompts drawn from the actual role. We record where it holds up and where it breaks — you get the specific flaws we found, not a slide deck of recommendations.",
   },
   {
-    question: "What kind of SLA do you offer?",
+    question: "What's the difference between this and consulting?",
     answer:
-      "Our Pro and Enterprise plans include a 99.99% uptime SLA with financial penalties for violations. Our global infrastructure with automatic failover ensures your streams remain available even during regional outages.",
+      "We don't give advice and we don't consult. This is the test itself, and what we build off the back of it. If you want the flaws fixed, that becomes the basis for what we deploy.",
   },
   {
-    question: "Can I integrate Streamscale with my existing systems?",
+    question: "What industries do you cover?",
     answer:
-      "Yes, Streamscale provides native integrations with popular data sources and sinks including Kafka, PostgreSQL, Redis, and HTTP endpoints. Our REST and WebSocket APIs make it easy to build custom integrations.",
+      "We currently benchmark across five industries: software engineering, legal and big law, medicine and healthcare, management consulting, and finance and banking. Each Scoutly Axis is a model we run against real work in that industry.",
   },
   {
-    question: "How do you handle security and compliance?",
+    question: "How long does it take to get results?",
     answer:
-      "Streamscale is SOC 2 Type II certified and supports encryption at rest and in transit. We offer role-based access control, audit logging, and can deploy in your VPC for additional isolation. Enterprise plans include advanced security features.",
+      "Once we partner with a company, we scope the benchmark within four days on average. From there, the testing timeline depends on the role and the number of tasks we're evaluating.",
   },
   {
-    question: "What happens if I exceed my plan limits?",
+    question: "What happens after the benchmark?",
     answer:
-      "We'll notify you when you're approaching your limits. Pro plans can burst beyond their limits with pay-as-you-go pricing. Enterprise plans offer unlimited scaling with predictable monthly costs.",
+      "You get a detailed report with specific flaws and strengths. If you want to move forward, we can build and deploy the agent into that workflow, or help you monetize your operational data with AI labs.",
   },
 ];
 
-function FaqItem({ question, answer }: { question: string; answer: string }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <div className="border-b border-border/50 pb-6 last:border-0">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full text-left group"
-      >
-        <span className="text-base font-medium text-foreground group-hover:text-primary transition-colors">
-          {question}
-        </span>
-        <ChevronRight
-          className={`size-5 text-muted-foreground transition-transform duration-200 ${
-            isOpen ? "rotate-90" : ""
-          }`}
-        />
-      </button>
-      {isOpen && (
-        <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-          {answer}
-        </p>
-      )}
-    </div>
-  );
-}
-
-function PricingCard({
-  plan,
-}: {
-  plan: (typeof pricingPlans)[0];
-}) {
-  return (
-    <div
-      className={`relative rounded-xl border p-8 ${
-        plan.popular
-          ? "border-primary bg-primary/5 shadow-lg shadow-primary/10"
-          : "border-border/50 bg-card/50"
-      }`}
-    >
-      {plan.popular && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="px-4 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium">
-            Most Popular
-          </span>
-        </div>
-      )}
-      <div className="mb-6">
-        <h3 className="text-xl font-semibold text-foreground mb-2">
-          {plan.name}
-        </h3>
-        <p className="text-sm text-muted-foreground">{plan.description}</p>
-      </div>
-      <div className="mb-6">
-        <span className="text-4xl font-bold text-foreground">
-          {typeof plan.price === "number" ? `$${plan.price}` : plan.price}
-        </span>
-        {plan.period && (
-          <span className="text-muted-foreground text-sm ml-1">
-            {plan.period}
-          </span>
-        )}
-      </div>
-      <ul className="space-y-3 mb-8">
-        {plan.features.map((feature, index) => (
-          <li key={index} className="flex items-start gap-3">
-            <CheckCircle2 className="size-5 text-primary flex-shrink-0 mt-0.5" />
-            <span className="text-sm text-muted-foreground">{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <Button
-        asChild
-        variant={plan.popular ? "default" : "outline"}
-        className={`w-full ${
-          plan.popular
-            ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-            : "border-border hover:bg-accent"
-        }`}
-      >
-        <Link to="/auth">{plan.cta}</Link>
-      </Button>
-    </div>
-  );
-}
-
 function HeroSection() {
   return (
-    <section className="relative min-h-screen pt-24 pb-16 overflow-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/[0.02]" />
-      <div className="absolute inset-0 opacity-30">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 50% 0%, var(--primary) 0%, transparent 50%)`,
-          }}
-        />
-      </div>
-
-      {/* Grid pattern */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{
-          backgroundImage: `linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px)`,
-          backgroundSize: "60px 60px",
-        }}
-      />
+    <section className="relative min-h-screen pt-24 pb-20 overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-primary/[0.015]" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <div className="text-center max-w-4xl mx-auto">
+        <div className="text-center max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-              </span>
-              Now in Public Beta
-            </div>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+            </span>
+            Now accepting new partners
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6"
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground mb-6"
           >
-            Build streaming apps{" "}
-            <span className="text-primary">that scale</span>
-            <br />
-            without the complexity
+            We test AI before your company{" "}
+            <span className="text-primary">bets on it</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Streamscale makes it easy to build, deploy, and scale real-time
-            data streaming infrastructure. Focus on your product, not your
-            pipeline.
+            Streamscale runs real prompts against real agents to find out
+            whether they can actually take over a role — then hands back
+            exactly what we found.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-3"
           >
             <Button
               asChild
@@ -291,7 +174,7 @@ function HeroSection() {
               className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
             >
               <Link to="/auth">
-                Get Started Free
+                Start a Benchmark
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
@@ -299,51 +182,448 @@ function HeroSection() {
               asChild
               variant="outline"
               size="lg"
-              className="gap-2 text-base px-8 py-4 border-border hover:bg-accent"
+              className="text-base px-8 py-4 border-border hover:bg-accent"
             >
-              <Link to="#demo">
-                Watch Demo
-                <Globe className="size-4" />
+              <Link to="#how-it-works">
+                See How It Works
               </Link>
             </Button>
           </motion.div>
+        </div>
 
-          {/* Trusted By */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="mt-16"
-          >
-            <p className="text-xs text-muted-foreground uppercase tracking-widest mb-6">
-              Trusted by teams at
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12 opacity-60">
-              {["Vercel", "Linear", "Notion", "Figma", "Raycast"].map(
-                (company) => (
-                  <span
-                    key={company}
-                    className="text-xl font-semibold text-foreground"
-                  >
-                    {company}
-                  </span>
-                )
-              )}
+        {/* Stats */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8"
+        >
+          {stats.map((stat, index) => (
+            <div
+              key={index}
+              className="text-center md:text-left p-6 rounded-xl border border-border/30 bg-card/30"
+            >
+              <div className="text-3xl md:text-4xl font-semibold text-foreground mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {stat.label}
+              </div>
             </div>
+          ))}
+        </motion.div>
+
+        <p className="text-center text-xs text-muted-foreground mt-6">
+          Illustrative figures for demo purposes
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function StatsSection() {
+  return (
+    <section className="py-16 bg-card/30 border-y border-border/30">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { value: "247", label: "Agents Benchmarked" },
+            { value: "38", label: "Companies Partnered" },
+            { value: "5", label: "Industries Covered" },
+            { value: "$410K", label: "Sandbox Placement Revenue" },
+          ].map((stat, index) => (
+            <div
+              key={index}
+              className="text-center p-6 rounded-xl border border-border/30 bg-card/30"
+            >
+              <div className="text-3xl font-semibold text-foreground mb-1">
+                {stat.value}
+              </div>
+              <div className="text-sm text-muted-foreground">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          Illustrative figures for demo purposes
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function HowItWorksSection() {
+  return (
+    <section
+      id="how-it-works"
+      className="py-24 bg-background"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
+            How a benchmark actually runs
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            When we partner with a company or startup, we don't hand over a
+            slide deck of recommendations. We take the agent you're evaluating,
+            run it against real prompts drawn from the actual role, and record
+            where it holds up and where it breaks.
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto space-y-8">
+          {steps.map((step, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+              className="flex gap-6"
+            >
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-medium">
+                {index + 1}
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-foreground mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-16 p-6 rounded-xl border border-border/30 bg-card/30 text-center">
+          <p className="text-muted-foreground text-sm">
+            This isn't consulting. It's the test itself, and what we build off
+            the back of it.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const steps = [
+  {
+    title: "We scope the role",
+    description:
+      "You tell us about the role or process you want tested. We follow up to scope the benchmark and understand what the agent would actually be doing day to day.",
+  },
+  {
+    title: "We run real prompts",
+    description:
+      "We take the agent you're evaluating and run it against real prompts drawn from the actual work in that role. No hypothetical scenarios — just the actual tasks.",
+  },
+  {
+    title: "We record where it holds up",
+    description:
+      "Every test produces specific results: what the agent got right, what it got wrong, and where it broke. We document the exact flaws we found.",
+  },
+  {
+    title: "You get the report",
+    description:
+      "We hand back exactly what we found — not a deck of recommendations, but the actual performance data and the specific issues we identified.",
+  },
+  {
+    title: "We build off the results",
+    description:
+      "If you want the flaws fixed, that becomes the basis for what we deploy. If you'd rather monetize your data, we can broker that too.",
+  },
+];
+
+function IndustriesSection() {
+  return (
+    <section
+      id="industries"
+      className="py-24 bg-card/30 border-y border-border/30"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
+            What we test
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Each Scoutly Axis is a model we run against real work in that
+            industry. Open one to see what we test.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {industries.map((industry, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              className="rounded-xl border border-border/30 bg-card/50 p-6"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-lg font-medium text-foreground">
+                  {industry.name}
+                </h3>
+                <span className="text-2xl font-semibold text-primary">
+                  {industry.passRate}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                {industry.description}
+              </p>
+
+              <div className="pt-4 border-t border-border/30">
+                <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3">
+                  Sample scores across agent versions
+                </p>
+                <div className="space-y-2">
+                  {industry.scores.map((score, scoreIndex) => (
+                    <div
+                      key={scoreIndex}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="text-muted-foreground">
+                        {score.label}
+                      </span>
+                      <span
+                        className={`font-medium ${
+                          score.label === "Human baseline"
+                            ? "text-foreground"
+                            : "text-muted-foreground"
+                        }`}
+                      >
+                        {score.value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <p className="text-center text-xs text-muted-foreground mt-8">
+          Illustrative data to show the shape of a report. Not a live or real
+          result.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function EnterpriseSection() {
+  return (
+    <section
+      id="enterprise"
+      className="py-24 bg-background"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="text-center max-w-3xl mx-auto mb-16">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
+            Enterprise
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            For companies deciding how much of their operation an agent can
+            actually run — not just one role, but the workflow around it.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* AI Work Diagnostics */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+            className="lg:col-span-1 rounded-xl border border-border/30 bg-card/50 p-6"
+          >
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              AI Work Diagnostics
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              We look at how the work actually gets done — the tools, the
+              tickets, the day-to-day handoffs — and map out which parts of it
+              an agent could take on today.
+            </p>
+            <div className="space-y-3">
+              {pipelineData.map((item, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{item.task}</span>
+                  <span className="text-foreground font-medium">
+                    {item.automation}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 pt-4 border-t border-border/30">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+                Share of workflow automatable, by department
+              </p>
+              <div className="space-y-3">
+                {workflowData.map((dept, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground w-32 truncate">
+                      {dept.department}
+                    </span>
+                    <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full"
+                        style={{ width: dept.automatable }}
+                      />
+                    </div>
+                    <span className="text-sm text-foreground font-medium w-12 text-right">
+                      {dept.automatable}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-4">
+                Illustrative — output shape of a diagnostic, not a real
+                client's results
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Custom AI Agent Deployment */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="lg:col-span-1 rounded-xl border border-border/30 bg-card/50 p-6"
+          >
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              Custom AI Agent Deployment
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              Once we know what's automatable, we build the agent, place it into
+              that workflow, and keep testing it against the job it's
+              replacing.
+            </p>
+            <div className="space-y-3">
+              {deploymentData.map((week, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{week.week}</span>
+                  <span className="text-foreground font-medium">
+                    {week.accuracy}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 pt-4 border-t border-border/30">
+              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-4">
+                Accuracy climbing across deployment weeks
+              </p>
+              <div className="space-y-3">
+                {deploymentData.map((week, index) => (
+                  <div key={index} className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground w-16">
+                      {week.week}
+                    </span>
+                    <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full"
+                        style={{ width: week.accuracyValue }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-4">
+                Illustrative — a typical improvement curve after deployment,
+                not a real client's data
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Data Monetization */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="lg:col-span-1 rounded-xl border border-border/30 bg-card/50 p-6"
+          >
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              Data Monetization
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+              Your operational data is worth something to the labs training the
+              next generation of models. We clean it, strip anything
+              identifying, and broker the sale — you keep a cut.
+            </p>
+            <div className="space-y-3">
+              {dataValues.map((item, index) => (
+                <div key={index} className="flex items-center justify-between text-sm">
+                  <span className="text-muted-foreground">{item.category}</span>
+                  <span className="text-foreground font-medium">
+                    {item.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground mt-8">
+              Illustrative estimates — actual value depends on volume and
+              quality
+            </p>
           </motion.div>
         </div>
       </div>
+    </section>
+  );
+}
 
-      {/* Stats Bar */}
-      <div className="absolute bottom-0 left-0 right-0 border-t border-border/50 bg-card/30 backdrop-blur-sm">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-border/50">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="py-8 md:py-10 text-center md:text-left"
-              >
-                <div className="text-3xl md:text-4xl font-bold text-foreground mb-1">
+const pipelineData = [
+  { task: "Tier-1 support tickets", automation: "High automation" },
+  { task: "Contract redlining", automation: "Partial automation" },
+  { task: "Client escalations", automation: "Low automation" },
+];
+
+const deploymentData = [
+  { week: "Week 1", accuracy: "54%", accuracyValue: 54 },
+  { week: "Week 2", accuracy: "68%", accuracyValue: 68 },
+  { week: "Week 3", accuracy: "79%", accuracyValue: 79 },
+  { week: "Week 4", accuracy: "88%", accuracyValue: 88 },
+];
+
+function CTA() {
+  return (
+    <section
+      id="partner"
+      className="py-24 bg-card/30 border-y border-border/30"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-3xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
+            Partner with Streamscale
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Tell us about the role or process you want tested, and we'll follow
+            up to scope the benchmark.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            <Button
+              asChild
+              size="lg"
+              className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
+            >
+              <Link to="/auth">
+                Apply to Partner
+                <ArrowRight className="size-4" />
+              </Link>
+            </Button>
+          </div>
+
+          <div className="grid grid-cols-3 gap-6 text-center">
+            {[
+              { value: "4 days", label: "Avg. time to scope a benchmark" },
+              { value: "5", label: "Industries actively covered" },
+              { value: "12", label: "Active benchmark partners" },
+            ].map((stat, index) => (
+              <div key={index}>
+                <div className="text-2xl font-semibold text-foreground mb-1">
                   {stat.value}
                 </div>
                 <div className="text-sm text-muted-foreground">
@@ -352,105 +632,11 @@ function HeroSection() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
-function TestimonialsSection() {
-  return (
-    <section className="py-24 bg-card/20 border-y border-border/50">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Loved by developers
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Join thousands of developers who've made the switch to Streamscale.
+          <p className="text-center text-xs text-muted-foreground mt-6">
+            Illustrative figures for demo purposes
           </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((testimonial, index) => (
-            <div
-              key={index}
-              className="p-6 rounded-xl border border-border/50 bg-card/50"
-            >
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <svg
-                    key={i}
-                    className="w-4 h-4 text-primary fill-current"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground leading-relaxed mb-6">
-                &ldquo;{testimonial.quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-medium">
-                  {testimonial.avatar}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-foreground">
-                    {testimonial.name}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {testimonial.role}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PricingSection() {
-  return (
-    <section
-      id="pricing"
-      className="py-24 bg-background"
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Simple, transparent pricing
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8">
-            Start free and scale as you grow. No hidden fees, no surprises.
-          </p>
-          <div className="flex items-center justify-center gap-3">
-            <span className="text-sm text-muted-foreground">Monthly</span>
-            <div className="relative w-12 h-6">
-              <input
-                type="checkbox"
-                className="sr-only"
-              />
-              <div className="absolute inset-0 rounded-full bg-secondary cursor-pointer transition-colors" />
-              <div className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-foreground shadow transition-transform" />
-            </div>
-            <span className="text-sm text-muted-foreground">Annual</span>
-            <span className="text-sm text-primary font-medium">Save 20%</span>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {pricingPlans.map((plan) => (
-            <PricingCard key={plan.name} plan={plan} />
-          ))}
-        </div>
-
-        <p className="text-center text-sm text-muted-foreground mt-8">
-          All plans include a 14-day free trial. No credit card required.
-        </p>
       </div>
     </section>
   );
@@ -458,24 +644,17 @@ function PricingSection() {
 
 function FaqSection() {
   return (
-    <section className="py-24 bg-card/20 border-y border-border/50">
+    <section className="py-24 bg-background">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
             Frequently asked questions
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Everything you need to know about Streamscale.
-          </p>
         </div>
 
         <div className="space-y-1">
           {faqs.map((faq, index) => (
-            <FaqItem
-              key={index}
-              question={faq.question}
-              answer={faq.answer}
-            />
+            <FaqItem key={index} question={faq.question} answer={faq.answer} />
           ))}
         </div>
       </div>
@@ -483,56 +662,36 @@ function FaqSection() {
   );
 }
 
-function CallToAction() {
-  return (
-    <section className="py-24 bg-background">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/50 p-12 md:p-16 text-center">
-          {/* Background decoration */}
-          <div className="absolute inset-0 opacity-30">
-            <div
-              className="absolute top-0 right-0 w-96 h-96 rounded-full bg-primary/20 blur-3xl -translate-y-1/2 translate-x-1/2"
-            />
-            <div
-              className="absolute bottom-0 left-0 w-64 h-64 rounded-full bg-primary/10 blur-3xl translate-y-1/2 -translate-x-1/2"
-            />
-          </div>
+function FaqItem({
+  question,
+  answer,
+}: {
+  question: string;
+  answer: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
 
-          <div className="relative">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Ready to scale your streams?
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-              Join thousands of developers building with Streamscale. Start free,
-              upgrade when you need more.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button
-                asChild
-                size="lg"
-                className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
-              >
-                <Link to="/auth">
-                  Get Started Free
-                  <ArrowRight className="size-4" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="gap-2 text-base px-8 py-4 border-border hover:bg-accent"
-              >
-                <Link to="#contact">
-                  Talk to Sales
-                  <Users className="size-4" />
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+  return (
+    <div className="border-b border-border/30 pb-6 last:border-0">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full text-left group"
+      >
+        <span className="text-base font-medium text-foreground group-hover:text-primary transition-colors pr-8">
+          {question}
+        </span>
+        <ChevronRight
+          className={`size-5 text-muted-foreground transition-transform duration-200 flex-shrink-0 ${
+            isOpen ? "rotate-90" : ""
+          }`}
+        />
+      </button>
+      {isOpen && (
+        <p className="mt-4 text-sm text-muted-foreground leading-relaxed pl-8">
+          {answer}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -541,11 +700,12 @@ export default function Landing() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <HeroSection />
-      <FeaturesSection />
-      <TestimonialsSection />
-      <PricingSection />
+      <StatsSection />
+      <HowItWorksSection />
+      <IndustriesSection />
+      <EnterpriseSection />
+      <CTA />
       <FaqSection />
-      <CallToAction />
       <Footer />
     </div>
   );

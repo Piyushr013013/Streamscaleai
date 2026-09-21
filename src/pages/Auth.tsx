@@ -122,8 +122,8 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center">
                 <svg
-                  width="40"
-                  height="40"
+                  width="36"
+                  height="36"
                   viewBox="0 0 64 64"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -147,19 +147,19 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                   />
                 </svg>
               </div>
-              <span className="text-xl font-semibold tracking-tight text-foreground">
+              <span className="text-lg font-medium tracking-tight text-foreground">
                 Streamscale
               </span>
             </div>
           </div>
 
-          <Card className="border-border/50 shadow-xl bg-card/80 backdrop-blur-sm">
+          <Card className="border-border/30 shadow-xl bg-card/80 backdrop-blur-sm">
             {step === "signIn" ? (
               <>
                 <CardHeader className="text-center pb-4">
-                  <CardTitle className="text-2xl">Welcome back</CardTitle>
+                  <CardTitle className="text-xl">Create your account</CardTitle>
                   <CardDescription>
-                    Enter your email to log in or sign up
+                    Enter your email to get started
                   </CardDescription>
                 </CardHeader>
                 <form onSubmit={handleEmailSubmit}>
@@ -169,7 +169,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           name="email"
-                          placeholder="name@streamscale.com"
+                          placeholder="you@company.com"
                           type="email"
                           className="pl-9 h-12"
                           disabled={isLoading}
@@ -198,7 +198,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
 
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
-                        <span className="w-full border-t border-border/50" />
+                        <span className="w-full border-t border-border/30" />
                       </div>
                       <div className="relative flex justify-center text-xs uppercase">
                         <span className="bg-card/80 px-2 text-muted-foreground">
@@ -215,7 +215,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                       disabled={isLoading}
                     >
                       <UserX className="mr-2 h-4 w-4" />
-                      Continue as Guest
+                      Continue as guest
                     </Button>
                   </CardContent>
                 </form>
@@ -307,7 +307,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
               </>
             )}
 
-            <div className="py-4 px-6 text-xs text-center text-muted-foreground border-t border-border/50 rounded-b-lg bg-card/50">
+            <div className="py-4 px-6 text-xs text-center text-muted-foreground border-t border-border/30 rounded-b-lg bg-card/50">
               By continuing, you agree to our{" "}
               <a
                 href="#terms"
@@ -326,12 +326,12 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
           </Card>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
-            Don&apos;t have an account?{" "}
+            Already have an account?{" "}
             <a
-              href="#signup"
+              href="#login"
               className="text-primary hover:underline font-medium"
             >
-              Get started for free
+              Sign in
             </a>
           </p>
         </div>

@@ -9,65 +9,42 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import {
-  Menu,
-  ArrowRight,
-  CheckCircle2,
-  ChevronRight,
-  ArrowRightCircle,
-  Layers,
-  Globe,
-  Zap,
-  Shield,
-  BarChart3,
-  Users,
-  Code,
-} from "lucide-react";
-import { Link, useLocation } from "react-router";
+import { Menu, ArrowRight, ChevronRight } from "lucide-react";
+import { Link } from "react-router";
 
 const navLinks = [
   {
-    title: "Platform",
+    title: "How it works",
     items: [
       {
-        title: "Overview",
-        href: "#overview",
-        description: "See how Streamscale transforms your workflow",
+        title: "The process",
+        href: "#how-it-works",
+        description: "How a benchmark actually runs",
       },
       {
-        title: "Features",
-        href: "#features",
-        description: "Everything you need to scale your streams",
-      },
-      {
-        title: "Integrations",
-        href: "#integrations",
-        description: "Connect with your favorite tools",
-      },
-      {
-        title: "Pricing",
-        href: "#pricing",
-        description: "Simple, transparent pricing",
+        title: "What we test",
+        href: "#industries",
+        description: "The industries we cover",
       },
     ],
   },
   {
-    title: "Solutions",
+    title: "Services",
     items: [
       {
-        title: "Developers",
-        href: "#developers",
-        description: "Built for engineering teams",
+        title: "AI Work Diagnostics",
+        href: "#enterprise",
+        description: "Map what's automatable",
       },
       {
-        title: "Enterprises",
-        href: "#enterprises",
-        description: "Scale with confidence",
+        title: "Custom Agent Deployment",
+        href: "#enterprise",
+        description: "Build and deploy agents",
       },
       {
-        title: "Startups",
-        href: "#startups",
-        description: "Grow faster with Streamscale",
+        title: "Data Monetization",
+        href: "#enterprise",
+        description: "Broker your data to labs",
       },
     ],
   },
@@ -75,74 +52,30 @@ const navLinks = [
     title: "Resources",
     items: [
       {
-        title: "Documentation",
-        href: "#docs",
-        description: "Learn how to use Streamscale",
+        title: "Benchmarks",
+        href: "#industries",
+        description: "See pass rates by industry",
       },
       {
-        title: "API Reference",
-        href: "#api",
-        description: "Integrate with our REST API",
+        title: "FAQ",
+        href: "#faq",
+        description: "Common questions",
       },
-      {
-        title: "Blog",
-        href: "#blog",
-        description: "Latest updates and insights",
-      },
-    ],
-  },
-];
-
-const footerLinks = [
-  {
-    title: "Platform",
-    links: [
-      { title: "Overview", href: "#overview" },
-      { title: "Features", href: "#features" },
-      { title: "Integrations", href: "#integrations" },
-      { title: "Pricing", href: "#pricing" },
-    ],
-  },
-  {
-    title: "Solutions",
-    links: [
-      { title: "Developers", href: "#developers" },
-      { title: "Enterprises", href: "#enterprises" },
-      { title: "Startups", href: "#startups" },
-    ],
-  },
-  {
-    title: "Resources",
-    links: [
-      { title: "Documentation", href: "#docs" },
-      { title: "API Reference", href: "#api" },
-      { title: "Blog", href: "#blog" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { title: "About", href: "#about" },
-      { title: "Careers", href: "#careers" },
-      { title: "Contact", href: "#contact" },
-      { title: "Legal", href: "#legal" },
     ],
   },
 ];
 
 export function Navigation() {
-  const location = useLocation();
-
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-14 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <div className="flex items-center justify-center">
               <svg
-                width="32"
-                height="32"
+                width="28"
+                height="28"
                 viewBox="0 0 64 64"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -166,7 +99,7 @@ export function Navigation() {
                 />
               </svg>
             </div>
-            <span className="text-lg font-semibold tracking-tight text-foreground">
+            <span className="text-base font-medium tracking-tight text-foreground">
               Streamscale
             </span>
           </Link>
@@ -187,12 +120,15 @@ export function Navigation() {
                             asChild
                             className="block select-none space-y-1 rounded-md px-3 py-2 text-sm/6 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                           >
-                            <Link
-                              to={item.href}
-                              className="flex items-center gap-2"
-                            >
-                              {item.title}
-                              <ChevronRight className="size-4 opacity-50" />
+                            <Link to={item.href}>
+                              <div className="flex flex-col space-y-0.5">
+                                <span className="text-sm font-medium">
+                                  {item.title}
+                                </span>
+                                <span className="text-xs text-muted-foreground">
+                                  {item.description}
+                                </span>
+                              </div>
                             </Link>
                           </NavigationMenuLink>
                         </li>
@@ -205,22 +141,22 @@ export function Navigation() {
           </NavigationMenu>
 
           {/* Right side actions */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <nav className="hidden md:flex">
               <Link
-                to="#login"
+                to="#apply"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                Log in
+                Apply
               </Link>
             </nav>
             <Button
               asChild
               size="sm"
-              className="hidden md:inline-flex gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="hidden md:inline-flex gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground"
             >
               <Link to="/auth">
-                Get Started
+                Partner with us
                 <ArrowRight className="size-3.5" />
               </Link>
             </Button>
@@ -231,9 +167,9 @@ export function Navigation() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="md:hidden border-border hover:bg-accent"
+                  className="md:hidden border-border hover:bg-accent h-8 w-8"
                 >
-                  <Menu className="size-5" />
+                  <Menu className="size-4" />
                   <span className="sr-only">Menu</span>
                 </Button>
               </SheetTrigger>
@@ -241,7 +177,7 @@ export function Navigation() {
                 <nav className="flex flex-col gap-6 mt-8">
                   {navLinks.map((linkGroup) => (
                     <div key={linkGroup.title}>
-                      <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                         {linkGroup.title}
                       </h4>
                       <div className="flex flex-col gap-2">
@@ -249,20 +185,21 @@ export function Navigation() {
                           <Link
                             key={item.title}
                             to={item.href}
-                            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-between"
                           >
-                            {item.title}
+                            <span>{item.title}</span>
+                            <ChevronRight className="size-3.5" />
                           </Link>
                         ))}
                       </div>
                     </div>
                   ))}
-                  <div className="pt-6 border-t border-border/50">
+                  <div className="pt-6 border-t border-border/30">
                     <Link
-                      to="#login"
+                      to="#apply"
                       className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Log in
+                      Apply to partner
                     </Link>
                   </div>
                 </nav>
