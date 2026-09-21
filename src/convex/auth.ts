@@ -1,7 +1,8 @@
 import { v } from "convex/values";
-import { mutation, query } from "convex/server";
+import { mutation, query } from "./_generated/server";
 
-// Type guard to check if a user document is a real user (not anonymous)
+// Type guard to check if a user document is a real user (not anonymous).
+// Account creation remains admin-only through adminCreateUser.
 function isRealUser(user: any): user is {
   _id: string;
   email: string;
@@ -124,12 +125,51 @@ export const requestOtp = mutation({
   },
 });
 
+export const getUserById = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    return user && isRealUser(user) ? user : null;
+  },
+});
+
+export const adminCreateUser = mutation({
+  args: {
+    email: v.string(),
+    password: v.string(),
+    name: v.string(),
+    role: v.union(v.literal("admin"), v.literal("user")),
+    permissions: v.array(v.string()),
+    linkedin: v.optional(v.string()),
+    twitter: v.optional(v.string()),
+    website: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const email = args.email.toLowerCase();
+    const existing = await ctx.db.query("users").withIndex("by_email", (q) => q.eq("email", email)).first();
+    if (existing) throw new Error("Email already registered");
+    return await ctx.db.insert("users", {
+      email,
+      name: args.name,
+      passwordHash: btoa(args.password),
+      role: args.role,
+      emailVerified: true,
+      permissions: args.permissions,
+      socialLinks: { linkedin: args.linkedin, twitter: args.twitter, website: args.website },
+    });
+  },
+});
+
 export const adminUpdateUser = mutation({
   args: {
     userId: v.id("users"),
     email: v.optional(v.string()),
     password: v.optional(v.string()),
     name: v.optional(v.string()),
+    permissions: v.optional(v.array(v.string())),
+    linkedin: v.optional(v.string()),
+    twitter: v.optional(v.string()),
+    website: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const updates: any = {};
@@ -140,8 +180,10 @@ export const adminUpdateUser = mutation({
       updates.passwordHash = btoa(args.password);
       updates.emailVerified = true;
     }
-    if (args.name !== undefined) {
-      updates.name = args.name;
+    if (args.name !== undefined) updates.name = args.name;
+    if (args.permissions !== undefined) updates.permissions = args.permissions;
+    if (args.linkedin !== undefined || args.twitter !== undefined || args.website !== undefined) {
+      updates.socialLinks = { linkedin: args.linkedin, twitter: args.twitter, website: args.website };
     }
     await ctx.db.patch(args.userId, updates);
     return { success: true };
