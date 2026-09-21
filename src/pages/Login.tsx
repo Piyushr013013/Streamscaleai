@@ -46,7 +46,7 @@ export default function Login() {
 
   // Initialize admin on mount
   useState(() => {
-    initAdminMutation({});
+    initAdminMutation();
   }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -60,7 +60,7 @@ export default function Login() {
           email: loginEmail.toLowerCase(),
           password: loginPassword,
         });
-        await signIn();
+        await signIn(result.userId);
         navigate("/dashboard");
         return;
       } catch (loginErr: any) {
@@ -73,7 +73,7 @@ export default function Login() {
           try {
             const otpResult = await requestOtpMutation({
               email: loginEmail.toLowerCase(),
-            });
+            }) as any;
             setOtpSent(true);
             // In production, this would be sent via email
             // For demo, we show it in an alert
@@ -99,7 +99,7 @@ export default function Login() {
       const result = await verifyOtpMutation({
         email: otpEmail.toLowerCase(),
         otp: otpCode,
-      });
+      }) as any;
 
       if (result.success) {
         // Now try to login with pending password
@@ -108,7 +108,7 @@ export default function Login() {
             email: otpEmail.toLowerCase(),
             password: pendingPassword,
           });
-          await signIn();
+          await signIn(loginResult.userId);
           navigate("/dashboard");
         } catch (loginErr: any) {
           setOtpError(loginErr.message);
@@ -146,7 +146,7 @@ export default function Login() {
     try {
       const result = await requestOtpMutation({
         email: otpEmail.toLowerCase(),
-      });
+      }) as any;
       setOtpSent(true);
       alert(`New verification code sent to ${otpEmail}.\n\nFor demo purposes, check the browser console (F12) for the code.`);
       console.log(`OTP for ${otpEmail}: ${result.otp}`);

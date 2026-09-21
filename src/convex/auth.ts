@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 
 // Type guard to check if a user document is a real user (not anonymous)
 function isRealUser(user: any): user is {
@@ -152,7 +152,7 @@ export const requestOtp = mutation({
 });
 
 // Admin: Get all users
-export const adminGetUsers = mutation({
+export const adminGetUsers = query({
   handler: async (ctx) => {
     const users = await ctx.db.query("users").collect();
     const realUsers: any[] = [];
@@ -174,7 +174,8 @@ export const adminGetUsers = mutation({
 
 // Initialize default admin
 export const initAdmin = mutation({
-  handler: async (ctx) => {
+  args: {},
+  handler: async (ctx, _args) => {
     const existingAdmin = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", "piyushr013013@gmail.com"))
