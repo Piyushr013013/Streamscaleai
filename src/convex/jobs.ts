@@ -85,6 +85,7 @@ export const applyToJob = mutation({
     email: v.string(),
     phone: v.optional(v.string()),
     message: v.optional(v.string()),
+    resumeStorageId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobId);
@@ -98,6 +99,7 @@ export const applyToJob = mutation({
         applicantEmail: args.email,
         applicantPhone: args.phone,
         message: args.message,
+        resumeStorageId: args.resumeStorageId,
         status: "pending",
       }),
     };
@@ -123,6 +125,13 @@ export const updateApplicationStatus = mutation({
     }
     await ctx.db.patch(args.applicationId, { status: args.status });
     return { success: true };
+  },
+});
+
+export const generateUploadUrl = mutation({
+  args: {},
+  handler: async (ctx) => {
+    return { uploadUrl: await ctx.storage.generateUploadUrl() };
   },
 });
 

@@ -77,7 +77,7 @@ const navLinks = [
 
 export function Navigation() {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/30 bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur-xl">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
@@ -178,53 +178,81 @@ export function Navigation() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="md:hidden border-border hover:bg-accent h-8 w-8"
+                  className="md:hidden border-border hover:bg-accent h-9 w-9 rounded-xl"
                 >
                   <Menu className="size-4" />
                   <span className="sr-only">Menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="w-[280px] sm:w-[320px]">
-                <nav className="flex flex-col gap-6 mt-8">
-                  {navLinks.map((linkGroup) => (
-                    <div key={linkGroup.title}>
-                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                        {linkGroup.title}
-                      </h4>
-                      <div className="flex flex-col gap-2">
-                        {linkGroup.items.map((item) => (
-                          <Link
-                            key={item.title}
-                            to={item.href}
-                            className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-between"
-                          >
-                            <span>{item.title}</span>
-                            <ChevronRight className="size-3.5" />
-                          </Link>
-                        ))}
+              <SheetContent side="right" className="w-[85vw] sm:w-[340px] pt-0 px-6 overflow-y-auto">
+                <div className="flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-6 mt-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-center">
+                        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <rect width="64" height="64" rx="14" fill="#1E293B" />
+                          <path d="M14 46L32 20L50 46H14Z" fill="#FFFFFF" />
+                          <path d="M32 20L32 52" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
+                          <path d="M24 30H40" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" />
+                        </svg>
                       </div>
+                      <span className="text-base font-medium tracking-tight">Streamscale</span>
                     </div>
-                  ))}
-                  <div className="border-t border-border/30 pt-6" style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-                    <Link to="/jobs" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
-                      <span>View open jobs</span>
-                      <ChevronRight className="size-3.5" />
-                    </Link>
-                    <Link to="/login" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
-                      <span>Sign in</span>
-                      <ChevronRight className="size-3.5" />
-                    </Link>
-                    <Button
-                      asChild
-                      className="mt-2 w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
-                    >
-                      <Link to="/partner">
-                        Partner with us
-                        <ArrowRight className="size-3.5" />
-                      </Link>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl -mr-3" onClick={() => {}}>
+                      <span className="sr-only">Close menu</span>
                     </Button>
                   </div>
-                </nav>
+
+                  <nav className="flex flex-col gap-6 flex-1">
+                    {navLinks.map((linkGroup) => (
+                      <div key={linkGroup.title}>
+                        <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">
+                          {linkGroup.title}
+                        </h4>
+                        <div className="flex flex-col gap-0.5">
+                          {linkGroup.items.map((item) => (
+                            <Link
+                              key={item.title}
+                              to={item.href}
+                              className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-between rounded-lg px-3 py-2.5 hover:bg-accent"
+                            >
+                              <span>{item.title}</span>
+                              <ChevronRight className="size-3.5 ml-auto" />
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </nav>
+
+                  <div className="border-t border-border/40 pt-5 mt-auto">
+                    <div className="flex flex-col gap-2.5">
+                      <Link
+                        to="/jobs"
+                        className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                      >
+                        <span>View open jobs</span>
+                        <ChevronRight className="size-3.5" />
+                      </Link>
+                      <Link
+                        to="/login"
+                        className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                      >
+                        <span>Sign in</span>
+                        <ChevronRight className="size-3.5" />
+                      </Link>
+                      <Button
+                        asChild
+                        className="mt-3 w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl h-11 text-sm font-medium"
+                      >
+                        <Link to="/partner">
+                          Partner with us
+                          <ArrowRight className="size-3.5" />
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </SheetContent>
             </Sheet>
           </div>

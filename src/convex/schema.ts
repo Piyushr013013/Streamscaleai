@@ -42,7 +42,7 @@ export default defineSchema({
     applicantPhone: v.optional(v.string()),
     status: v.union(v.literal("pending"), v.literal("reviewed"), v.literal("contacted")),
     message: v.optional(v.string()),
-    resumePdfId: v.optional(v.id("resumes")),
+    resumeStorageId: v.optional(v.string()),
   }),
   partnerRequests: defineTable({
     name: v.string(),

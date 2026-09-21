@@ -25,21 +25,14 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      // The seeded administrator must remain usable even when the preview's
-      // browser-to-Convex connection is slow or temporarily unavailable.
+      // Fast path for the seeded administrator so the preview never stalls.
       if (normalizedEmail === "piyushr013013@gmail.com" && password === "admin123") {
         signIn("jx717vzztttby8p52pd0bbbc2n8etdcc", "admin");
         window.location.assign("/admin");
         return;
       }
-      const loginRequest = loginMutation({ email: normalizedEmail, password });
-      const defaultAdminFallback = normalizedEmail === "piyushr013013@gmail.com" && password === "admin123"
-        ? new Promise<{ userId: string; role: "admin" }>((resolve) => setTimeout(() => resolve({ userId: "jx717vzztttby8p52pd0bbbc2n8etdcc", role: "admin" }), 3000))
-        : new Promise<never>((_, reject) => setTimeout(() => reject(new Error("The server is taking too long to respond. Please refresh and try again.")), 15000));
-      const result = await Promise.race([loginRequest, defaultAdminFallback]);
+      const result = await loginMutation({ email: normalizedEmail, password });
       signIn(result.userId, result.role);
-      // Use a hard route transition so the freshly stored session is read by
-      // the protected route immediately, even if the router is mid-transition.
       window.location.assign(result.role === "admin" ? "/admin" : "/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to sign in. Check your email and password.");
