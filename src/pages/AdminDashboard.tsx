@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Briefcase, Link2, LogOut, Shield, Trash2, UserPlus, Users } from "lucide-react";
+import { Briefcase, Link2, LogOut, Shield, Trash2, UserPlus, Users, UserX, Edit2, Plus } from "lucide-react";
 
 const permissions = ["manage_jobs", "view_applications", "view_partner_requests", "manage_notifications"];
 
@@ -43,8 +43,12 @@ export default function AdminDashboard() {
   const updateRequest = useMutation(api.bookings.updatePartnerRequestStatus);
   const notificationSettings = useQuery(api.notifications.getSettings, userId ? { viewerId: userId as any } : "skip");
   const updateNotificationSettings = useMutation(api.notifications.updateSettings);
+  const teamMembers = useQuery(api.team.getTeamMembers);
+  const addTeamMember = useMutation(api.team.addTeamMember);
+  const updateTeamMember = useMutation(api.team.updateTeamMember);
+  const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
-  const [tab, setTab] = useState<"accounts" | "jobs" | "applications" | "requests">("accounts");
+  const [tab, setTab] = useState<"accounts" | "jobs" | "applications" | "requests" | "team">("accounts");
   const [message, setMessage] = useState("");
   const [account, setAccount] = useState({ name: "", email: "", password: "", role: "user" as "user" | "admin", permissions: [] as string[], linkedin: "", twitter: "", website: "" });
   const [profile, setProfile] = useState({ email: "", password: "", linkedin: "", twitter: "", website: "" });
@@ -52,6 +56,9 @@ export default function AdminDashboard() {
   const [notificationForm, setNotificationForm] = useState({ partner: "", applications: "", accounts: "" });
   const [job, setJob] = useState(emptyJob);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
+  const [teamTab, setTeamTab] = useState<"list" | "add">("list");
+  const [newMember, setNewMember] = useState({ name: "", role: "", bio: "", linkedin: "", avatarColor: "#1E293B" });
+  const [editingMember, setEditingMember] = useState<any>(null);
 
   useEffect(() => {
     if (!notificationSettings) return;
@@ -105,7 +112,38 @@ export default function AdminDashboard() {
   const submitManagedEdit = async (event: FormEvent) => { event.preventDefault(); try { await updateUser({ userId: managedEdit.id as any, editorId: userId as any, email: managedEdit.email || undefined, password: managedEdit.password || undefined, name: managedEdit.name || undefined }); setMessage("Account updated."); setManagedEdit({ id: "", email: "", password: "", name: "" }); } catch (error) { setMessage(error instanceof Error ? error.message : "Unable to update account."); } };
   const submitNotificationSettings = async (event: FormEvent) => { event.preventDefault(); try { await updateNotificationSettings({ editorId: userId as any, partnerRequestRecipients: notificationForm.partner.split(/[\\n,]/), jobApplicationRecipients: notificationForm.applications.split(/[\\n,]/), accountRecipients: notificationForm.accounts.split(/[\\n,]/) }); setMessage("Notification recipients updated securely."); } catch (error) { setMessage(error instanceof Error ? error.message : "Unable to update notification recipients."); } };
 
-  const tabs = [["accounts", "Accounts", Users], ["jobs", "Jobs", Briefcase], ["applications", "Applications", Link2], ["requests", "Partner requests", UserPlus]] as const;
+  const handleAddMember = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      await addTeamMember({ ...newMember, order: teamMembers?.length ?? 0, addedBy: userId as any });
+      setMessage(`${newMember.name} added to the team.`);
+      setNewMember({ name: "", role: "", bio: "", linkedin: "", avatarColor: "#1E293B" });
+      setTeamTab("list");
+    } catch (err) { setMessage(err instanceof Error ? err.message : "Failed to add member."); }
+  };
+
+  const handleDeleteMember = async (memberId: string, memberName: string) => {
+    if (!window.confirm(`Remove ${memberName} from the team?`)) return;
+    try {
+      await deleteTeamMember({ memberId: memberId as any, deletedBy: userId as any });
+      setMessage(`${memberName} removed from the team.`);
+    } catch (err) { setMessage(err instanceof Error ? err.message : "Failed to remove member."); }
+  };
+
+  const handleUpdateMember = async (e: FormEvent) => {
+    e.preventDefault();
+    try {
+      await updateTeamMember({ memberId: editingMember._id, name: editingMember.name, role: editingMember.role, bio: editingMember.bio || undefined, linkedin: editingMember.linkedin || undefined, avatarColor: editingMember.avatarColor || undefined, updatedBy: userId as any });
+      setMessage(`${editingMember.name} updated.`);
+      setEditingMember(null);
+    } catch (err) { setMessage(err instanceof Error ? err.message : "Failed to update member."); }
+  };
+
+  const startEditingMember = (member: any) => {
+    setEditingMember({ ...member });
+  };
+
+  const tabs = [["accounts", "Accounts", Users], ["jobs", "Jobs", Briefcase], ["applications", "Applications", Link2], ["requests", "Partner requests", UserPlus], ["team", "Team", UserX]] as const;
 
   return <main className="min-h-screen bg-[#f7f8fa] text-slate-900">
     <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6"><div><Link to="/" className="text-sm text-slate-500 hover:text-slate-900">← Back home</Link><h1 className="mt-1 text-xl font-semibold">Streamscale admin</h1></div><div className="flex items-center gap-3"><span className="hidden text-sm text-slate-500 sm:inline">{user && "email" in user ? user.email : ""}</span><Button variant="outline" onClick={signOut}><LogOut className="mr-2 size-4" />Sign out</Button></div></div></header>
@@ -123,6 +161,104 @@ export default function AdminDashboard() {
 
       {tab === "applications" && <Card><CardHeader><CardTitle>Applications</CardTitle><CardDescription>Applications submitted from the public jobs board.</CardDescription></CardHeader><CardContent className="space-y-3">{applications?.map((item: any) => <div key={item._id} className="rounded-lg border border-slate-200 p-4"><div className="flex flex-wrap justify-between gap-2"><p className="font-medium">{item.applicantName} · {item.applicantEmail}</p><Badge>{item.status}</Badge></div><p className="mt-2 text-sm text-slate-500">{item.applicantPhone || "No phone provided"}</p>{item.message && <p className="mt-2 text-sm text-slate-700">{item.message}</p>}</div>)}</CardContent></Card>}
       {tab === "requests" && <Card><CardHeader><CardTitle>Partner requests</CardTitle><CardDescription>Requests are visible to the admin team for follow-up.</CardDescription></CardHeader><CardContent className="space-y-3">{requests?.map((item: any) => <div key={item._id} className="rounded-lg border border-slate-200 p-4"><div className="flex flex-wrap justify-between gap-2"><div><p className="font-medium">{item.name} · {item.email}</p><p className="text-sm text-slate-500">{item.phone} · {item.service}</p></div><Button size="sm" variant="outline" onClick={() => updateRequest({ requestId: item._id, status: "contacted", editorId: userId as any })}>{item.status === "new" ? "Mark contacted" : "Contacted"}</Button></div><p className="mt-3 text-sm text-slate-700">{item.requirements}</p></div>)}</CardContent></Card>}
+
+      {tab === "team" && (
+        <>
+          <div className="flex flex-wrap gap-2 mb-6">
+            <Button variant={teamTab === "list" ? "default" : "outline"} onClick={() => setTeamTab("list")} className="gap-1">
+              <Users className="size-4" /> View team
+            </Button>
+            <Button variant={teamTab === "add" ? "default" : "outline"} onClick={() => setTeamTab("add")} className="gap-1">
+              <Plus className="size-4" /> Add member
+            </Button>
+          </div>
+
+          {teamTab === "add" && (
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><UserPlus className="size-5" /> Add a team member</CardTitle>
+                <CardDescription>Add people to the public team page. Only admins can manage the team.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddMember} className="grid gap-4 max-w-lg">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><Label>Name</Label><Input value={newMember.name} onChange={(e) => setNewMember({ ...newMember, name: e.target.value })} required placeholder="Vivikth Mantha" /></div>
+                    <div><Label>Role</Label><Input value={newMember.role} onChange={(e) => setNewMember({ ...newMember, role: e.target.value })} required placeholder="CEO" /></div>
+                  </div>
+                  <div><Label>Bio <span className="text-slate-400 text-xs font-normal">(optional)</span></Label><Textarea value={newMember.bio} onChange={(e) => setNewMember({ ...newMember, bio: e.target.value })} rows={2} placeholder="Leading Streamscale's vision and strategy..." /></div>
+                  <div><Label>LinkedIn URL <span className="text-slate-400 text-xs font-normal">(optional)</span></Label><Input value={newMember.linkedin} onChange={(e) => setNewMember({ ...newMember, linkedin: e.target.value })} placeholder="https://linkedin.com/in/..." /></div>
+                  <div><Label>Avatar color</Label><div className="flex gap-2 flex-wrap">{["#1E293B","#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#06b6d4","#f43f5e"].map((c) => (<button key={c} type="button" onClick={() => setNewMember({ ...newMember, avatarColor: c })} className={`w-8 h-8 rounded-full border-2 transition-transform ${newMember.avatarColor === c ? "border-white scale-110" : "border-transparent"}`} style={{ backgroundColor: c }} />))}</div></div>
+                  <div className="flex gap-2"><Button type="button" variant="outline" onClick={() => setTeamTab("list")} className="flex-1">Cancel</Button><Button type="submit" className="flex-1 bg-slate-900 hover:bg-slate-800">Add member</Button></div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          {teamTab === "list" && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Team members</CardTitle>
+                <CardDescription>Edit or remove people from the public team page.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {teamMembers?.map((member: any) => (
+                  <div key={member._id} className="rounded-lg border border-slate-200 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-10 items-center justify-center rounded-full text-white text-sm font-semibold" style={{ backgroundColor: member.avatarColor || "#1E293B" }}>
+                          {member.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="font-medium">{member.name}</p>
+                          <p className="text-sm text-slate-500">{member.role}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button size="sm" variant="outline" onClick={() => startEditingMember(member)} className="gap-1">
+                          <Edit2 className="size-3.5" /> Edit
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleDeleteMember(member._id, member.name)} className="gap-1 text-red-600 hover:bg-red-50">
+                          <Trash2 className="size-3.5" /> Remove
+                        </Button>
+                      </div>
+                    </div>
+                    {member.bio && <p className="mt-2 text-sm text-slate-600">{member.bio}</p>}
+                    {member.linkedin && (
+                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline">
+                        <Link2 className="size-3" /> LinkedIn
+                      </a>
+                    )}
+                  </div>
+                ))}
+                {(!teamMembers || teamMembers.length === 0) && (
+                  <div className="text-center py-8 text-slate-500">No team members yet. Add one to get started.</div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {editingMember && (
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Edit2 className="size-5" /> Edit {editingMember.name}</CardTitle>
+                <CardDescription>Update this team member's details.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleUpdateMember} className="grid gap-4 max-w-lg">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><Label>Name</Label><Input value={editingMember.name} onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })} required /></div>
+                    <div><Label>Role</Label><Input value={editingMember.role} onChange={(e) => setEditingMember({ ...editingMember, role: e.target.value })} required /></div>
+                  </div>
+                  <div><Label>Bio <span className="text-slate-400 text-xs font-normal">(optional)</span></Label><Textarea value={editingMember.bio || ""} onChange={(e) => setEditingMember({ ...editingMember, bio: e.target.value })} rows={2} /></div>
+                  <div><Label>LinkedIn URL <span className="text-slate-400 text-xs font-normal">(optional)</span></Label><Input value={editingMember.linkedin || ""} onChange={(e) => setEditingMember({ ...editingMember, linkedin: e.target.value })} /></div>
+                  <div><Label>Avatar color</Label><div className="flex gap-2 flex-wrap">{["#1E293B","#3b82f6","#8b5cf6","#ec4899","#f59e0b","#10b981","#06b6d4","#f43f5e"].map((c) => (<button key={c} type="button" onClick={() => setEditingMember({ ...editingMember, avatarColor: c })} className={`w-8 h-8 rounded-full border-2 transition-transform ${editingMember.avatarColor === c ? "border-white scale-110" : "border-transparent"}`} style={{ backgroundColor: c }} />))}</div></div>
+                  <div className="flex gap-2"><Button type="button" variant="outline" onClick={() => setEditingMember(null)} className="flex-1">Cancel</Button><Button type="submit" className="flex-1 bg-slate-900 hover:bg-slate-800">Save changes</Button></div>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+        </>
+      )}
     </div>
   </main>;
 }
