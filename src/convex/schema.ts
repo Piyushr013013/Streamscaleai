@@ -62,6 +62,15 @@ export default defineSchema({
 
   resumes: defineTable({}),
 
+  teamMembers: defineTable({
+    name: v.string(),
+    role: v.string(),
+    bio: v.optional(v.string()),
+    linkedin: v.optional(v.string()),
+    avatarColor: v.string(),
+    order: v.number(),
+  }).index("by_order", ["order"]),
+
   bookings: defineTable({
     name: v.string(),
     email: v.string(),

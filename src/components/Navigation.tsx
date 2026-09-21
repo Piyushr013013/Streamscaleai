@@ -54,17 +54,27 @@ const navLinks = [
     ],
   },
   {
+    title: "Team",
+    items: [
+      {
+        title: "Leadership",
+        href: "/team",
+        description: "Board, CEO, and executive team",
+      },
+      {
+        title: "Operations",
+        href: "/team#operations",
+        description: "Outreach, demos, and client relations",
+      },
+    ],
+  },
+  {
     title: "Resources",
     items: [
       {
         title: "Benchmarks",
         href: "/industries/software-engineering",
         description: "See pass rates by industry",
-      },
-      {
-        title: "Jobs",
-        href: "/jobs",
-        description: "Browse open positions",
       },
       {
         title: "FAQ",
@@ -152,9 +162,6 @@ export function Navigation() {
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
-            <Link to="/jobs" className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground md:inline-flex">
-              Jobs
-            </Link>
             <Link
               to="/login"
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -198,9 +205,11 @@ export function Navigation() {
                       </div>
                       <span className="text-base font-medium tracking-tight">Streamscale</span>
                     </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl -mr-3" onClick={() => {}}>
-                      <span className="sr-only">Close menu</span>
-                    </Button>
+                    <SheetTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-xl -mr-3">
+                        <span className="sr-only">Close menu</span>
+                      </Button>
+                    </SheetTrigger>
                   </div>
 
                   <nav className="flex flex-col gap-6 flex-1">
@@ -227,13 +236,15 @@ export function Navigation() {
 
                   <div className="border-t border-border/40 pt-5 mt-auto">
                     <div className="flex flex-col gap-2.5">
-                      <Link
-                        to="/jobs"
-                        className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+                      <Button
+                        asChild
+                        className="w-full gap-2 bg-white hover:bg-slate-50 text-slate-900 border-border rounded-xl h-11 text-sm font-medium"
                       >
-                        <span>View open jobs</span>
-                        <ChevronRight className="size-3.5" />
-                      </Link>
+                        <Link to="/jobs">
+                          View open jobs
+                          <ArrowRight className="size-3.5" />
+                        </Link>
+                      </Button>
                       <Link
                         to="/login"
                         className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"

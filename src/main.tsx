@@ -15,6 +15,7 @@ const Jobs = lazy(() => import("./pages/Jobs.tsx"));
 const BookDemo = lazy(() => import("./pages/BookDemo.tsx"));
 const Partner = lazy(() => import("./pages/Partner.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const Team = lazy(() => import("./pages/Team.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 const Info = lazy(() => import("./pages/Info.tsx"));
 
@@ -142,6 +143,8 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/services/:service" element={<Info />} />
               <Route path="/industries/:industry" element={<Info />} />
               <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/team" element={<Team />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

@@ -3,6 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { RecruitmentSection } from "@/components/RecruitmentSection";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router";
 import { useState } from "react";
 import {
@@ -167,7 +168,7 @@ function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-3"
+            className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button
               asChild
@@ -187,7 +188,12 @@ function HeroSection() {
             >
               <Link to="/login">Sign In</Link>
             </Button>
-            <Button asChild variant="ghost" size="lg" className="text-base px-5 py-4 text-muted-foreground hover:text-foreground">
+            <Button
+              asChild
+              variant="link"
+              size="lg"
+              className="text-base px-4 py-4 text-muted-foreground hover:text-foreground"
+            >
               <Link to="/jobs">View open jobs</Link>
             </Button>
           </motion.div>
@@ -644,16 +650,18 @@ function CTA() {
 
 function TeamSection() {
   const team = [
-    { name: "Jaiveer", role: "IT Manager & Board Member", initials: "J" },
-    { name: "Akash", role: "Chairman of Board", initials: "A" },
-    { name: "Piyush", role: "CTO", initials: "P" },
-    { name: "Zain", role: "Candidate Outreach", initials: "Z" },
-    { name: "Roni", role: "General Demo Leader", initials: "R" },
-    { name: "Pranit", role: "Client Relations Manager", initials: "P" },
-    { name: "Yuva", role: "Recruitment and Demos", initials: "Y" },
+    { name: "Vivikth Mantha", role: "CEO", initials: "V", color: "#10b981" },
+    { name: "Jaiveer", role: "IT Manager & Board Member", initials: "J", color: "#1E293B" },
+    { name: "Akash", role: "Chairman of Board", initials: "A", color: "#3b82f6" },
+    { name: "Piyush", role: "CTO", initials: "P", color: "#8b5cf6" },
+    { name: "Zain", role: "Candidate Outreach", initials: "Z", color: "#ec4899" },
+    { name: "Roni", role: "General Demo Leader", initials: "R", color: "#f59e0b" },
+    { name: "Pranit", role: "Client Relations Manager", initials: "P", color: "#10b981" },
+    { name: "Yuva", role: "Recruitment and Demos", initials: "Y", color: "#06b6d4" },
   ];
+  const [selectedMember, setSelectedMember] = useState<typeof team[0] | null>(null);
   return (
-    <section className="py-24 bg-card/30 border-y border-border/30">
+    <section className="py-24 bg-card/30 border-y border-border/30" id="team">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
@@ -662,6 +670,9 @@ function TeamSection() {
           <p className="text-lg text-muted-foreground">
             A small, focused group running benchmarks, placing candidates, and working directly with every partner.
           </p>
+          <Button asChild variant="outline" className="mt-6 border-border">
+            <Link to="/team">Meet the full team</Link>
+          </Button>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
           {team.map((member, index) => (
@@ -671,13 +682,21 @@ function TeamSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="flex flex-col items-center text-center rounded-xl border border-border/30 bg-card/50 p-6"
+              className="cursor-pointer"
+              onClick={() => setSelectedMember(member)}
             >
-              <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary text-lg font-semibold mb-4">
-                {member.initials}
-              </div>
-              <p className="font-medium text-foreground">{member.name}</p>
-              <p className="text-sm text-muted-foreground mt-1">{member.role}</p>
+              <Card className="border-border/30 bg-card/50 hover:border-primary/30 transition-all h-full">
+                <CardContent className="pt-6 text-center">
+                  <div
+                    className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full text-white text-lg font-semibold shadow-md"
+                    style={{ backgroundColor: member.color }}
+                  >
+                    {member.initials}
+                  </div>
+                  <h3 className="font-semibold text-foreground">{member.name}</h3>
+                  <p className="text-sm text-muted-foreground mt-1">{member.role}</p>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
