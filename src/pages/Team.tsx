@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Plus, Trash2, ExternalLink, User, Edit2 } from "lucide-react";
+import { ArrowLeft, Plus, Trash2, ExternalLink, User, Edit2, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 
 function TeamMemberCard({ member, onSelect }: { member: any; onSelect: () => void }) {
@@ -35,17 +35,17 @@ function TeamMemberCard({ member, onSelect }: { member: any; onSelect: () => voi
   );
 }
 
-function MemberDetailDialog({ member, onClose, onUpdate }: { member: any; onClose: () => void; onUpdate: (data: any) => void }) {
+function MemberDetailDialog({ member, onClose, onUpdate, isAdmin, userId }: { member: any; onClose: () => void; onUpdate: (data: any) => void; isAdmin: boolean; userId: string | null }) {
   const [name, setName] = useState(member.name);
   const [role, setRole] = useState(member.role);
   const [bio, setBio] = useState(member.bio || "");
   const [linkedin, setLinkedin] = useState(member.linkedin || "");
   const [avatarColor, setAvatarColor] = useState(member.avatarColor || "#1E293B");
   const [updating, setUpdating] = useState(false);
-  const { userId } = useAuth();
-  const updateMutation = useMutation(api.team.updateTeamMember);
+  const updateMutation = isAdmin ? useMutation(api.team.updateTeamMember) : null;
 
   const handleSave = async () => {
+    if (!updateMutation) return;
     setUpdating(true);
     try {
       await updateMutation({ memberId: member._id, name, role, bio: bio || undefined, linkedin: linkedin || undefined, avatarColor: avatarColor || undefined, updatedBy: userId as any });
@@ -78,12 +78,18 @@ function MemberDetailDialog({ member, onClose, onUpdate }: { member: any; onClos
 
 export default function Team() {
   const navigate = useNavigate();
-  const { userId, role, isAuthenticated, user } = useAuth();
-  // Only show admin UI if the server-returned user object confirms admin role
-  const isAdmin = Boolean(isAuthenticated && user && (user as any).role === "admin");
+  const { userId, user } = useAuth();
+  // Strict admin check: must be authenticated AND server-confirmed as admin
+  // The user object comes from getUserById which queries the actual Convex DB
+  const isAdmin = Boolean(userId && user && (user as any).role === "admin");
+
+  // Query team members from DB (public, everyone can see)
   const members = useQuery(api.team.getTeamMembers);
-  const addMember = useMutation(api.team.addTeamMember);
-  const deleteMember = useMutation(api.team.deleteTeamMember);
+
+  // Only admins can access mutation functions
+  const addMember = isAdmin ? useMutation(api.team.addTeamMember) : null;
+  const deleteMember = isAdmin ? useMutation(api.team.deleteTeamMember) : null;
+  const updateMember = isAdmin ? useMutation(api.team.updateTeamMember) : null;
 
   const [viewingMember, setViewingMember] = useState<any>(null);
   const [editingMember, setEditingMember] = useState<any>(null);
@@ -93,6 +99,7 @@ export default function Team() {
   const [newMember, setNewMember] = useState({ name: "", role: "", bio: "", linkedin: "", avatarColor: "#1E293B", order: 0 });
 
   const handleAdd = async (e: React.FormEvent) => {
+    if (!addMember) return;
     e.preventDefault();
     try {
       await addMember({ ...newMember, addedBy: userId as any });
@@ -103,6 +110,7 @@ export default function Team() {
   };
 
   const handleDelete = async (member: any) => {
+    if (!deleteMember) return;
     if (!window.confirm(`Remove ${member.name} from the team?`)) return;
     try {
       await deleteMember({ memberId: member._id, deletedBy: userId as any });
@@ -173,7 +181,7 @@ export default function Team() {
             <Card className="mb-8 border-primary/30 bg-primary/5">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2"><Plus className="size-4" /> {showAddForm ? "Add team member" : "Add a team member"}</CardTitle>
-                <CardDescription>Only admins can add or remove people from the team.</CardDescription>
+                <CardDescription>Only the admin account can add people to the team.</CardDescription>
               </CardHeader>
               <CardContent>
                 {showAddForm ? (
@@ -193,30 +201,65 @@ export default function Team() {
             </Card>
           )}
 
-          {isAdmin && members && members.length > 0 && (
-            <Card>
-              <CardHeader><CardTitle>Manage team</CardTitle><CardDescription>Edit details or remove members. Only admins can manage the team.</CardDescription></CardHeader>
-              <CardContent className="space-y-3">
-                {members.filter((m: any) => (m as any)._creationTime).map((member: any) => (
-                  <div key={member._id} className="flex items-center justify-between rounded-lg border border-border/30 p-3">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-10 items-center justify-center rounded-full text-white text-sm font-semibold" style={{ backgroundColor: member.avatarColor || "#1E293B" }}>{member.name.charAt(0)}</div>
-                      <div><p className="font-medium">{member.name}</p><p className="text-sm text-muted-foreground">{member.role}</p></div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => setEditingMember(member)} className="gap-1"><Edit2 className="size-3.5" /> Edit</Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(member)} className="gap-1 text-red-600 hover:bg-red-50"><Trash2 className="size-3.5" /> Remove</Button>
-                    </div>
+          {isAdmin && (
+            <Card className="border-primary/30 bg-primary/5">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Shield className="size-4" /> Admin: Manage team</CardTitle>
+                <CardDescription>Only the admin account can add, edit, or remove team members.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Plus className="size-4" />
+                  Add team member
+                </Button>
+
+                {members && members.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-sm font-medium text-muted-foreground">Team members (click to edit):</p>
+                    {members
+                      .filter((m: any) => (m as any)._creationTime)
+                      .map((member: any) => (
+                        <div
+                          key={member._id}
+                          className="flex items-center justify-between rounded-lg border border-border/30 p-3 cursor-pointer hover:border-primary/40"
+                          onClick={() => setEditingMember(member)}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="flex size-10 items-center justify-center rounded-full text-white text-sm font-semibold"
+                              style={{ backgroundColor: member.avatarColor || "#1E293B" }}
+                            >
+                              {member.name.charAt(0)}
+                            </div>
+                            <div>
+                              <p className="font-medium">{member.name}</p>
+                              <p className="text-sm text-muted-foreground">{member.role}</p>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={(e) => { e.stopPropagation(); handleDelete(member); }}
+                            className="gap-1 text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="size-3.5" />
+                            Remove
+                          </Button>
+                        </div>
+                      ))}
                   </div>
-                ))}
+                )}
               </CardContent>
             </Card>
           )}
         </div>
       </main>
 
-      {viewingMember && <MemberDetailDialog member={viewingMember} onClose={() => setViewingMember(null)} onUpdate={handleMemberUpdate} />}
-      {editingMember && <MemberDetailDialog member={editingMember} onClose={() => setEditingMember(null)} onUpdate={handleMemberUpdate} />}
+      {viewingMember && <MemberDetailDialog member={viewingMember} onClose={() => setViewingMember(null)} onUpdate={handleMemberUpdate} isAdmin={isAdmin} userId={userId} />}
+      {editingMember && <MemberDetailDialog member={editingMember} onClose={() => setEditingMember(null)} onUpdate={handleMemberUpdate} isAdmin={isAdmin} userId={userId} />}
     </div>
   );
 }
