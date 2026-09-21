@@ -205,15 +205,14 @@ export function Navigation() {
                       </div>
                     </div>
                   ))}
-                  <div className="pt-6 border-t border-border/30">
-                    <Link to="/jobs" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                      View jobs
+                  <div className="flex flex-col gap-3 border-t border-border/30 pt-6">
+                    <Link to="/jobs" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                      <span>View open jobs</span>
+                      <ChevronRight className="size-3.5" />
                     </Link>
-                    <Link
-                      to="/login"
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      Sign In
+                    <Link to="/login" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+                      <span>Sign in</span>
+                      <ChevronRight className="size-3.5" />
                     </Link>
                     <Button
                       asChild
