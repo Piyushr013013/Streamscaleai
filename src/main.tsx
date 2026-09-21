@@ -15,6 +15,7 @@ const Jobs = lazy(() => import("./pages/Jobs.tsx"));
 const BookDemo = lazy(() => import("./pages/BookDemo.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Info = lazy(() => import("./pages/Info.tsx"));
 
 // Simple loading fallback for route transitions
 function RouteLoading() {
@@ -133,6 +134,12 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/login" element={<Login />} />
               <Route path="/jobs" element={<Jobs />} />
               <Route path="/partner" element={<BookDemo />} />
+              <Route path="/privacy" element={<Info />} />
+              <Route path="/terms" element={<Info />} />
+              <Route path="/about" element={<Info />} />
+              <Route path="/contact" element={<Info />} />
+              <Route path="/services/:service" element={<Info />} />
+              <Route path="/industries/:industry" element={<Info />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

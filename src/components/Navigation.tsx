@@ -33,17 +33,17 @@ const navLinks = [
     items: [
       {
         title: "AI Work Diagnostics",
-        href: "#enterprise",
+        href: "/services/ai-work-diagnostics",
         description: "Map what's automatable",
       },
       {
         title: "Custom Agent Deployment",
-        href: "#enterprise",
+        href: "/services/custom-agent-deployment",
         description: "Build and deploy agents",
       },
       {
         title: "Data Monetization",
-        href: "#enterprise",
+        href: "/services/data-monetization",
         description: "Broker your data to labs",
       },
     ],
@@ -53,7 +53,7 @@ const navLinks = [
     items: [
       {
         title: "Benchmarks",
-        href: "#industries",
+        href: "/industries/software-engineering",
         description: "See pass rates by industry",
       },
       {

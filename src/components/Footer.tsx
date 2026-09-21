@@ -109,13 +109,13 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-6">
             <Link
-              to="#privacy"
+              to="/privacy"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               Privacy
             </Link>
             <Link
-              to="#terms"
+              to="/terms"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               Terms
@@ -131,27 +131,27 @@ const footerLinks = [
   {
     title: "Service",
     links: [
-      { title: "AI Work Diagnostics", href: "#enterprise" },
-      { title: "Custom Agent Deployment", href: "#enterprise" },
-      { title: "Data Monetization", href: "#enterprise" },
+      { title: "AI Work Diagnostics", href: "/services/ai-work-diagnostics" },
+      { title: "Custom Agent Deployment", href: "/services/custom-agent-deployment" },
+      { title: "Data Monetization", href: "/services/data-monetization" },
     ],
   },
   {
     title: "Industries",
     links: [
-      { title: "Software Engineering", href: "#industries" },
-      { title: "Legal & Big Law", href: "#industries" },
-      { title: "Medicine & Healthcare", href: "#industries" },
-      { title: "Management Consulting", href: "#industries" },
-      { title: "Finance & Banking", href: "#industries" },
+      { title: "Software Engineering", href: "/industries/software-engineering" },
+      { title: "Legal & Big Law", href: "/industries/legal-big-law" },
+      { title: "Medicine & Healthcare", href: "/industries/medicine-healthcare" },
+      { title: "Management Consulting", href: "/industries/management-consulting" },
+      { title: "Finance & Banking", href: "/industries/finance-banking" },
     ],
   },
   {
     title: "Company",
     links: [
-      { title: "About", href: "#about" },
+      { title: "About", href: "/about" },
       { title: "Partner with us", href: "/partner" },
-      { title: "Contact", href: "#contact" },
+      { title: "Contact", href: "/contact" },
     ],
   },
   {
