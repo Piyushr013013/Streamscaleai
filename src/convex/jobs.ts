@@ -85,22 +85,12 @@ export const applyToJob = mutation({
     email: v.string(),
     phone: v.optional(v.string()),
     message: v.optional(v.string()),
-    resumePdf: v.union(
-      v.object({
-        storageId: v.id("resumes"),
-        name: v.string(),
-        contentType: v.string(),
-        size: v.number(),
-      }),
-      v.null()
-    ),
   },
   handler: async (ctx, args) => {
     const job = await ctx.db.get(args.jobId);
     if (!job) {
       throw new Error("Job not found");
     }
-    const resumePdfId = args.resumePdf?.storageId ?? undefined;
     return {
       applicationId: await ctx.db.insert("applications", {
         jobId: args.jobId,
@@ -108,7 +98,6 @@ export const applyToJob = mutation({
         applicantEmail: args.email,
         applicantPhone: args.phone,
         message: args.message,
-        resumePdfId,
         status: "pending",
       }),
     };

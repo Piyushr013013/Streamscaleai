@@ -33,7 +33,7 @@ export default function AdminDashboard() {
   const isAdmin = Boolean(role === "admin" || (user && "role" in user && user.role === "admin"));
   const users = useQuery(api.auth.adminGetUsers, userId ? { viewerId: userId as any } : "skip");
   const jobs = useQuery(api.jobs.listJobs);
-  const applications = useQuery(api.jobs.listApplications);
+  const applications = useQuery(api.jobs.listApplications, { viewerId: userId as any });
   const requests = useQuery(api.bookings.listPartnerRequests);
   const createUser = useMutation(api.auth.adminCreateUser);
   const updateUser = useMutation(api.auth.adminUpdateUser);

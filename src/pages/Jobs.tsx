@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Paperclip, Upload, FileText, Phone, Mail } from "lucide-react";
+import { ArrowLeft, Upload, FileText, Phone, Mail, ExternalLink } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { Link } from "react-router";
@@ -22,36 +22,16 @@ export default function Jobs() {
   const [applicantEmail, setApplicantEmail] = useState("");
   const [applicantPhone, setApplicantPhone] = useState("");
   const [applyMessage, setApplyMessage] = useState("");
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
-  const [resumePreview, setResumePreview] = useState<{ name: string; size: number } | null>(null);
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState("");
   const [applied, setApplied] = useState(false);
-  const resumeInputRef = useRef<HTMLInputElement>(null);
-  const maxFileSize = 10 * 1024 * 1024;
 
   const handleApply = async (job: any) => {
     setApplyingTo(job);
     setShowApplyForm(job._id);
   };
 
-  const handleResumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-    if (file.type !== "application/pdf") {
-      setApplyError("Please upload a PDF resume.");
-      event.target.value = "";
-      return;
-    }
-    if (file.size > maxFileSize) {
-      setApplyError("Resume must be 10 MB or smaller.");
-      event.target.value = "";
-      return;
-    }
-    setResumeFile(file);
-    setResumePreview({ name: file.name, size: file.size });
-    setApplyError("");
-  };
+
 
   const submitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,22 +44,12 @@ export default function Jobs() {
 
     setApplying(true);
     try {
-      let resumePdf: { storageId: string; name: string; contentType: string; size: number } | null = null;
-      if (resumeFile) {
-        const stored = await applyMutation(api.storage.put as any)(
-          { storageId: resumeFile.name, file: resumeFile, contentType: "application/pdf", name: resumeFile.name },
-          { strict: false }
-        );
-        resumePdf = { storageId: stored.storageId as string, name: resumeFile.name, contentType: "application/pdf", size: resumeFile.size };
-      }
-
       await applyMutation({
         jobId: applyingTo._id,
         name: applicantName,
         email: applicantEmail,
         phone: applicantPhone || undefined,
         message: applyMessage || undefined,
-        resumePdf,
       });
 
       setApplied(true);
@@ -270,35 +240,6 @@ export default function Jobs() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="resume">Resume <span className="text-slate-400 text-xs font-normal">(PDF, optional)</span></Label>
-                    {resumePreview ? (
-                      <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-                        <FileText className="flex-shrink-0 size-5 text-slate-500" />
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-slate-900">{resumePreview.name}</p>
-                          <p className="truncate text-xs text-slate-500">{(resumePreview.size / 1024).toFixed(1)} KB</p>
-                        </div>
-                        <Button type="button" variant="ghost" size="sm" onClick={() => { setResumeFile(null); setResumePreview(null); resumeInputRef.current?.value = ""; }}>
-                          Change
-                        </Button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-3 rounded-lg border border-dashed border-slate-300 bg-slate-50/60 px-4 py-3 transition hover:border-slate-400 hover:bg-slate-50">
-                        <Upload className="size-5 text-slate-400" />
-                        <span className="text-sm text-slate-600">Attach a PDF resume</span>
-                        <Input
-                          ref={resumeInputRef}
-                          id="resume-input"
-                          type="file"
-                          accept=".pdf,application/pdf"
-                          onChange={handleResumeChange}
-                          className="sr-only"
-                        />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
                     <Label htmlFor="message">Message <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
                     <textarea
                       id="message"
@@ -310,7 +251,6 @@ export default function Jobs() {
                     />
                   </div>
 
-                  <div className="flex gap-3 pt-1">
                   <div className="flex gap-3 pt-1">
                     <Button
                       type="button"
@@ -327,7 +267,6 @@ export default function Jobs() {
                     >
                       {applying ? "Submitting application..." : "Submit application"}
                     </Button>
-                  </div>
                   </div>
                 </form>
               )}
