@@ -78,8 +78,8 @@ function MemberDetailDialog({ member, onClose, onUpdate }: { member: any; onClos
 
 export default function Team() {
   const navigate = useNavigate();
-  const { userId, role } = useAuth();
-  const isAdmin = role === "admin";
+  const { userId, role, isAuthenticated } = useAuth();
+  const isAdmin = Boolean(isAuthenticated && role === "admin");
   const members = useQuery(api.team.getTeamMembers);
   const addMember = useMutation(api.team.addTeamMember);
   const deleteMember = useMutation(api.team.deleteTeamMember);

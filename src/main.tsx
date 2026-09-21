@@ -144,7 +144,6 @@ createRoot(document.getElementById("root")!).render(
               <Route path="/industries/:industry" element={<Info />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/team" element={<Team />} />
-              <Route path="/team" element={<Team />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
