@@ -140,7 +140,8 @@ export const getUserById = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
-    return user && isRealUser(user) ? user : null;
+    if (!user || !isRealUser(user)) return null;
+    return { _id: user._id, _creationTime: user._creationTime, email: user.email, name: user.name, role: user.role, emailVerified: user.emailVerified, permissions: user.permissions, socialLinks: user.socialLinks };
   },
 });
 
@@ -154,11 +155,11 @@ export const adminCreateUser = mutation({
     linkedin: v.optional(v.string()),
     twitter: v.optional(v.string()),
     website: v.optional(v.string()),
-    creatorId: v.optional(v.id("users")),
+    creatorId: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const creator = args.creatorId ? await ctx.db.get(args.creatorId) : null;
-    if (creator && (!isRealUser(creator) || creator.role !== "admin")) throw new Error("Admin access required");
+    const creator = await ctx.db.get(args.creatorId);
+    if (!creator || !isRealUser(creator) || creator.role !== "admin") throw new Error("Admin access required");
     const email = args.email.toLowerCase();
     const existing = await ctx.db.query("users").withIndex("by_email", (q) => q.eq("email", email)).first();
     if (existing) throw new Error("Email already registered");
@@ -184,8 +185,11 @@ export const adminUpdateUser = mutation({
     linkedin: v.optional(v.string()),
     twitter: v.optional(v.string()),
     website: v.optional(v.string()),
+    editorId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const editor = await ctx.db.get(args.editorId);
+    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
     const updates: any = {};
     if (args.email !== undefined) {
       updates.email = args.email.toLowerCase();
@@ -205,7 +209,10 @@ export const adminUpdateUser = mutation({
 });
 
 export const adminGetUsers = query({
-  handler: async (ctx) => {
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId);
+    if (!viewer || !isRealUser(viewer) || viewer.role !== "admin") return [];
     const users = await ctx.db.query("users").collect();
     const realUsers: any[] = [];
     for (const u of users) {

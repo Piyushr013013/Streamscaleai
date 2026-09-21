@@ -205,7 +205,7 @@ export function Navigation() {
                       </div>
                     </div>
                   ))}
-                  <div className="flex flex-col gap-3 border-t border-border/30 pt-6">
+                  <div className="border-t border-border/30 pt-6" style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                     <Link to="/jobs" className="flex items-center justify-between rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
                       <span>View open jobs</span>
                       <ChevronRight className="size-3.5" />

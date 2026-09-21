@@ -52,6 +52,14 @@ export default defineSchema({
     requirements: v.string(),
     status: v.union(v.literal("new"), v.literal("contacted")),
   }),
+  notificationSettings: defineTable({
+    key: v.literal("default"),
+    partnerRequestRecipients: v.array(v.string()),
+    jobApplicationRecipients: v.array(v.string()),
+    accountRecipients: v.array(v.string()),
+    updatedBy: v.id("users"),
+  }).index("by_key", ["key"]),
+
   bookings: defineTable({
     name: v.string(),
     email: v.string(),
