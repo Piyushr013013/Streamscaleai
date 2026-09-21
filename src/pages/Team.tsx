@@ -42,10 +42,10 @@ function MemberDetailDialog({ member, onClose, onUpdate, isAdmin, userId }: { me
   const [linkedin, setLinkedin] = useState(member.linkedin || "");
   const [avatarColor, setAvatarColor] = useState(member.avatarColor || "#1E293B");
   const [updating, setUpdating] = useState(false);
-  const updateMutation = isAdmin ? useMutation(api.team.updateTeamMember) : null;
+  const updateMutation = useMutation(api.team.updateTeamMember);
 
   const handleSave = async () => {
-    if (!updateMutation) return;
+    if (!isAdmin) return;
     setUpdating(true);
     try {
       await updateMutation({ memberId: member._id, name, role, bio: bio || undefined, linkedin: linkedin || undefined, avatarColor: avatarColor || undefined, updatedBy: userId as any });
@@ -86,10 +86,10 @@ export default function Team() {
   // Query team members from DB (public, everyone can see)
   const members = useQuery(api.team.getTeamMembers);
 
-  // Only admins can access mutation functions
-  const addMember = isAdmin ? useMutation(api.team.addTeamMember) : null;
-  const deleteMember = isAdmin ? useMutation(api.team.deleteTeamMember) : null;
-  const updateMember = isAdmin ? useMutation(api.team.updateTeamMember) : null;
+  // Mutations - called unconditionally (React hooks rule), guarded at call sites
+  const addMemberMutation = useMutation(api.team.addTeamMember);
+  const deleteMemberMutation = useMutation(api.team.deleteTeamMember);
+  const updateMemberMutation = useMutation(api.team.updateTeamMember);
 
   const [viewingMember, setViewingMember] = useState<any>(null);
   const [editingMember, setEditingMember] = useState<any>(null);
@@ -99,10 +99,10 @@ export default function Team() {
   const [newMember, setNewMember] = useState({ name: "", role: "", bio: "", linkedin: "", avatarColor: "#1E293B", order: 0 });
 
   const handleAdd = async (e: React.FormEvent) => {
-    if (!addMember) return;
+    if (!isAdmin) return;
     e.preventDefault();
     try {
-      await addMember({ ...newMember, addedBy: userId as any });
+      await addMemberMutation({ ...newMember, addedBy: userId as any });
       setMessage(`${newMember.name} added to the team.`);
       setNewMember({ name: "", role: "", bio: "", linkedin: "", avatarColor: "#1E293B", order: 0 });
       setShowAddForm(false);
@@ -110,10 +110,10 @@ export default function Team() {
   };
 
   const handleDelete = async (member: any) => {
-    if (!deleteMember) return;
+    if (!isAdmin) return;
     if (!window.confirm(`Remove ${member.name} from the team?`)) return;
     try {
-      await deleteMember({ memberId: member._id, deletedBy: userId as any });
+      await deleteMemberMutation({ memberId: member._id, deletedBy: userId as any });
       setMessage(`${member.name} removed.`);
     } catch (err) { setMessage(err instanceof Error ? err.message : "Failed to remove member."); }
   };
