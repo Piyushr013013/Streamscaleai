@@ -302,7 +302,9 @@ export default function AdminDashboard() {
       await deleteUser({ userId: targetUserId as any, deletedBy: userId as any });
       setMessage(`${userName}'s account has been deleted.`);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to delete account.");
+      const message = error instanceof Error ? error.message : "Unable to delete account.";
+
+      setMessage(message);
     } finally {
       setIsSubmitting(false);
     }
