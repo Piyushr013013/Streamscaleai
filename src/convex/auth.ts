@@ -199,6 +199,10 @@ export const requestResetCode = mutation({
     email: v.string(),
   },
   handler: async (ctx, args) => {
+    if (typeof args.email !== "string" || args.email.trim().length === 0) {
+      throw new Error("Email is required");
+    }
+
     const normalizedEmail = args.email.toLowerCase().trim();
     const user = await ctx.db
       .query("users")
@@ -209,13 +213,15 @@ export const requestResetCode = mutation({
       throw new Error("No account found with that email");
     }
 
+    if (!user.emailVerified) {
+      throw new Error("That account has not been verified yet");
+    }
+
     const code = String(Math.floor(100000 + Math.random() * 900000));
     await ctx.db.patch(user._id, {
       otp: code,
       otpExpiry: Date.now() + 10 * 60 * 1000,
     } as any);
-
-    console.log(`Streamscale reset code for ${user.email}: ${code}`);
 
     return { ok: true };
   },
