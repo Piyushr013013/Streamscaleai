@@ -105,8 +105,7 @@ export const applyToJob = mutation({
     const job = await ctx.db.get(args.jobId);
     if (!job) {
       throw new Error("Job not found");
-    }
-    const applicationId = await ctx.db.insert("applications", {
+    }    const applicationId = await ctx.db.insert("applications", {
       jobId: args.jobId,
       applicantName: args.name,
       applicantEmail: args.email,

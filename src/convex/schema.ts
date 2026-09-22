@@ -44,7 +44,7 @@ export default defineSchema({
     status: v.union(v.literal("pending"), v.literal("reviewed"), v.literal("contacted")),
     message: v.optional(v.string()),
     resumeStorageId: v.optional(v.string()),
-  }),
+  }).index("by_applicant_email", ["applicantEmail"]),
   partnerRequests: defineTable({
     name: v.string(),
     email: v.string(),
@@ -70,7 +70,7 @@ export default defineSchema({
     linkedin: v.optional(v.string()),
     avatarColor: v.string(),
     order: v.number(),
-  }).index("by_order", ["order"]),
+  }),
 
   bookings: defineTable({
     name: v.string(),
