@@ -234,6 +234,66 @@ export const adminGetUsers = query({
   },
 });
 
+export const adminDeleteUser = mutation({
+  args: {
+    userId: v.id("users"),
+    deletedBy: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const editor = await ctx.db.get(args.deletedBy);
+    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
+    if (args.userId === args.deletedBy) throw new Error("You cannot delete your own account from this menu.");
+    const target = await ctx.db.get(args.userId);
+    if (!target || !isRealUser(target)) throw new Error("Account not found");
+    // Delete related data first
+    const userApplications = await ctx.db.query("applications").collect();
+    for (const app of userApplications) {
+      if (app.applicantEmail === target.email) {
+        await ctx.db.delete(app._id);
+      }
+    }
+    await ctx.db.delete(args.userId);
+    return { success: true };
+  },
+});
+
+export const adminDeleteAllUsers = mutation({
+  args: {
+    deletedBy: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const editor = await ctx.db.get(args.deletedBy);
+    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
+    const users = await ctx.db.query("users").collect();
+    const realUserIds: any[] = [];
+    for (const u of users) {
+      if (isRealUser(u) && u._id !== args.deletedBy) {
+        realUserIds.push(u._id);
+      }
+    }
+    // Delete all applications
+    const applications = await ctx.db.query("applications").collect();
+    for (const app of applications) {
+      await ctx.db.delete(app._id);
+    }
+    // Delete all jobs
+    const jobs = await ctx.db.query("jobs").collect();
+    for (const job of jobs) {
+      await ctx.db.delete(job._id);
+    }
+    // Delete all partner requests
+    const requests = await ctx.db.query("partnerRequests").collect();
+    for (const req of requests) {
+      await ctx.db.delete(req._id);
+    }
+    // Delete all non-admin users
+    for (const id of realUserIds) {
+      await ctx.db.delete(id);
+    }
+    return { success: true, deletedCount: realUserIds.length };
+  },
+});
+
 export const initAdmin = mutation({
   args: {},
   handler: async (ctx) => {
