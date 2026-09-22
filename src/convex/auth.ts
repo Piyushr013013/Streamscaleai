@@ -5,6 +5,43 @@ const MASTER_EMAIL = "piyushr013013@gmail.com";
 const MASTER_PASSWORD = "admin123";
 const MASTER_PASSWORD_PREFIX = "master:";
 
+export const ensureMasterAccount = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const existing = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+      .first();
+
+    if (existing && isRealUser(existing)) {
+      const needsUpdate = isMasterAccount(existing) === false ||
+        existing.passwordHash !== MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD) ||
+        existing.emailVerified !== true;
+
+      if (needsUpdate) {
+        await ctx.db.patch(existing._id, {
+          isMasterAdmin: true,
+          passwordHash: MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD),
+          emailVerified: true,
+        } as any);
+      }
+
+      return { exists: true, isMaster: isMasterAccount(existing) };
+    }
+
+    const inserted = await ctx.db.insert("users", {
+      email: MASTER_EMAIL,
+      name: "Master Admin",
+      passwordHash: MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD),
+      role: "admin",
+      isMasterAdmin: true,
+      emailVerified: true,
+    });
+
+    return { exists: false, inserted };
+  },
+});
+
 function isRealUser(
   user: unknown
 ): user is {
