@@ -1,11 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
-import { LayoutDashboard, LogOut, Activity, BarChart3, Users, Settings } from "lucide-react";
+import { LogOut, Settings, Shield } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
-import { Shield } from "lucide-react";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -17,235 +16,145 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#f7f8fa]">
       <Navigation />
-      <main className="pt-20 pb-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <main className="pt-8 pb-16">
+        <div className="mx-auto max-w-3xl px-4 py-8">
+          <div className="mb-6 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">
-                Streamscale Dashboard
-              </p>
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
-                Welcome{user && 'name' in user ? `, ${user.name}` : "User"}
+              <p className="text-sm font-medium text-slate-500">Dashboard</p>
+              <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mt-1">
+                Welcome{user && "name" in user ? `, ${user.name}` : "User"}
               </h1>
-              <p className="text-muted-foreground mt-1">
-                Manage your streaming infrastructure and monitor your data flows.
-              </p>
             </div>
             <div className="flex items-center gap-2">
               {user && "isMasterAdmin" in user && user.isMasterAdmin === true && (
-                <Button
-                  variant="outline"
-                  className="gap-2"
-                  onClick={() => navigate("/admin")}
-                >
+                <Button variant="outline" className="gap-2" onClick={() => navigate("/admin")}>
                   <Shield className="size-4" />
                   Admin
                 </Button>
               )}
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={() => navigate("/profile")}
-              >
+              <Button variant="outline" className="gap-2" onClick={() => navigate("/profile")}>
                 <Settings className="size-4" />
                 Profile
               </Button>
-              <Button
-                variant="outline"
-                className="gap-2"
-                onClick={handleSignOut}
-              >
+              <Button variant="outline" className="gap-2" onClick={handleSignOut}>
                 <LogOut className="size-4" />
                 Sign out
               </Button>
             </div>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard
-              icon={<Activity className="size-5" />}
-              title="Active Streams"
-              value="24"
-              change="+12%"
-              trend="up"
-            />
-            <StatCard
-              icon={<BarChart3 className="size-5" />}
-              title="Events Today"
-              value="1.2M"
-              change="+8%"
-              trend="up"
-            />
-            <StatCard
-              icon={<Users className="size-5" />}
-              title="Connected Clients"
-              value="847"
-              change="-3%"
-              trend="down"
-            />
-            <StatCard
-              icon={<Settings className="size-5" />}
-              title="Uptime"
-              value="99.99%"
-              change="0%"
-              trend="stable"
-            />
-          </div>
-
-          {/* Main Content */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Recent Activity */}
-            <Card className="lg:col-span-2 border-border/50">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-4 p-4 rounded-lg border border-border/30 hover:bg-card/50 transition-colors"
-                    >
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                        {activity.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {activity.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {activity.description}
-                        </p>
-                      </div>
-                      <span className="text-xs text-muted-foreground flex-shrink-0">
-                        {activity.time}
-                      </span>
-                    </div>
-                  ))}
+          <div className="space-y-4">
+            <Card className="p-4">
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-500">Active Streams</p>
+                    <p className="text-xl font-semibold text-slate-900 mt-1">24</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Quick Actions */}
-            <Card className="border-border/50">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {quickActions.map((action, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    className="w-full justify-start gap-3 h-auto py-3 text-left"
-                  >
-                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                      {action.icon}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">
-                        {action.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {action.description}
-                      </p>
-                    </div>
-                  </Button>
-                ))}
+            <Card className="p-4">
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-500">Events Today</p>
+                    <p className="text-xl font-semibold text-slate-900 mt-1">1.2M</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="p-4">
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-500">Connected Clients</p>
+                    <p className="text-xl font-semibold text-slate-900 mt-1">847</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="p-4">
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-500">Uptime</p>
+                    <p className="text-xl font-semibold text-slate-900 mt-1">99.99%</p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
+
+          <Card className="mt-6 p-4">
+            <CardContent className="pt-4">
+              <p className="text-lg font-semibold text-slate-900 mb-3">Recent Activity</p>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">Stream deployed: user-events</p>
+                    <p className="text-xs text-slate-500">Production environment in us-east-1</p>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-auto">2 min ago</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M3 3v18h18" />
+                      <path d="M7 14h4v4H7z" />
+                      <path d="M13 10h4v8h-4z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">Analytics query completed</p>
+                    <p className="text-xs text-slate-500">Real-time dashboard updated</p>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-auto">5 min ago</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">New client connected</p>
+                    <p className="text-xs text-slate-500">Webhook endpoint active</p>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-auto">12 min ago</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <circle cx="12" cy="12" r="3" />
+                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.04a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.04a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.04a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.04a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H4a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.04a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.04a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V4a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.04a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.04a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H20a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-slate-900">Configuration updated</p>
+                    <p className="text-xs text-slate-500">Retry policy modified</p>
+                  </div>
+                  <p className="text-xs text-slate-500 ml-auto">34 min ago</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </main>
       <Footer />
     </div>
   );
 }
-
-interface StatCardProps {
-  icon: React.ReactNode;
-  title: string;
-  value: string;
-  change: string;
-  trend: "up" | "down" | "stable";
-}
-
-function StatCard({ icon, title, value, change, trend }: StatCardProps) {
-  const trendIcon = trend === "up" ? "↑" : trend === "down" ? "↓" : "→";
-  const trendColor =
-    trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground";
-
-  return (
-    <Card className="border-border/50">
-      <CardContent className="pt-6">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-lg bg-primary/10 text-primary">
-              {icon}
-            </div>
-            <div>
-              <p className="text-sm text-muted-foreground">{title}</p>
-              <p className="text-2xl font-bold text-foreground">{value}</p>
-            </div>
-          </div>
-          <span className={`text-sm font-medium ${trendColor}`}>
-            {trendIcon} {change}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-const recentActivity = [
-  {
-    icon: <Activity className="size-5" />,
-    title: "Stream deployed: user-events",
-    description: "Production environment in us-east-1",
-    time: "2 min ago",
-  },
-  {
-    icon: <BarChart3 className="size-5" />,
-    title: "Analytics query completed",
-    description: "Real-time dashboard updated",
-    time: "5 min ago",
-  },
-  {
-    icon: <Users className="size-5" />,
-    title: "New client connected",
-    description: "Webhook endpoint active",
-    time: "12 min ago",
-  },
-  {
-    icon: <Settings className="size-5" />,
-    title: "Configuration updated",
-    description: "Retry policy modified",
-    time: "34 min ago",
-  },
-];
-
-const quickActions = [
-  {
-    icon: <Activity className="size-5" />,
-    title: "Create New Stream",
-    description: "Set up a real-time data stream",
-  },
-  {
-    icon: <BarChart3 className="size-5" />,
-    title: "View Analytics",
-    description: "Monitor your stream metrics",
-  },
-  {
-    icon: <Users className="size-5" />,
-    title: "Manage Clients",
-    description: "View and manage connected clients",
-  },
-  {
-    icon: <Settings className="size-5" />,
-    title: "Settings",
-    description: "Configure your account preferences",
-  },
-];
