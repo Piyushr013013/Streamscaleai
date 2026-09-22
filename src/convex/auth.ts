@@ -328,19 +328,23 @@ export const updateProfile = mutation({
     const patch: any = {};
 
     if (args.email !== undefined) {
-      const normalized = args.email.toLowerCase().trim();
+      const normalized = (args.email ?? "").trim().toLowerCase();
+
       if (normalized === "") {
         throw new Error("Email cannot be empty");
       }
+
       if (normalized !== current.email) {
         const conflict = await ctx.db
           .query("users")
           .withIndex("by_email", (q) => q.eq("email", normalized))
           .first();
-        if (conflict && conflict._id !== args.userId) {
+
+        if (conflict && conflict._id.toString() !== args.userId.toString()) {
           throw new Error("That email is already in use");
         }
       }
+
       patch.email = normalized;
     }
 
