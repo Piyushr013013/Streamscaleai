@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck, ArrowLeft, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { Button } from "@/components/ui/button";
@@ -34,13 +34,20 @@ export default function ForgotPassword() {
       return;
     }
     setIsSubmitting(true);
+
     try {
       await requestCode({ email: email.trim().toLowerCase() });
       setStep("code");
       setCode("");
       setError("");
     } catch (err: any) {
-      setError(err?.message ?? "Could not send code. Try again.");
+      const message = err?.message ?? "Could not send code. Try again.";
+
+      if (message === "No account found with that email") {
+        setError("No account found with that email.");
+      } else {
+        setError(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -49,17 +56,32 @@ export default function ForgotPassword() {
   const handleCodeSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
-    if (code.length !== 6 || !/^\d+$/.test(code)) {
+
+    const trimmedCode = code.replace(/\D/g, "").slice(0, 6);
+    if (trimmedCode.length !== 6) {
       setError("Enter the 6-digit code we sent.");
       return;
     }
+
     setIsSubmitting(true);
+
     try {
-      await verifyCode({ email: email.trim().toLowerCase(), code });
+      await verifyCode({ email: email.trim().toLowerCase(), code: trimmedCode });
       setStep("password");
       setError("");
+      setConfirmPassword("");
     } catch (err: any) {
-      setError(err?.message ?? "Invalid or expired code. Request a new one.");
+      const message = err?.message ?? "Invalid or expired code. Request a new one.";
+
+      if (message === "No account found with that email") {
+        setError("No account found with that email.");
+      } else if (message === "Invalid code") {
+        setError("That code is not correct. Please try again.");
+      } else if (message === "Code expired") {
+        setError("That code has expired. Request a new one.");
+      } else {
+        setError(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -68,29 +90,40 @@ export default function ForgotPassword() {
   const handlePasswordSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
+
     if (newPassword.length < 6) {
       setError("Password must be at least 6 characters.");
       return;
     }
+
     if (newPassword !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
+
     setIsSubmitting(true);
+
     try {
       await resetPassword({
         email: email.trim().toLowerCase(),
-        code,
+        code: code.replace(/\D/g, "").slice(0, 6),
         newPassword,
       });
+
       setSuccess("Password updated. You can now sign in with your new password.");
-      setStep("email");
-      setEmail("");
-      setCode("");
-      setNewPassword("");
-      setConfirmPassword("");
     } catch (err: any) {
-      setError(err?.message ?? "Could not update password. Try again.");
+      const message = err?.message ?? "Could not update password. Try again.";
+
+      if (message === "No account found with that email") {
+        setError("No account found with that email.");
+      } else if (message === "Invalid or expired code") {
+        setError("That code is not valid. Request a new one and try again.");
+      } else if (message === "Password must be at least 6 characters") {
+        setError("Password must be at least 6 characters.");
+      } else {
+        setError(message);
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -154,8 +187,17 @@ export default function ForgotPassword() {
                   disabled={isSubmitting}
                   className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
                 >
-                  {isSubmitting ? "Sending…" : "Send code"}
-                  {!isSubmitting && <ArrowRight className="size-4" />}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      Send code
+                      <ArrowRight className="size-4" />
+                    </>
+                  )}
                 </Button>
               </form>
             )}
@@ -175,6 +217,7 @@ export default function ForgotPassword() {
                     <Input
                       id="code"
                       type="text"
+                      inputMode="numeric"
                       value={code}
                       onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                       className="h-11 pl-10"
@@ -190,8 +233,17 @@ export default function ForgotPassword() {
                   disabled={isSubmitting}
                   className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
                 >
-                  {isSubmitting ? "Verifying…" : "Verify code"}
-                  {!isSubmitting && <ArrowRight className="size-4" />}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Verifying...
+                    </>
+                  ) : (
+                    <>
+                      Verify code
+                      <ArrowRight className="size-4" />
+                    </>
+                  )}
                 </Button>
                 <button
                   type="button"
@@ -258,8 +310,17 @@ export default function ForgotPassword() {
                   disabled={isSubmitting}
                   className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
                 >
-                  {isSubmitting ? "Updating…" : "Update password"}
-                  {!isSubmitting && <ArrowRight className="size-4" />}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Updating...
+                    </>
+                  ) : (
+                    <>
+                      Update password
+                      <ArrowRight className="size-4" />
+                    </>
+                  )}
                 </Button>
                 <button
                   type="button"
