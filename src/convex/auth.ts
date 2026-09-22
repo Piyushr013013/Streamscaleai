@@ -433,6 +433,10 @@ export const adminUpdateUser = mutation({
 
     const patch: any = {};
 
+    if (args.permissions !== undefined) {
+      patch.permissions = args.permissions;
+    }
+
     if (args.email !== undefined) {
       const normalized = args.email.toLowerCase().trim();
       if (normalized !== target.email) {
@@ -533,6 +537,10 @@ export const adminDeleteUser = mutation({
       throw new Error("Account not found");
     }
 
+    if (target.isMasterAdmin) {
+      throw new Error("You cannot delete the master account from this menu. The master account is permanent and cannot be removed by anyone.");
+    }
+
     await ctx.db.delete(args.userId);
     return { ok: true };
   },
@@ -567,6 +575,11 @@ export const adminDeleteAllNonMasterUsers = mutation({
     const partnerRequests = await ctx.db.query("partnerRequests").collect();
     for (const request of partnerRequests) {
       await ctx.db.delete(request._id);
+    }
+
+    const teamMembers = await ctx.db.query("teamMembers").collect();
+    for (const member of teamMembers) {
+      await ctx.db.delete(member._id);
     }
 
     for (const id of idsToDelete) {

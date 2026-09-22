@@ -9,9 +9,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Briefcase, Link2, LogOut, Shield, Trash2, UserPlus, Users, UserX, Edit2, Plus } from "lucide-react";
+import { Briefcase, Link2, LogOut, Shield, Trash2, UserPlus, Users, UserX, Edit2, Plus, ToggleLeft, ToggleRight } from "lucide-react";
 
-const permissions = ["manage_jobs", "view_applications", "view_partner_requests", "manage_notifications"];
+const permissions = [
+  { key: "manage_jobs", label: "Create and manage job listings" },
+  { key: "view_applications", label: "View applications" },
+  { key: "view_partner_requests", label: "View partner requests" },
+  { key: "manage_notifications", label: "Manage email recipients" },
+];
+
+const permissionLabels: Record<string, string> = {
+  manage_jobs: "Create and manage job listings",
+  view_applications: "View applications",
+  view_partner_requests: "View partner requests",
+  manage_notifications: "Manage email recipients",
+};
 
 function formatSalary(value: string) {
   const cleaned = value.replace(/[^0-9kKmM$.,\-–— ]/g, "");
@@ -63,6 +75,8 @@ export default function AdminDashboard() {
   ];
 
   const [tab, setTab] = useState<"accounts" | "jobs" | "applications" | "requests" | "team">("accounts");
+  const [(_, setSync] = useState(0);
+  useEffect(() => { setSync((n) => n + 1); }, [users]);
   const [message, setMessage] = useState("");
   const [account, setAccount] = useState({ name: "", email: "", password: "", role: "user" as "user" | "admin", permissions: [] as string[], linkedin: "", twitter: "", website: "" });
   const [profile, setProfile] = useState({ email: "", password: "", linkedin: "", twitter: "", website: "" });
@@ -73,6 +87,7 @@ export default function AdminDashboard() {
   const [teamTab, setTeamTab] = useState<"list" | "add">("list");
   const [newMember, setNewMember] = useState({ name: "", role: "", bio: "", linkedin: "", avatarColor: "#1E293B" });
   const [editingMember, setEditingMember] = useState<any>(null);
+  const [memberToDelete, setMemberToDelete] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (!notificationSettings) return;
