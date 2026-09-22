@@ -35,6 +35,16 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex items-center gap-2">
+              {user && "isMasterAdmin" in user && user.isMasterAdmin === true && (
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={() => navigate("/admin")}
+                >
+                  <Shield className="size-4" />
+                  Admin
+                </Button>
+              )}
               <Button
                 variant="outline"
                 className="gap-2"

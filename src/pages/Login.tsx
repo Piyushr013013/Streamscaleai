@@ -14,8 +14,8 @@ export default function Login() {
   const { signIn } = useAuth();
   const loginMutation = useMutation(api.auth.login);
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("piyushr013013@gmail.com");
+  const [password, setPassword] = useState("admin123");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,7 +57,7 @@ export default function Login() {
       } else if (message.startsWith("Incorrect master password")) {
         setError("Wrong master password. Please try again.");
       } else {
-        setError("Unable to sign in. Please try again.");
+        setError(message);
       }
     } finally {
       setIsSubmitting(false);

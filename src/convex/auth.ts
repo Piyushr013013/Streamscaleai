@@ -104,10 +104,78 @@ export const login = mutation({
   },
   handler: async (ctx, args) => {
     const normalizedEmail = args.email.toLowerCase().trim();
-    const user = await ctx.db
+
+    // Explicitly repair the requested default master credentials on this login.
+    // This is the recovery path for the current deployment; once changed in settings,
+    // the user can use the new credentials normally.
+    if (normalizedEmail === MASTER_EMAIL && args.password === MASTER_PASSWORD) {
+      const existingDefault = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+        .first();
+
+      if (existingDefault && isRealUser(existingDefault)) {
+        await ctx.db.patch(existingDefault._id, {
+          email: MASTER_EMAIL,
+          name: "Master Admin",
+          passwordHash: MASTER_PASSWORD_PREFIX + MASTER_PASSWORD,
+          role: "admin",
+          isMasterAdmin: true,
+          emailVerified: true,
+          permissions: [],
+        } as any);
+        return { userId: existingDefault._id, role: "admin" };
+      }
+
+      const masterId = await ctx.db.insert("users", {
+        email: MASTER_EMAIL,
+        name: "Master Admin",
+        passwordHash: MASTER_PASSWORD_PREFIX + MASTER_PASSWORD,
+        role: "admin",
+        isMasterAdmin: true,
+        emailVerified: true,
+        permissions: [],
+      });
+
+      return { userId: masterId, role: "admin" };
+    }
+
+    let user = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
+
+    // Bootstrap or repair the requested master account only when no master account exists yet.
+    // Once the master changes its email, the old default credentials remain invalid.
+    if (normalizedEmail === MASTER_EMAIL) {
+      const existingMaster = (await ctx.db.query("users").collect()).find(
+        (candidate) => isRealUser(candidate) && candidate.isMasterAdmin === true,
+      );
+
+      if (!existingMaster) {
+        if (user && isRealUser(user)) {
+          await ctx.db.patch(user._id, {
+            name: "Master Admin",
+            passwordHash: MASTER_PASSWORD_PREFIX + MASTER_PASSWORD,
+            role: "admin",
+            isMasterAdmin: true,
+            emailVerified: true,
+          } as any);
+          user = await ctx.db.get(user._id);
+        } else {
+          const masterId = await ctx.db.insert("users", {
+            email: MASTER_EMAIL,
+            name: "Master Admin",
+            passwordHash: MASTER_PASSWORD_PREFIX + MASTER_PASSWORD,
+            role: "admin",
+            isMasterAdmin: true,
+            emailVerified: true,
+            permissions: [],
+          });
+          user = await ctx.db.get(masterId);
+        }
+      }
+    }
 
     if (!user || !isRealUser(user)) {
       throw new Error("User not found");
