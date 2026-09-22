@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Shield, Trash2, UserPlus, Users, UserX, Edit2, Plus, Briefcase, Link2 } from "lucide-react";
+import { Shield, Trash2, UserPlus, Users, UserX, Edit2, Plus } from "lucide-react";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -17,14 +17,8 @@ export default function AdminDashboard() {
   const isMasterAdmin = Boolean(user && "isMasterAdmin" in user && user.isMasterAdmin === true);
 
   const users = useQuery(api.auth.adminGetUsers, userId ? { viewerId: userId as any } : "skip");
-  const jobs = useQuery(api.jobs.listJobs);
-  const applications = useQuery(api.jobs.listApplications, { viewerId: userId as any });
-  const requests = useQuery(api.bookings.listPartnerRequests);
   const createUser = useMutation(api.auth.adminCreateUser);
   const updateUser = useMutation(api.auth.adminUpdateUser);
-  const createJob = useMutation(api.jobs.createJob);
-  const deleteJob = useMutation(api.jobs.deleteJob);
-  const updateRequest = useMutation(api.bookings.updatePartnerRequestStatus);
   const deleteUser = useMutation(api.auth.adminDeleteUser);
   const deleteAllUsers = useMutation(api.auth.adminDeleteAllNonMasterUsers);
   const teamMembers = useQuery(api.team.getTeamMembers);
@@ -32,28 +26,27 @@ export default function AdminDashboard() {
   const updateTeamMember = useMutation(api.team.updateTeamMember);
   const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
-  const [activeTab, setActiveTab] = useState<"accounts" | "jobs" | "applications" | "requests" | "team">("accounts");
+  const [activeTab, setActiveTab] = useState<"accounts" | "team">("accounts");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<"user" | "admin">("user");
   const [newPermissions, setNewPermissions] = useState<string[]>([]);
+
   const [managedId, setManagedId] = useState("");
+  const [managedName, setManagedName] = useState("");
   const [managedEmail, setManagedEmail] = useState("");
   const [managedPassword, setManagedPassword] = useState("");
-  const [managedName, setManagedName] = useState("");
+
   const [profileEmail, setProfileEmail] = useState("");
   const [profilePassword, setProfilePassword] = useState("");
-  const [editingMember, setEditingMember] = useState<any>(null);
 
-  const [newJobTitle, setNewJobTitle] = useState("");
-  const [newJobRole, setNewJobRole] = useState("");
-  const [newJobType, setNewJobType] = useState("Full-time");
-  const [newJobCompany, setNewJobCompany] = useState("");
-  const [newJobSalary, setNewJobSalary] = useState("");
+  const [memberName, setMemberName] = useState("New Member");
+  const [memberRole, setMemberRole] = useState("Team Member");
+  const [memberBio, setMemberBio] = useState("");
 
   const defaultTeamMembers = [
     { _id: "default-ceo", name: "Vivikth Mantha", role: "CEO", bio: "Leading Streamscale's vision and strategy.", avatarColor: "#10b981" },
@@ -82,68 +75,6 @@ export default function AdminDashboard() {
       </main>
     );
   }
-
-  const submitNewAccount = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!newName.trim() || !newEmail.trim() || !newPassword.trim()) {
-      setMessage("Enter name, email, and a temporary password.");
-      return;
-    }
-    if (newPassword.length < 6) {
-      setMessage("Temporary password must be at least 6 characters.");
-      return;
-    }
-    setIsSubmitting(true);
-    setMessage("");
-    try {
-      await createUser({
-        email: newEmail.trim().toLowerCase(),
-        password: newPassword,
-        name: newName.trim(),
-        role: newRole,
-        permissions: newPermissions,
-        creatorId: userId as any,
-      });
-      setMessage("Account created. Share the temporary password with the user.");
-      setNewEmail("");
-      setNewName("");
-      setNewPassword("");
-      setNewRole("user");
-      setNewPermissions([]);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to create account.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const submitManagedEdit = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!managedId || (!managedEmail.trim() && !managedPassword.trim() && !managedName.trim())) {
-      setMessage("Enter at least one field to update.");
-      return;
-    }
-    setIsSubmitting(true);
-    setMessage("");
-    try {
-      await updateUser({
-        userId: managedId as any,
-        editorId: userId as any,
-        email: managedEmail.trim() || undefined,
-        password: managedPassword || undefined,
-        name: managedName.trim() || undefined,
-      });
-      setMessage("Account updated. The user must sign in with the new credentials.");
-      setManagedId("");
-      setManagedEmail("");
-      setManagedPassword("");
-      setManagedName("");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to update account.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const submitProfile = async (event: FormEvent) => {
     event.preventDefault();
@@ -174,45 +105,67 @@ export default function AdminDashboard() {
     }
   };
 
-  const submitNewJob = async (event: FormEvent) => {
+  const submitNewAccount = async (event: FormEvent) => {
     event.preventDefault();
-    if (!newJobTitle.trim() || !newJobRole.trim() || !newJobCompany.trim() || !newJobSalary.trim()) {
-      setMessage("Enter job title, role, company, and salary.");
+    if (!newName.trim() || !newEmail.trim() || !newPassword.trim()) {
+      setMessage("Enter name, email, and a temporary password.");
+      return;
+    }
+    if (newPassword.length < 6) {
+      setMessage("Temporary password must be at least 6 characters.");
       return;
     }
     setIsSubmitting(true);
     setMessage("");
     try {
-      await createJob({
-        title: newJobTitle.trim(),
-        role: newJobRole.trim(),
-        jobType: newJobType,
-        companyName: newJobCompany.trim(),
-        salary: newJobSalary.trim(),
-        requirements: "No requirements listed.",
-        createdBy: userId as any,
+      await createUser({
+        email: newEmail.trim().toLowerCase(),
+        password: newPassword,
+        name: newName.trim(),
+        role: newRole,
+        permissions: newPermissions,
+        creatorId: userId as any,
       });
-      setMessage("Job published.");
-      setNewJobTitle("");
-      setNewJobRole("");
-      setNewJobCompany("");
-      setNewJobSalary("");
+      setMessage("Account created. Share the credentials with the user.");
+      setNewName("");
+      setNewEmail("");
+      setNewPassword("");
+      setNewRole("user");
+      setNewPermissions([]);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to publish job.");
+      setMessage(error instanceof Error ? error.message : "Unable to create account.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const removeJob = async (jobId: string, jobTitle: string) => {
-    if (!window.confirm(`Delete “${jobTitle}”?`)) return;
+  const submitManagedEdit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!managedId || (!managedName.trim() && !managedEmail.trim() && !managedPassword.trim())) {
+      setMessage("Enter at least one field to update.");
+      return;
+    }
+    if (managedPassword.trim().length > 0 && managedPassword.trim().length < 6) {
+      setMessage("New password must be at least 6 characters.");
+      return;
+    }
     setIsSubmitting(true);
     setMessage("");
     try {
-      await deleteJob({ jobId: jobId as any, editorId: userId as any });
-      setMessage("Job deleted.");
+      await updateUser({
+        userId: managedId as any,
+        editorId: userId as any,
+        name: managedName.trim() || undefined,
+        email: managedEmail.trim() || undefined,
+        password: managedPassword || undefined,
+      });
+      setMessage("Account updated. The user must sign in with the new credentials.");
+      setManagedId("");
+      setManagedName("");
+      setManagedEmail("");
+      setManagedPassword("");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to delete job.");
+      setMessage(error instanceof Error ? error.message : "Unable to update account.");
     } finally {
       setIsSubmitting(false);
     }
@@ -257,16 +210,19 @@ export default function AdminDashboard() {
     setMessage("");
     try {
       await addTeamMember({
-        name: "New Member",
-        role: "Team Member",
-        bio: "",
+        name: memberName.trim() || "New Member",
+        role: memberRole.trim() || "Team Member",
+        bio: memberBio.trim() || undefined,
         avatarColor: "#1E293B",
         order: (teamMembers?.length ?? 0) + 1,
         addedBy: userId as any,
       });
-      setMessage("Member added to the team.");
+      setMessage("Team member added.");
+      setMemberName("");
+      setMemberRole("");
+      setMemberBio("");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to add member.");
+      setMessage(error instanceof Error ? error.message : "Unable to add team member.");
     } finally {
       setIsSubmitting(false);
     }
@@ -280,44 +236,49 @@ export default function AdminDashboard() {
       await deleteTeamMember({ memberId: member._id as any, deletedBy: userId as any });
       setMessage(`${member.name} removed.`);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to remove member.");
+      setMessage(error instanceof Error ? error.message : "Unable to remove team member.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleUpdateMember = async (e: FormEvent) => {
+  const startEditingMember = (member: any) => {
+    setMemberName(member.name || "");
+    setMemberRole(member.role || "Team Member");
+    setMemberBio(member.bio || "");
+    setEditingMember(member);
+  };
+
+  const [editingMember, setEditingMember] = useState<any>(null);
+
+  const submitEditMember = async (e: FormEvent) => {
     e.preventDefault();
+    if (!editingMember._id) return;
     setIsSubmitting(true);
     setMessage("");
     try {
       await updateTeamMember({
         memberId: editingMember._id as any,
-        name: editingMember.name || "Team Member",
-        role: editingMember.role || "Team Member",
+        name: memberName.trim() || "Team Member",
+        role: memberRole.trim() || "Team Member",
+        bio: memberBio.trim() || undefined,
         updatedBy: userId as any,
       });
-      setMessage("Member updated.");
+      setMessage("Team member updated.");
       setEditingMember(null);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to update member.");
+      setMessage(error instanceof Error ? error.message : "Unable to update team member.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const tabs = [
-    ["accounts", "Accounts", Users],
-    ["jobs", "Jobs", Briefcase],
-    ["applications", "Applications", Link2],
-    ["requests", "Partner requests", UserPlus],
-    ["team", "Team", UserX],
+    ["accounts", "Accounts", UserX],
+    ["team", "Team", Users],
   ] as const;
 
   const currentUsers = users ?? [];
-  const currentJobs = jobs ?? [];
-  const currentApplications = applications ?? [];
-  const currentRequests = requests ?? [];
   const currentTeam = teamMembers && teamMembers.length > 0 ? teamMembers : defaultTeamMembers;
 
   return (
@@ -362,7 +323,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === "accounts" && (
-          <div className="grid gap-6 lg:grid-cols-[1fr_1.3fr]">
+          <div>
             <Card className="mb-6">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -500,8 +461,8 @@ export default function AdminDashboard() {
                       <div className="mt-2 flex items-center gap-2">
                         <Button variant="link" className="h-auto px-0" onClick={() => {
                           setManagedId(item._id);
-                          setManagedEmail(item.email);
                           setManagedName(item.name);
+                          setManagedEmail(item.email);
                         }} disabled={isSubmitting}>
                           Edit
                         </Button>
@@ -550,133 +511,10 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {activeTab === "jobs" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Jobs</CardTitle>
-              <CardDescription>Publish and manage job postings.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={submitNewJob} className="mb-6 space-y-4">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label>Job title</Label>
-                    <Input value={newJobTitle} onChange={(e) => setNewJobTitle(e.target.value)} disabled={isSubmitting} />
-                  </div>
-                  <div>
-                    <Label>Role</Label>
-                    <Input value={newJobRole} onChange={(e) => setNewJobRole(e.target.value)} disabled={isSubmitting} />
-                  </div>
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div>
-                    <Label>Company</Label>
-                    <Input value={newJobCompany} onChange={(e) => setNewJobCompany(e.target.value)} disabled={isSubmitting} />
-                  </div>
-                  <div>
-                    <Label>Salary</Label>
-                    <Input value={newJobSalary} onChange={(e) => setNewJobSalary(e.target.value)} disabled={isSubmitting} />
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? "Publishing..." : "Publish job"}
-                  </Button>
-                </div>
-              </form>
-
-              {currentJobs.length === 0 ? (
-                <p className="text-sm text-slate-500">No jobs published yet.</p>
-              ) : (
-                <div className="grid gap-3 md:grid-cols-2">
-                  {currentJobs.map((item: any) => (
-                    <div key={item._id} className="rounded-lg border border-slate-200 p-4">
-                      <div className="flex justify-between gap-3">
-                        <h3 className="font-semibold">{item.title}</h3>
-                        <Badge variant="outline">{item.jobType}</Badge>
-                      </div>
-                      <p className="mt-1 text-sm text-slate-500">{item.companyName} · {item.salary}</p>
-                      <p className="mt-3 text-sm text-slate-600">{item.requirements}</p>
-                      <div className="mt-4 flex gap-2 border-t border-slate-100 pt-3">
-                        <Button size="sm" variant="outline" onClick={() => removeJob(item._id, item.title)} className="text-red-600 hover:bg-red-50" disabled={isSubmitting}>
-                          <Trash2 className="mr-1 size-4" />
-                          Delete
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "applications" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Applications</CardTitle>
-              <CardDescription>Applications submitted from the public jobs board.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {currentApplications.length === 0 ? (
-                <p className="text-sm text-slate-500">No applications yet.</p>
-              ) : (
-                <div className="space-y-3">
-                  {currentApplications.map((item: any) => (
-                    <div key={item._id} className="rounded-lg border border-slate-200 p-4">
-                      <div className="flex flex-wrap justify-between gap-2">
-                        <p className="font-medium">{item.applicantName} · {item.applicantEmail}</p>
-                        <Badge>{item.status}</Badge>
-                      </div>
-                      <p className="mt-2 text-sm text-slate-500">{item.applicantPhone || "No phone provided"}</p>
-                      {item.message && <p className="mt-2 text-sm text-slate-700">{item.message}</p>}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {activeTab === "requests" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Partner requests</CardTitle>
-              <CardDescription>Requests are visible to the admin team for follow-up.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {currentRequests.length === 0 ? (
-                <p className="text-sm text-slate-500">No partner requests yet.</p>
-              ) : (
-                <div className="space-y-3">
-                  {currentRequests.map((item: any) => (
-                    <div key={item._id} className="rounded-lg border border-slate-200 p-4">
-                      <div className="flex flex-wrap justify-between gap-2">
-                        <div>
-                          <p className="font-medium">{item.name} · {item.email}</p>
-                          <p className="text-sm text-slate-500">{item.phone} · {item.service}</p>
-                        </div>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => updateRequest({ requestId: item._id, status: "contacted", editorId: userId as any })}
-                        >
-                          {item.status === "new" ? "Mark contacted" : "Contacted"}
-                        </Button>
-                      </div>
-                      <p className="mt-3 text-sm text-slate-700">{item.requirements}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
         {activeTab === "team" && (
-          <>
+          <div>
             <div className="mb-6 flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => { setEditingMember(null); }} className="gap-1">
+              <Button variant="outline" onClick={() => setEditingMember(null)} className="gap-1" disabled={isSubmitting}>
                 <Users className="size-4" />
                 View team
               </Button>
@@ -689,7 +527,7 @@ export default function AdminDashboard() {
             <Card>
               <CardHeader>
                 <CardTitle>Team members</CardTitle>
-                <CardDescription>Edit or remove people from the public team page.</CardDescription>
+                <CardDescription>Change the team shown on the public team page.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {currentTeam.map((member: any) => (
@@ -705,7 +543,7 @@ export default function AdminDashboard() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Button size="sm" variant="outline" onClick={() => { setEditingMember({ ...member }); }} className="gap-1" disabled={isSubmitting}>
+                        <Button size="sm" variant="outline" onClick={() => startEditingMember(member)} className="gap-1" disabled={isSubmitting}>
                           <Edit2 className="size-3.5" />
                           Edit
                         </Button>
@@ -718,7 +556,10 @@ export default function AdminDashboard() {
                     {member.bio && <p className="mt-2 text-sm text-slate-600">{member.bio}</p>}
                     {member.linkedin && (
                       <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline">
-                        <Link2 className="size-3" />
+                        <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                        </svg>
                         LinkedIn
                       </a>
                     )}
@@ -732,28 +573,37 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Edit2 className="size-5" />
-                    Edit {editingMember.name || "team member"}
+                    Edit team member
                   </CardTitle>
                   <CardDescription>Update this team member's details.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleUpdateMember} className="grid gap-4 max-w-lg">
+                  <form onSubmit={submitEditMember} className="grid gap-4 max-w-lg">
                     <div>
                       <Label>Name</Label>
-                      <Input value={editingMember.name || ""} onChange={(e) => setEditingMember({ ...editingMember, name: e.target.value })} disabled={isSubmitting} />
+                      <Input value={memberName || ""} onChange={(e) => setMemberName(e.target.value)} disabled={isSubmitting} />
                     </div>
                     <div>
                       <Label>Role</Label>
-                      <Input value={editingMember.role || "Team Member"} onChange={(e) => setEditingMember({ ...editingMember, role: e.target.value })} disabled={isSubmitting} />
+                      <Input value={memberRole || "Team Member"} onChange={(e) => setMemberRole(e.target.value)} disabled={isSubmitting} />
                     </div>
-                    <Button type="submit" disabled={isSubmitting} className="bg-slate-900 hover:bg-slate-800">
-                      {isSubmitting ? "Saving..." : "Save changes"}
-                    </Button>
+                    <div>
+                      <Label>Bio <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                      <Textarea value={memberBio || ""} onChange={(e) => setMemberBio(e.target.value)} rows={3} disabled={isSubmitting} />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => setEditingMember(null)} className="flex-1" disabled={isSubmitting}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" className="flex-1 bg-slate-900 hover:bg-slate-800" disabled={isSubmitting}>
+                        {isSubmitting ? "Saving..." : "Save changes"}
+                      </Button>
+                    </div>
                   </form>
                 </CardContent>
               </Card>
             )}
-          </>
+          </div>
         )}
       </div>
     </main>
