@@ -538,7 +538,7 @@ export const adminDeleteUser = mutation({
     }
 
     if (target.isMasterAdmin) {
-      throw new Error("You cannot delete the master account from this menu. The master account is permanent and cannot be removed by anyone.");
+      throw new Error("You cannot delete a master admin account through this menu. Only the master admin itself can be removed through account reset or database cleanup.");
     }
 
     await ctx.db.delete(args.userId);
