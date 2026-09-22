@@ -25,17 +25,20 @@ export default function Login() {
     setIsSubmitting(true);
     try {
       const normalizedEmail = email.trim().toLowerCase();
-      // Fast path for the seeded administrator so the preview never stalls.
-      if (normalizedEmail === "piyushr013013@gmail.com" && password === "admin123") {
-        signIn("jx717vzztttby8p52pd0bbbc2n8etdcc", "admin");
-        window.location.assign("/admin");
-        return;
-      }
       const result = await loginMutation({ email: normalizedEmail, password });
       signIn(result.userId, result.role);
       window.location.assign(result.role === "admin" ? "/admin" : "/dashboard");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to sign in. Check your email and password.");
+    } catch (err: any) {
+      const message = err?.message ?? "Unable to sign in.";
+      if (message === "Invalid password") {
+        setError("Wrong password. Please try again.");
+      } else if (message === "User not found") {
+        setError("No account found with that email.");
+      } else if (message === "Email not verified") {
+        setError("This account has not been verified yet.");
+      } else {
+        setError("Unable to sign in. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }

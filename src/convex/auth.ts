@@ -90,16 +90,6 @@ export const login = mutation({
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
-    if (!user && normalizedEmail === "piyushr013013@gmail.com" && args.password === "admin123") {
-      const adminId = await ctx.db.insert("users", {
-        email: normalizedEmail,
-        name: "Admin",
-        passwordHash: btoa("admin123"),
-        role: "admin",
-        emailVerified: true,
-      });
-      user = await ctx.db.get(adminId);
-    }
     if (!user || !isRealUser(user)) {
       throw new Error("User not found");
     }
@@ -190,11 +180,24 @@ export const adminUpdateUser = mutation({
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.editorId);
     if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
+    const target = await ctx.db.get(args.userId);
+    if (!target || !isRealUser(target)) throw new Error("Account not found");
     const updates: any = {};
     if (args.email !== undefined) {
-      updates.email = args.email.toLowerCase();
+      const normalized = args.email.toLowerCase();
+      if (normalized !== target.email) {
+        const conflict = await ctx.db
+          .query("users")
+          .withIndex("by_email", (q) => q.eq("email", normalized))
+          .first();
+        if (conflict && conflict._id !== args.userId) {
+          throw new Error("That email is already in use by another account.");
+        }
+        updates.email = normalized;
+      }
     }
     if (args.password !== undefined) {
+      if (args.password.length < 6) throw new Error("Password must be at least 6 characters.");
       updates.passwordHash = btoa(args.password);
       updates.emailVerified = true;
     }
