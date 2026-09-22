@@ -9,14 +9,16 @@ export default defineSchema({
         name: v.string(),
         passwordHash: v.string(),
         role: v.union(v.literal("admin"), v.literal("user")),
-        isMaster: v.optional(v.boolean()),
+        isMasterAdmin: v.optional(v.boolean()),
         emailVerified: v.boolean(),
         permissions: v.optional(v.array(v.string())),
-        socialLinks: v.optional(v.object({
-          linkedin: v.optional(v.string()),
-          twitter: v.optional(v.string()),
-          website: v.optional(v.string()),
-        })),
+        socialLinks: v.optional(
+          v.object({
+            linkedin: v.optional(v.string()),
+            twitter: v.optional(v.string()),
+            website: v.optional(v.string()),
+          })
+        ),
         otp: v.optional(v.string()),
         otpExpiry: v.optional(v.number()),
       }),
@@ -41,18 +43,28 @@ export default defineSchema({
     applicantName: v.string(),
     applicantEmail: v.string(),
     applicantPhone: v.optional(v.string()),
-    status: v.union(v.literal("pending"), v.literal("reviewed"), v.literal("contacted")),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("reviewed"),
+      v.literal("contacted")
+    ),
     message: v.optional(v.string()),
     resumeStorageId: v.optional(v.string()),
   }).index("by_applicant_email", ["applicantEmail"]),
+
   partnerRequests: defineTable({
     name: v.string(),
     email: v.string(),
     phone: v.string(),
-    service: v.union(v.literal("ai"), v.literal("testing_ai"), v.literal("recruitment")),
+    service: v.union(
+      v.literal("ai"),
+      v.literal("testing_ai"),
+      v.literal("recruitment")
+    ),
     requirements: v.string(),
     status: v.union(v.literal("new"), v.literal("contacted")),
   }),
+
   notificationSettings: defineTable({
     key: v.literal("default"),
     partnerRequestRecipients: v.array(v.string()),
