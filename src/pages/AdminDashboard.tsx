@@ -625,7 +625,7 @@ export default function AdminDashboard() {
                               }}
                               disabled={isSubmitting}
                             />
-                            <span htmlFor={permission.key}>{permission.label}</span>
+                            <span>{permission.label}</span>
                           </label>
                         ))}
                       </div>
