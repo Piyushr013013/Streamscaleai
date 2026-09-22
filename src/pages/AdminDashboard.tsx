@@ -42,7 +42,7 @@ export default function AdminDashboard() {
   const deleteJob = useMutation(api.jobs.deleteJob);
   const updateRequest = useMutation(api.bookings.updatePartnerRequestStatus);
   const deleteUser = useMutation(api.auth.adminDeleteUser);
-  const deleteAllUsers = useMutation(api.auth.adminDeleteAllUsers);
+  const deleteAllUsers = useMutation(api.auth.adminDeleteAllNonMasterUsers);
   const notificationSettings = useQuery(api.notifications.getSettings, userId ? { viewerId: userId as any } : "skip");
   const updateNotificationSettings = useMutation(api.notifications.updateSettings);
   const teamMembers = useQuery(api.team.getTeamMembers);

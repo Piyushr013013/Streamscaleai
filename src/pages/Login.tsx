@@ -88,7 +88,23 @@ export default function Login() {
             </form>
           </CardContent>
         </Card>
-        <button type="button" onClick={() => navigate("/")} className="mx-auto mt-6 block text-sm text-slate-500 hover:text-slate-900">Back to home</button>
+        <div className="mt-6 text-center">
+          <button
+            type="button"
+            onClick={() => navigate("/forgot-password")}
+            className="text-sm text-slate-500 hover:text-slate-900"
+          >
+            Forgot your password?
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="mt-4 flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900"
+        >
+          <ArrowLeft className="size-4" />
+          Back to home
+        </button>
       </div>
     </main>
   );
