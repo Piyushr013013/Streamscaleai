@@ -23,17 +23,19 @@ export default function Login() {
     event.preventDefault();
     setError("");
     setIsSubmitting(true);
+
     try {
       const normalizedEmail = email.trim().toLowerCase();
       const result = await loginMutation({ email: normalizedEmail, password });
       signIn(result.userId, result.role);
-      window.location.assign(result.role === "admin" ? "/admin" : "/dashboard");
+      navigate("/dashboard");
     } catch (err: any) {
       const message = err?.message ?? "Unable to sign in.";
-      if (message === "Invalid password") {
-        setError("Wrong password. Please try again.");
-      } else if (message === "User not found") {
+
+      if (message === "User not found") {
         setError("No account found with that email.");
+      } else if (message === "Incorrect password") {
+        setError("Wrong password. Please try again.");
       } else if (message === "Email not verified") {
         setError("This account has not been verified yet.");
       } else {
@@ -63,31 +65,64 @@ export default function Login() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
-              {error && <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>}
+              {error && (
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  {error}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                  <Input id="email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} className="h-11 pl-10" placeholder="you@company.com" required />
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                    className="h-11 pl-10"
+                    placeholder="you@company.com"
+                    required
+                  />
                 </div>
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
-                  <Input id="password" type={showPassword ? "text" : "password"} value={password} onChange={(event) => setPassword(event.target.value)} className="h-11 px-10" placeholder="Your password" required />
-                  <button type="button" aria-label={showPassword ? "Hide password" : "Show password"} onClick={() => setShowPassword((visible) => !visible)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                    className="h-11 px-10"
+                    placeholder="Your password"
+                    required
+                  />
+                  <button
+                    type="button"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    onClick={() => setShowPassword((visible) => !visible)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                  >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
                 </div>
               </div>
-              <Button type="submit" disabled={isSubmitting} className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800">
-                {isSubmitting ? "Signing in…" : "Sign in"}
+
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
+              >
+                {isSubmitting ? "Signing in..." : "Sign in"}
                 {!isSubmitting && <ArrowRight className="size-4" />}
               </Button>
             </form>
           </CardContent>
         </Card>
+
         <div className="mt-6 text-center">
           <button
             type="button"
@@ -97,6 +132,7 @@ export default function Login() {
             Forgot your password?
           </button>
         </div>
+
         <button
           type="button"
           onClick={() => navigate("/")}
