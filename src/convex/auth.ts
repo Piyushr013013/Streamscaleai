@@ -3,6 +3,13 @@ import { mutation, query } from "./_generated/server";
 
 // Type guard to check if a user document is a real user (not anonymous).
 // Account creation remains admin-only through adminCreateUser.
+const MASTER_ACCOUNT_ID = "jx717vzztttby8p52pd0bbbc2n8etdcc";
+const ORIGINAL_MASTER_EMAIL = "piyushr013013@gmail.com";
+
+function isMasterAccount(user: any) {
+  return Boolean(user?.isMaster === true || user?._id === MASTER_ACCOUNT_ID || (user?.role === "admin" && user?.email === ORIGINAL_MASTER_EMAIL));
+}
+
 function isRealUser(user: any): user is {
   _id: string;
   email: string;
@@ -85,10 +92,22 @@ export const login = mutation({
   },
   handler: async (ctx, args) => {
     const normalizedEmail = args.email.toLowerCase();
-    let user = await ctx.db
+    // The original seeded credentials are permanently retired. They must never
+    // become valid again after the master account changes credentials.
+    if (normalizedEmail === ORIGINAL_MASTER_EMAIL) {
+      throw new Error("User not found");
+    }
+    const allUsers = await ctx.db.query("users").collect();
+    const currentMaster = allUsers.find((candidate) => isMasterAccount(candidate));
+    const matchingUsers = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
-      .first();
+      .collect();
+    const user = matchingUsers.find((candidate) => isMasterAccount(candidate)) ?? matchingUsers[0];
+    // The old seeded email must never authenticate through a duplicate legacy account.
+    if (normalizedEmail === ORIGINAL_MASTER_EMAIL && (!user || !isMasterAccount(user))) {
+      throw new Error("User not found");
+    }
     if (!user || !isRealUser(user)) {
       throw new Error("User not found");
     }
@@ -108,6 +127,9 @@ export const login = mutation({
     }
     if (!user.emailVerified) {
       throw new Error("Email not verified");
+    }
+    if (isMasterAccount(user) && user.isMaster !== true) {
+      await ctx.db.patch(user._id, { isMaster: true });
     }
     return { userId: user._id, role: user.role };
   },
@@ -140,7 +162,7 @@ export const getUserById = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
     if (!user || !isRealUser(user)) return null;
-    return { _id: user._id, _creationTime: user._creationTime, email: user.email, name: user.name, role: user.role, emailVerified: user.emailVerified, permissions: user.permissions, socialLinks: user.socialLinks };
+    return { _id: user._id, _creationTime: user._creationTime, email: user.email, name: user.name, role: user.role, isMaster: isMasterAccount(user), emailVerified: user.emailVerified, permissions: user.permissions, socialLinks: user.socialLinks };
   },
 });
 
@@ -192,6 +214,7 @@ export const adminUpdateUser = mutation({
     const target = await ctx.db.get(args.userId);
     if (!target || !isRealUser(target)) throw new Error("Account not found");
     const updates: any = {};
+    if (isMasterAccount(target)) updates.isMaster = true;
     if (args.email !== undefined) {
       const normalized = args.email.toLowerCase();
       if (normalized !== target.email) {
@@ -243,6 +266,7 @@ export const adminGetUsers = query({
           email: u.email,
           name: u.name,
           role: u.role,
+          isMaster: isMasterAccount(u),
           emailVerified: u.emailVerified,
           createdAt: u._creationTime,
         });
@@ -259,10 +283,12 @@ export const adminDeleteUser = mutation({
   },
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.deletedBy);
-    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
+    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Only an administrator can delete accounts.");
     if (args.userId === args.deletedBy) throw new Error("You cannot delete your own account. No one can delete the master account under any circumstances.");
     const target = await ctx.db.get(args.userId);
-    if (!target || !isRealUser(target)) throw new Error("Account not found");
+    if (!target || !isRealUser(target)) throw new Error("Account not found.");
+    if (isMasterAccount(target)) throw new Error("The master account is protected and cannot be deleted.");
+    if (target.role === "admin" && !isMasterAccount(editor)) throw new Error("Only the master account can delete another administrator.");
     // Delete related data first
     const userApplications = await ctx.db.query("applications").collect();
     for (const app of userApplications) {
@@ -281,11 +307,12 @@ export const adminDeleteAllUsers = mutation({
   },
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.deletedBy);
-    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
+    if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Only an administrator can delete accounts.");
+    if (!isMasterAccount(editor)) throw new Error("Only the master account can delete all accounts and data.");
     const users = await ctx.db.query("users").collect();
     const realUserIds: any[] = [];
     for (const u of users) {
-      if (isRealUser(u) && u._id !== args.deletedBy) {
+      if (isRealUser(u) && !isMasterAccount(u)) {
         realUserIds.push(u._id);
       }
     }
@@ -327,6 +354,7 @@ export const initAdmin = mutation({
       name: "Admin",
       passwordHash: "v1:admin123",
       role: "admin",
+      isMaster: true,
       emailVerified: true,
     });
     return { success: true };

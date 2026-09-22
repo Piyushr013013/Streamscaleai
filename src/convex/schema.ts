@@ -9,6 +9,7 @@ export default defineSchema({
         name: v.string(),
         passwordHash: v.string(),
         role: v.union(v.literal("admin"), v.literal("user")),
+        isMaster: v.optional(v.boolean()),
         emailVerified: v.boolean(),
         permissions: v.optional(v.array(v.string())),
         socialLinks: v.optional(v.object({
