@@ -1,6 +1,6 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck, Loader2 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useAuth } from "@/hooks/use-auth";
@@ -13,27 +13,37 @@ export default function Login() {
   const navigate = useNavigate();
   const { signIn } = useAuth();
   const loginMutation = useMutation(api.auth.login);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    setError("");
+  }, [email, password]);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
+
+    const normalizedEmail = (email ?? "").trim().toLowerCase();
+    const normalizedPassword = (password ?? "");
+
+    if (!normalizedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+
+    if (!normalizedPassword || normalizedPassword.length === 0) {
+      setError("Enter your password.");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const normalizedEmail = (email ?? "").trim().toLowerCase();
-      const normalizedPassword = (password ?? "");
-
-      if (!normalizedEmail || !normalizedPassword) {
-        setError("Enter your email and password.");
-        setIsSubmitting(false);
-        return;
-      }
-
       const result = await loginMutation({ email: normalizedEmail, password: normalizedPassword });
       signIn(result.userId, result.role);
       navigate("/dashboard");
@@ -48,6 +58,8 @@ export default function Login() {
         setError("This account has not been verified yet.");
       } else if (message === "Email is required") {
         setError("Enter your email address.");
+      } else if (message.startsWith("Incorrect master password")) {
+        setError("Wrong master password. Please try again.");
       } else {
         setError("Unable to sign in. Please try again.");
       }
@@ -125,9 +137,17 @@ export default function Login() {
                 type="submit"
                 disabled={isSubmitting}
                 className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
-              >
-                {isSubmitting ? "Signing in..." : "Sign in"}
-                {!isSubmitting && <ArrowRight className="size-4" />}
+              >              {isSubmitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="size-4" />
+                </>
+              )}
               </Button>
             </form>
           </CardContent>
