@@ -10,6 +10,7 @@ export default defineSchema({
         passwordHash: v.string(),
         role: v.union(v.literal("admin"), v.literal("user")),
         isMasterAdmin: v.optional(v.boolean()),
+        isMaster: v.optional(v.boolean()),
         emailVerified: v.boolean(),
         permissions: v.optional(v.array(v.string())),
         socialLinks: v.optional(
@@ -20,7 +21,7 @@ export default defineSchema({
           })
         ),
         otp: v.optional(v.string()),
-        otpExpiry: v.optional(v.number()),
+        otpExpiry: v.optional(v.float64()),
       }),
       v.object({ isAnonymous: v.literal(true) })
     )
