@@ -48,6 +48,18 @@ export default function AdminDashboard() {
   const updateTeamMember = useMutation(api.team.updateTeamMember);
   const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
+  // Fallback team data when DB is empty
+  const defaultTeamMembers = [
+    { _id: "1", name: "Vivikth Mantha", role: "CEO", bio: "Leading Streamscale's vision and strategy.", linkedin: "", avatarColor: "#10b981", order: 0 },
+    { _id: "2", name: "Jaiveer", role: "IT Manager & Board Member", bio: "Oversees technology infrastructure and serves on the board.", linkedin: "", avatarColor: "#1E293B", order: 1 },
+    { _id: "3", name: "Akash", role: "Chairman of Board", bio: "Chairman of the board, guiding long-term direction.", linkedin: "", avatarColor: "#3b82f6", order: 2 },
+    { _id: "4", name: "Piyush", role: "CTO", bio: "Builds the agents, benchmarks, and infrastructure.", linkedin: "", avatarColor: "#8b5cf6", order: 3 },
+    { _id: "5", name: "Zain", role: "Candidate Outreach", bio: "Finds and connects with strong candidates.", linkedin: "", avatarColor: "#ec4899", order: 4 },
+    { _id: "6", name: "Roni", role: "General Demo Leader", bio: "Leads demos of Streamscale's platform.", linkedin: "", avatarColor: "#f59e0b", order: 5 },
+    { _id: "7", name: "Pranit", role: "Client Relations Manager", bio: "Manages relationships with partner companies.", linkedin: "", avatarColor: "#10b981", order: 6 },
+    { _id: "8", name: "Yuva", role: "Recruitment and Demos", bio: "Handles recruitment outreach and runs demos.", linkedin: "", avatarColor: "#06b6d4", order: 7 },
+  ];
+
   const [tab, setTab] = useState<"accounts" | "jobs" | "applications" | "requests" | "team">("accounts");
   const [message, setMessage] = useState("");
   const [account, setAccount] = useState({ name: "", email: "", password: "", role: "user" as "user" | "admin", permissions: [] as string[], linkedin: "", twitter: "", website: "" });
@@ -201,7 +213,7 @@ export default function AdminDashboard() {
                 <CardDescription>Edit or remove people from the public team page.</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {teamMembers?.map((member: any) => (
+                {(teamMembers && teamMembers.length > 0 ? teamMembers : defaultTeamMembers).map((member: any) => (
                   <div key={member._id} className="rounded-lg border border-slate-200 p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
@@ -230,9 +242,6 @@ export default function AdminDashboard() {
                     )}
                   </div>
                 ))}
-                {(!teamMembers || teamMembers.length === 0) && (
-                  <div className="text-center py-8 text-slate-500">No team members yet. Add one to get started.</div>
-                )}
               </CardContent>
             </Card>
           )}
