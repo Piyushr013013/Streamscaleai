@@ -201,6 +201,9 @@ export const adminUpdateUser = mutation({
       updates.passwordHash = btoa(args.password);
       updates.emailVerified = true;
     }
+    if (Object.keys(updates).length === 0) {
+      throw new Error("No changes to save. Provide at least one field to update.");
+    }
     if (args.name !== undefined) updates.name = args.name;
     if (args.permissions !== undefined) updates.permissions = args.permissions;
     if (args.linkedin !== undefined || args.twitter !== undefined || args.website !== undefined) {
@@ -242,7 +245,7 @@ export const adminDeleteUser = mutation({
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.deletedBy);
     if (!editor || !isRealUser(editor) || editor.role !== "admin") throw new Error("Admin access required");
-    if (args.userId === args.deletedBy) throw new Error("You cannot delete your own account from this menu.");
+    if (args.userId === args.deletedBy) throw new Error("You cannot delete your own account. No one can delete the master account under any circumstances.");
     const target = await ctx.db.get(args.userId);
     if (!target || !isRealUser(target)) throw new Error("Account not found");
     // Delete related data first
