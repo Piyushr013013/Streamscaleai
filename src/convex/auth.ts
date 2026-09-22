@@ -32,11 +32,10 @@ export const register = mutation({
       throw new Error("Email already registered");
     }
     // Simple hash placeholder - in production use proper hashing (bcrypt)
-    const passwordHash = btoa(args.password);
     const userId = await ctx.db.insert("users", {
       email: args.email.toLowerCase(),
       name: args.name,
-      passwordHash,
+      passwordHash: "v1:" + args.password,
       role: "user",
       emailVerified: false,
     });
@@ -93,8 +92,18 @@ export const login = mutation({
     if (!user || !isRealUser(user)) {
       throw new Error("User not found");
     }
-    const storedHash = atob(user.passwordHash);
-    if (storedHash !== args.password) {
+    // Support both old btoa format and new v1: format
+    let passwordValid = false;
+    if (typeof user.passwordHash === "string") {
+      if (user.passwordHash.startsWith("v1:")) {
+        // New format: direct comparison
+        passwordValid = user.passwordHash.slice(3) === args.password;
+      } else {
+        // Old btoa format: decode and compare
+        try { passwordValid = atob(user.passwordHash) === args.password; } catch { passwordValid = false; }
+      }
+    }
+    if (!passwordValid) {
       throw new Error("Invalid password");
     }
     if (!user.emailVerified) {
@@ -156,7 +165,7 @@ export const adminCreateUser = mutation({
     return await ctx.db.insert("users", {
       email,
       name: args.name,
-      passwordHash: btoa(args.password),
+      passwordHash: "v1:" + args.password,
       role: args.role,
       emailVerified: true,
       permissions: args.permissions,
@@ -198,19 +207,25 @@ export const adminUpdateUser = mutation({
     }
     if (args.password !== undefined) {
       if (args.password.length < 6) throw new Error("Password must be at least 6 characters.");
-      updates.passwordHash = btoa(args.password);
+      updates.passwordHash = "v1:" + args.password;
       updates.emailVerified = true;
-    }
-    if (Object.keys(updates).length === 0) {
-      throw new Error("No changes to save. Provide at least one field to update.");
     }
     if (args.name !== undefined) updates.name = args.name;
     if (args.permissions !== undefined) updates.permissions = args.permissions;
     if (args.linkedin !== undefined || args.twitter !== undefined || args.website !== undefined) {
       updates.socialLinks = { linkedin: args.linkedin, twitter: args.twitter, website: args.website };
     }
+    if (Object.keys(updates).length === 0) {
+      throw new Error("No changes to save. Enter at least one field to update.");
+    }
     await ctx.db.patch(args.userId, updates);
-    return { success: true };
+    // Verify the update actually persisted
+    const verify = await ctx.db.get(args.userId);
+    if (!verify || !isRealUser(verify)) throw new Error("Failed to update account. Please try again.");
+    if (args.password !== undefined && verify.passwordHash !== updates.passwordHash) {
+      throw new Error("Password update failed. The old password might still work. Please try again.");
+    }
+    return { success: true, updatedEmail: verify.email, updatedName: verify.name };
   },
 });
 
@@ -307,11 +322,10 @@ export const initAdmin = mutation({
     if (existingAdmin && isRealUser(existingAdmin)) {
       return { exists: true };
     }
-    const passwordHash = btoa("admin123");
     await ctx.db.insert("users", {
       email: "piyushr013013@gmail.com",
       name: "Admin",
-      passwordHash,
+      passwordHash: "v1:admin123",
       role: "admin",
       emailVerified: true,
     });
