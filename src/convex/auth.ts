@@ -95,54 +95,7 @@ export const initMasterAccount = mutation({
   },
 });
 
-export const migrateLegacyUsers = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const users = await ctx.db.query("users").collect();
-    let patched = 0;
 
-    for (const doc of users) {
-      if (!doc || typeof doc !== "object") continue;
-      const record = doc as any;
-      if (record.isAnonymous) continue;
-      if (typeof record.email !== "string") continue;
-      if (record.isMasterAdmin !== undefined) continue;
-
-      const isMaster = record.isMaster === true;
-
-      let passwordHash: string;
-      if (typeof record.passwordHash === "string") {
-        if (record.passwordHash.startsWith("v1:")) {
-          passwordHash = record.passwordHash;
-        } else if (record.passwordHash.startsWith(MASTER_PASSWORD_PREFIX)) {
-          passwordHash = record.passwordHash;
-        } else {
-          try {
-            const decoded = atob(record.passwordHash);
-            if (typeof decoded === "string" && decoded.length > 0) {
-              passwordHash = "v1:" + decoded;
-            } else {
-              passwordHash = "v1:" + record.passwordHash;
-            }
-          } catch {
-            passwordHash = "v1:" + record.passwordHash;
-          }
-        }
-      } else {
-        passwordHash = "v1:changeme";
-      }
-
-      await ctx.db.patch(record._id, {
-        isMasterAdmin: isMaster,
-        passwordHash,
-      } as any);
-
-      patched += 1;
-    }
-
-    return { patched };
-  },
-});
 
 export const login = mutation({
   args: {
@@ -179,6 +132,8 @@ export const login = mutation({
       passwordValid = true;
     } else if (stored.startsWith(MASTER_PASSWORD_PREFIX) && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
       passwordValid = stored.slice(MASTER_PASSWORD_PREFIX.length) === normalizePassword(args.password);
+    } else if (stored === MASTER_PASSWORD_V1_HASH && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
+      passwordValid = args.password === MASTER_PASSWORD;
     } else if (stored.startsWith("v1:")) {
       passwordValid = stored.slice(3) === normalizePassword(args.password);
     } else {

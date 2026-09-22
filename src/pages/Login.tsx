@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck, Loader2 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
@@ -20,10 +20,6 @@ export default function Login() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    setError("");
-  }, [email, password]);
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError("");
@@ -36,7 +32,7 @@ export default function Login() {
       return;
     }
 
-    if (!normalizedPassword || normalizedPassword.length === 0) {
+    if (!normalizedPassword) {
       setError("Enter your password.");
       return;
     }
@@ -104,6 +100,7 @@ export default function Login() {
                     onChange={(event) => setEmail(event.target.value)}
                     className="h-11 pl-10"
                     placeholder="you@company.com"
+                    autoComplete="email"
                     required
                   />
                 </div>
@@ -120,6 +117,7 @@ export default function Login() {
                     onChange={(event) => setPassword(event.target.value)}
                     className="h-11 px-10"
                     placeholder="Your password"
+                    autoComplete="current-password"
                     required
                   />
                   <button
@@ -137,17 +135,18 @@ export default function Login() {
                 type="submit"
                 disabled={isSubmitting}
                 className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
-              >              {isSubmitting ? (
-                <>
-                  <Loader2 className="size-4 animate-spin" />
-                  Signing in...
-                </>
-              ) : (
-                <>
-                  Sign in
-                  <ArrowRight className="size-4" />
-                </>
-              )}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="size-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  <>
+                    Sign in
+                    <ArrowRight className="size-4" />
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
