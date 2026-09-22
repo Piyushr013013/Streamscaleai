@@ -5,40 +5,38 @@ const MASTER_EMAIL = "piyushr013013@gmail.com";
 const MASTER_PASSWORD = "admin123";
 const MASTER_PASSWORD_PREFIX = "master:";
 
-export const ensureMasterAccount = mutation({
+export const migrateUsers = mutation({
   args: {},
   handler: async (ctx) => {
-    const existing = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
-      .first();
+    const users = await ctx.db.query("users").collect();
+    let patched = 0;
 
-    if (existing && isRealUser(existing)) {
-      const needsUpdate = isMasterAccount(existing) === false ||
-        existing.passwordHash !== MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD) ||
-        existing.emailVerified !== true;
+    for (const doc of users) {
+      if (!isRealUser(doc)) continue;
 
-      if (needsUpdate) {
-        await ctx.db.patch(existing._id, {
-          isMasterAdmin: true,
-          passwordHash: MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD),
-          emailVerified: true,
-        } as any);
+      const updated: any = {};
+      const isHistoricalMaster = !!(doc as any).isMaster;
+
+      if (doc.isMasterAdmin !== true) {
+        updated.isMasterAdmin = isHistoricalMaster ? true : undefined;
       }
 
-      return { exists: true, isMaster: isMasterAccount(existing) };
+      if (typeof doc.passwordHash !== "string" || !doc.passwordHash.startsWith("v1:") || doc.passwordHash.startsWith("master:")) {
+        const normalized = normalizePassword(doc.passwordHash?.replace(/^(?:master:|v1:)/, "") ?? "");
+        updated.passwordHash = "v1:" + normalized;
+      }
+
+      if (updated.emailVerified === undefined) {
+        updated.emailVerified = true;
+      }
+
+      if (Object.keys(updated).length > 0) {
+        await ctx.db.patch(doc._id, updated);
+        patched += 1;
+      }
     }
 
-    const inserted = await ctx.db.insert("users", {
-      email: MASTER_EMAIL,
-      name: "Master Admin",
-      passwordHash: MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD),
-      role: "admin",
-      isMasterAdmin: true,
-      emailVerified: true,
-    });
-
-    return { exists: false, inserted };
+    return { patched };
   },
 });
 
@@ -78,6 +76,8 @@ function normalizePassword(password: string) {
 function hashPassword(password: string): string {
   return "v1:" + normalizePassword(password);
 }
+
+const MASTER_LOOKUP_KEY = "master:" + normalizePassword(MASTER_PASSWORD);
 
 export const initMasterAccount = mutation({
   args: {},
@@ -180,20 +180,21 @@ export const login = mutation({
       throw new Error("Email not verified");
     }
 
+    let isMasterCredential = false;
     let passwordValid = false;
 
     if (typeof user.passwordHash === "string") {
-      if (user.passwordHash.startsWith(MASTER_PASSWORD_PREFIX)) {
-        passwordValid =
-          user.passwordHash.slice(MASTER_PASSWORD_PREFIX.length) ===
-          normalizePassword(args.password);
+      if (user.passwordHash === MASTER_LOOKUP_KEY) {
+        isMasterCredential = user.email.toLowerCase() === MASTER_EMAIL.toLowerCase();
+        passwordValid = isMasterCredential;
+      } else if (user.passwordHash.startsWith(MASTER_PASSWORD_PREFIX)) {
+        isMasterCredential = user.email.toLowerCase() === MASTER_EMAIL.toLowerCase();
+        passwordValid = isMasterCredential && user.passwordHash.slice(MASTER_PASSWORD_PREFIX.length) === normalizePassword(args.password);
       } else if (user.passwordHash.startsWith("v1:")) {
-        passwordValid =
-          user.passwordHash.slice(3) === normalizePassword(args.password);
+        passwordValid = user.passwordHash.slice(3) === normalizePassword(args.password);
       } else {
         try {
-          passwordValid =
-            atob(user.passwordHash) === normalizePassword(args.password);
+          passwordValid = atob(user.passwordHash) === normalizePassword(args.password);
         } catch {
           passwordValid = false;
         }
@@ -201,6 +202,9 @@ export const login = mutation({
     }
 
     if (!passwordValid) {
+      if (isMasterCredential) {
+        throw new Error("Incorrect master password. The master password is not valid for this email.");
+      }
       throw new Error("Incorrect password");
     }
 
@@ -363,6 +367,7 @@ export const updateProfile = mutation({
     }
 
     if (args.password !== undefined) {
+      args.password; // noop
       if (args.password.length < 6) {
         throw new Error("Password must be at least 6 characters");
       }
