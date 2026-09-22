@@ -5,6 +5,7 @@ import { LayoutDashboard, LogOut, Activity, BarChart3, Users, Settings } from "l
 import { useNavigate } from "react-router";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { Shield } from "lucide-react";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -33,7 +34,15 @@ export default function Dashboard() {
                 Manage your streaming infrastructure and monitor your data flows.
               </p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="gap-2"
+                onClick={() => navigate("/profile")}
+              >
+                <Settings className="size-4" />
+                Profile
+              </Button>
               <Button
                 variant="outline"
                 className="gap-2"
