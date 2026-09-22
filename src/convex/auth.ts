@@ -5,40 +5,22 @@ const MASTER_EMAIL = "piyushr013013@gmail.com";
 const MASTER_PASSWORD = "admin123";
 const MASTER_PASSWORD_PREFIX = "master:";
 
-export const migrateUsers = mutation({
-  args: {},
-  handler: async (ctx) => {
-    const users = await ctx.db.query("users").collect();
-    let patched = 0;
 
-    for (const doc of users) {
-      if (!isRealUser(doc)) continue;
 
-      const updated: any = {};
-      const isHistoricalMaster = !!(doc as any).isMaster;
-
-      if (doc.isMasterAdmin !== true) {
-        updated.isMasterAdmin = isHistoricalMaster ? true : undefined;
-      }
-
-      if (typeof doc.passwordHash !== "string" || !doc.passwordHash.startsWith("v1:") || doc.passwordHash.startsWith("master:")) {
-        const normalized = normalizePassword(doc.passwordHash?.replace(/^(?:master:|v1:)/, "") ?? "");
-        updated.passwordHash = "v1:" + normalized;
-      }
-
-      if (updated.emailVerified === undefined) {
-        updated.emailVerified = true;
-      }
-
-      if (Object.keys(updated).length > 0) {
-        await ctx.db.patch(doc._id, updated);
-        patched += 1;
-      }
+function normalizeStoredPassword(raw: unknown): string {
+  if (typeof raw !== "string") return raw as any;
+  if (raw.startsWith(MASTER_PASSWORD_PREFIX)) return raw;
+  if (raw.startsWith("v1:")) return raw;
+  try {
+    const decoded = atob(raw);
+    if (typeof decoded === "string" && decoded.length > 0) {
+      return "v1:" + decoded;
     }
-
-    return { patched };
-  },
-});
+  } catch {
+    // fall through
+  }
+  return "v1:" + raw;
+}
 
 function isRealUser(
   user: unknown
