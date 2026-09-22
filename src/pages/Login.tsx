@@ -25,8 +25,16 @@ export default function Login() {
     setIsSubmitting(true);
 
     try {
-      const normalizedEmail = email.trim().toLowerCase();
-      const result = await loginMutation({ email: normalizedEmail, password });
+      const normalizedEmail = (email ?? "").trim().toLowerCase();
+      const normalizedPassword = (password ?? "");
+
+      if (!normalizedEmail || !normalizedPassword) {
+        setError("Enter your email and password.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const result = await loginMutation({ email: normalizedEmail, password: normalizedPassword });
       signIn(result.userId, result.role);
       navigate("/dashboard");
     } catch (err: any) {
@@ -38,6 +46,8 @@ export default function Login() {
         setError("Wrong password. Please try again.");
       } else if (message === "Email not verified") {
         setError("This account has not been verified yet.");
+      } else if (message === "Email is required") {
+        setError("Enter your email address.");
       } else {
         setError("Unable to sign in. Please try again.");
       }

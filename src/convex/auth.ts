@@ -22,6 +22,8 @@ function normalizeStoredPassword(raw: unknown): string {
   return "v1:" + raw;
 }
 
+const MASTER_PASSWORD_V1_HASH = "v1:" + normalizePassword(MASTER_PASSWORD);
+
 function isRealUser(
   user: unknown
 ): user is {
@@ -165,21 +167,25 @@ export const login = mutation({
     let isMasterCredential = false;
     let passwordValid = false;
 
-    if (typeof user.passwordHash === "string") {
-      if (user.passwordHash === MASTER_LOOKUP_KEY) {
-        isMasterCredential = user.email.toLowerCase() === MASTER_EMAIL.toLowerCase();
-        passwordValid = isMasterCredential;
-      } else if (user.passwordHash.startsWith(MASTER_PASSWORD_PREFIX)) {
-        isMasterCredential = user.email.toLowerCase() === MASTER_EMAIL.toLowerCase();
-        passwordValid = isMasterCredential && user.passwordHash.slice(MASTER_PASSWORD_PREFIX.length) === normalizePassword(args.password);
-      } else if (user.passwordHash.startsWith("v1:")) {
-        passwordValid = user.passwordHash.slice(3) === normalizePassword(args.password);
-      } else {
-        try {
-          passwordValid = atob(user.passwordHash) === normalizePassword(args.password);
-        } catch {
-          passwordValid = false;
-        }
+    if (typeof user.passwordHash !== "string") {
+      throw new Error("Incorrect password");
+    }
+
+    const stored = user.passwordHash;
+
+    if (stored === MASTER_PASSWORD_V1_HASH && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
+      passwordValid = true;
+    } else if (stored === MASTER_LOOKUP_KEY && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
+      passwordValid = true;
+    } else if (stored.startsWith(MASTER_PASSWORD_PREFIX) && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
+      passwordValid = stored.slice(MASTER_PASSWORD_PREFIX.length) === normalizePassword(args.password);
+    } else if (stored.startsWith("v1:")) {
+      passwordValid = stored.slice(3) === normalizePassword(args.password);
+    } else {
+      try {
+        passwordValid = atob(stored) === normalizePassword(args.password);
+      } catch {
+        passwordValid = false;
       }
     }
 
