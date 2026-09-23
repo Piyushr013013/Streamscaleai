@@ -7,8 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { ArrowRight, ArrowLeft, Send, CheckCircle, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowLeft, Send, CheckCircle, Sparkles, Check } from "lucide-react";
 
 const services = [
   {
@@ -36,7 +35,7 @@ export default function Partner() {
     { icon: Sparkles, title: "We review and scope", desc: "Our team follows up within 1-2 business days." },
     { icon: Sparkles, title: "We deliver", desc: "You get a benchmark, deployed agent, or placed candidate." },
   ]);
-  const [service, setService] = useState("ai");
+  const [selectedServices, setSelectedServices] = useState<string[]>(["ai"]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -53,13 +52,17 @@ export default function Partner() {
       setError("Please fill in your name, email, and requirements.");
       return;
     }
+    if (selectedServices.length === 0) {
+      setError("Select at least one service you're interested in.");
+      return;
+    }
     setSubmitting(true);
     try {
       await partnerMutation({
         name,
         email,
         phone: phone || "",
-        service: service as "ai" | "testing_ai" | "recruitment",
+        services: selectedServices as ("ai" | "testing_ai" | "recruitment")[],
         requirements,
       });
       setSubmitted(true);
@@ -171,23 +174,46 @@ export default function Partner() {
         <Card className="border-border/40 bg-card/50 shadow-xl shadow-slate-200/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">What do you need?</CardTitle>
-            <CardDescription>Choose a service to get started.</CardDescription>
+            <CardDescription>Select every service you're interested in — you can pick more than one.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-5">
-            <RadioGroup value={service} onValueChange={(v) => setService(v)} className="grid gap-3">
-              {services.map((s) => (
-                <label
-                  key={s.value}
-                  className="flex items-start gap-4 rounded-xl border border-border/40 bg-background/50 p-4 cursor-pointer transition-all hover:border-primary/40 hover:bg-primary/5"
-                >
-                  <RadioGroupItem value={s.value} className="mt-0.5" />
-                  <div>
-                    <p className="font-medium text-foreground">{s.label}</p>
-                    <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{s.description}</p>
-                  </div>
-                </label>
-              ))}
-            </RadioGroup>
+            <div className="grid gap-3">
+              {services.map((s) => {
+                const isSelected = selectedServices.includes(s.value);
+                return (
+                  <label
+                    key={s.value}
+                    className={`flex items-start gap-4 rounded-xl border p-4 cursor-pointer transition-all ${
+                      isSelected
+                        ? "border-primary/60 bg-primary/5"
+                        : "border-border/40 bg-background/50 hover:border-primary/40 hover:bg-primary/5"
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isSelected}
+                      onChange={(e) =>
+                        setSelectedServices((prev) =>
+                          e.target.checked ? [...prev, s.value] : prev.filter((v) => v !== s.value)
+                        )
+                      }
+                      className="sr-only"
+                    />
+                    <span
+                      className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
+                        isSelected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background"
+                      }`}
+                    >
+                      {isSelected && <Check className="size-3.5" strokeWidth={3} />}
+                    </span>
+                    <div>
+                      <p className="font-medium text-foreground">{s.label}</p>
+                      <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{s.description}</p>
+                    </div>
+                  </label>
+                );
+              })}
+            </div>
 
             {error && (
               <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">{error}</div>
