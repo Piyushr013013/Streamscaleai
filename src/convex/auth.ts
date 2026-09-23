@@ -551,6 +551,77 @@ export const adminGetUsers = query({
   },
 });
 
+export const adminPromoteToMasterAdmin = mutation({
+  args: {
+    userId: v.id("users"),
+    promoterId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const promoter = await ctx.db.get(args.promoterId);
+    if (!promoter || !isRealUser(promoter) || !promoter.isMasterAdmin) {
+      throw new Error("Master admin access required");
+    }
+
+    const target = await ctx.db.get(args.userId);
+    if (!target || !isRealUser(target)) {
+      throw new Error("Account not found");
+    }
+
+    if (isMasterAccount(target)) {
+      throw new Error("That account is already a master admin");
+    }
+
+    await ctx.db.patch(args.userId, {
+      isMasterAdmin: true,
+      role: "admin",
+      emailVerified: true,
+    } as any);
+
+    return { ok: true };
+  },
+});
+
+export const adminDemoteMasterAdmin = mutation({
+  args: {
+    userId: v.id("users"),
+    demoterId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const demoter = await ctx.db.get(args.demoterId);
+    if (!demoter || !isRealUser(demoter) || !demoter.isMasterAdmin) {
+      throw new Error("Master admin access required");
+    }
+
+    // Only the original (first-created) master admin can demote others.
+    const originalMaster = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+      .first();
+    if (!originalMaster || originalMaster._id.toString() !== args.demoterId.toString()) {
+      throw new Error("Only the original master admin can remove master admin access");
+    }
+
+    if (args.userId.toString() === args.demoterId.toString()) {
+      throw new Error("You cannot remove your own master admin access");
+    }
+
+    const target = await ctx.db.get(args.userId);
+    if (!target || !isRealUser(target)) {
+      throw new Error("Account not found");
+    }
+
+    if (!isMasterAccount(target)) {
+      throw new Error("That account is not a master admin");
+    }
+
+    await ctx.db.patch(args.userId, {
+      isMasterAdmin: false,
+    } as any);
+
+    return { ok: true };
+  },
+});
+
 export const adminDeleteUser = mutation({
   args: {
     userId: v.id("users"),
@@ -568,7 +639,19 @@ export const adminDeleteUser = mutation({
     }
 
     if (target.isMasterAdmin) {
-      throw new Error("You cannot delete a master admin account through this menu. Only the master admin itself can be removed through account reset or database cleanup.");
+      // Only the original master admin may delete another master admin account.
+      const originalMaster = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+        .first();
+      const isOriginalMaster =
+        originalMaster && originalMaster._id.toString() === args.deletedBy.toString();
+      if (!isOriginalMaster) {
+        throw new Error("Only the original master admin account can delete another master admin");
+      }
+      if (args.userId.toString() === args.deletedBy.toString()) {
+        throw new Error("You cannot delete your own account");
+      }
     }
 
     await ctx.db.delete(args.userId);

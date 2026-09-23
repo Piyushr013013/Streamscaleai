@@ -64,6 +64,8 @@ export default function AdminDashboard() {
   const createUser = useMutation(api.auth.adminCreateUser);
   const updateUser = useMutation(api.auth.adminUpdateUser);
   const deleteUser = useMutation(api.auth.adminDeleteUser);
+  const promoteToMaster = useMutation(api.auth.adminPromoteToMasterAdmin);
+  const demoteMaster = useMutation(api.auth.adminDemoteMasterAdmin);
   const deleteAllUsers = useMutation(api.auth.adminDeleteAllNonMasterUsers);
 
   const teamMembers = useQuery(api.team.getTeamMembers);
@@ -1078,6 +1080,21 @@ export default function AdminDashboard() {
                       <div>
                         <Label className="block">Permissions</Label>
                         <div className="mt-1 space-y-2">
+                          <label className="flex items-center gap-2 text-sm font-medium">
+                            <input
+                              type="checkbox"
+                              checked={newPermissions.length === 4}
+                              onChange={(e) => {
+                                setNewPermissions(
+                                  e.target.checked
+                                    ? ["manage_jobs", "view_applications", "view_partner_requests", "manage_notifications"]
+                                    : []
+                                );
+                              }}
+                              disabled={isSubmitting}
+                            />
+                            All permissions
+                          </label>
                           {[
                             ["manage_jobs", "Manage jobs"],
                             ["view_applications", "View applications"],
@@ -1089,11 +1106,12 @@ export default function AdminDashboard() {
                                 type="checkbox"
                                 checked={newPermissions.includes(key)}
                                 onChange={(e) => {
-                                  e.preventDefault();
                                   setNewPermissions((current) =>
-                                    current.includes(key)
-                                      ? current.filter((p) => p !== key)
-                                      : [...current, key]
+                                    e.target.checked && !current.includes(key)
+                                      ? [...current, key]
+                                      : !e.target.checked
+                                        ? current.filter((p) => p !== key)
+                                        : current
                                   );
                                 }}
                                 disabled={isSubmitting}
@@ -1115,7 +1133,9 @@ export default function AdminDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>Managed accounts</CardTitle>
-                  <CardDescription>Update account credentials when needed.</CardDescription>
+                  <CardDescription>
+                    Update account credentials, or grant master admin access. Master admin accounts can only be deleted by the original master admin.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {currentUsers.map((item: any) => (
@@ -1126,10 +1146,10 @@ export default function AdminDashboard() {
                           <p className="text-sm text-slate-500">{item.email}</p>
                         </div>
                         <Badge variant={item.role === "admin" ? "default" : "outline"} className={item.role === "admin" ? "bg-slate-900 text-white border-slate-900" : ""}>
-                          {item.role === "admin" ? "Admin" : "Member"}
+                          {item.isMasterAdmin ? "Master admin" : item.role === "admin" ? "Admin" : "Member"}
                         </Badge>
                       </div>
-                      <div className="mt-2 flex items-center gap-2">
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
                         <Button
                           variant="link"
                           className="h-auto px-0"
@@ -1142,17 +1162,70 @@ export default function AdminDashboard() {
                         >
                           Edit
                         </Button>
-                        {item._id === userId || item.isMasterAdmin ? (
-                          <span className="text-xs text-slate-400">Protected account</span>
+                        {item.isMasterAdmin ? (
+                          item._id === userId ? (
+                            <span className="text-xs text-slate-400">This is your account</span>
+                          ) : (
+                            <>
+                              <Button
+                                variant="link"
+                                className="h-auto px-0"
+                                onClick={async () => {
+                                  if (!window.confirm(`Remove master admin access from ${item.name}?`)) return;
+                                  setIsSubmitting(true);
+                                  try {
+                                    await demoteMaster({ userId: item._id, demoterId: userId as any });
+                                    setMessage(`${item.name} is no longer a master admin.`);
+                                  } catch (error) {
+                                    setMessage(error instanceof Error ? error.message : "Unable to update account.");
+                                  } finally {
+                                    setIsSubmitting(false);
+                                  }
+                                }}
+                                disabled={isSubmitting}
+                              >
+                                Remove master admin
+                              </Button>
+                              <Button
+                                variant="link"
+                                className="h-auto px-0 text-red-600 hover:text-red-700"
+                                onClick={() => handleDeleteUser(item._id, item.name)}
+                                disabled={isSubmitting}
+                              >
+                                Delete
+                              </Button>
+                            </>
+                          )
                         ) : (
-                          <Button
-                            variant="link"
-                            className="h-auto px-0 text-red-600 hover:text-red-700"
-                            onClick={() => handleDeleteUser(item._id, item.name)}
-                            disabled={isSubmitting}
-                          >
-                            Delete
-                          </Button>
+                          <>
+                            <Button
+                              variant="link"
+                              className="h-auto px-0"
+                              onClick={async () => {
+                                if (!window.confirm(`Give ${item.name} full master admin access?`)) return;
+                                setIsSubmitting(true);
+                                try {
+                                  await promoteToMaster({ userId: item._id, promoterId: userId as any });
+                                  setMessage(`${item.name} is now a master admin.`);
+                                } catch (error) {
+                                  setMessage(error instanceof Error ? error.message : "Unable to update account.");
+                                } finally {
+                                  setIsSubmitting(false);
+                                }
+                              }}
+                              disabled={isSubmitting}
+                            >
+                              Make master admin
+                            </Button>
+                            <Button
+                              variant="link"
+                              className="h-auto px-0 text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteUser(item._id, item.name)}
+                              disabled={isSubmitting}
+                            >
+                              Delete
+                            </Button>
+                          </>
                         )}
                       </div>
                       {managedId === item._id && (
@@ -1351,11 +1424,12 @@ export default function AdminDashboard() {
                             type="checkbox"
                             checked={newServices.includes(option.value)}
                             onChange={(e) => {
-                              e.preventDefault();
                               setNewServices((current) =>
-                                current.includes(option.value)
-                                  ? current.filter((s) => s !== option.value)
-                                  : [...current, option.value]
+                                e.target.checked && !current.includes(option.value)
+                                  ? [...current, option.value]
+                                  : !e.target.checked
+                                    ? current.filter((s) => s !== option.value)
+                                    : current
                               );
                             }}
                             disabled={isSubmitting}
