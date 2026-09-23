@@ -51,33 +51,67 @@ class ToolbarErrorBoundary extends React.Component<
 /** Hard guard so runtime errors never leave the preview as a blank page. */
 class RootErrorBoundary extends React.Component<
   { children: React.ReactNode },
-  { hasError: boolean; message: string; stack: string }
+  { hasError: boolean }
 > {
-  state = { hasError: false, message: "", stack: "" };
-  static getDerivedStateFromError(error: Error) {
-    return {
-      hasError: true,
-      message: error.message || "Unknown runtime error",
-      stack: error.stack || "",
-    };
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
   componentDidCatch(err: Error) {
-    console.error("[WebContainer preview] Root crash:", err);
+    // Full details stay in the browser console for debugging; the screen the
+    // visitor sees stays plain and actionable.
+    console.error("Streamscale ran into a problem:", err);
   }
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-6">
-          <div className="max-w-lg text-center">
-            <p className="text-sm font-semibold">Preview runtime error</p>
-            <p className="mt-2 text-xs text-muted-foreground break-words">
-              {this.state.message}
+        <div className="flex min-h-screen items-center justify-center bg-background p-6">
+          <div className="w-full max-w-md rounded-2xl border border-border/50 bg-card p-8 text-center shadow-lg">
+            <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-amber-100">
+              <svg
+                className="size-6 text-amber-600"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="M12 9v4" />
+                <path d="M12 17h.01" />
+                <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+              </svg>
+            </div>
+            <h1 className="text-xl font-semibold text-foreground">
+              Something went wrong
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              This page hit an unexpected problem and couldn't finish loading.
+              Reloading usually fixes it. If it keeps happening, sign out and
+              sign back in, or try again in a few minutes.
             </p>
-            {this.state.stack && (
-              <pre className="mt-3 text-left text-[10px] leading-4 text-muted-foreground/80 max-h-40 overflow-auto rounded border border-border/60 p-2">
-                {this.state.stack}
-              </pre>
-            )}
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="h-11 w-full rounded-lg bg-slate-900 text-sm font-medium text-white transition hover:bg-slate-800"
+              >
+                Reload the page
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    localStorage.removeItem("streamscale_user_id");
+                    localStorage.removeItem("streamscale_user_role");
+                  } catch {
+                    // ignore storage failures
+                  }
+                  window.location.replace("/");
+                }}
+                className="h-11 w-full rounded-lg border border-border text-sm font-medium text-foreground transition hover:bg-accent"
+              >
+                Sign out and start fresh
+              </button>
+            </div>
           </div>
         </div>
       );

@@ -1,6 +1,4 @@
 {
   "$schema": "https://download.convex.dev/schema.json",
-  "deployment": {
-    "name": "dev"
-  }
+  "functions": "src/convex"
 }

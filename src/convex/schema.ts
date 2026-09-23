@@ -65,16 +65,18 @@ export default defineSchema({
       v.literal("monitoring"),
       v.literal("integration")
     ),
-    services: v.array(v.union(
+    // Optional so legacy partner requests (saved before multi-select existed)
+    // still validate; every new write supplies a full array of selections.
+    services: v.optional(v.array(v.union(
       v.literal("ai"),
       v.literal("testing_ai"),
       v.literal("recruitment"),
       v.literal("compliance"),
       v.literal("monitoring"),
       v.literal("integration")
-    )),
+    ))),
     requirements: v.string(),
-    objectives: v.array(v.string()),
+    objectives: v.optional(v.array(v.string())),
     status: v.union(v.literal("new"), v.literal("contacted"), v.literal("active"), v.literal("closed")),
   }).index("by_service", ["service"]),
 

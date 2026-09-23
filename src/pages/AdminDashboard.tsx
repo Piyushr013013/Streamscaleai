@@ -42,30 +42,30 @@ export default function AdminDashboard() {
   const updateTeamMember = useMutation(api.team.updateTeamMember);
   const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
-  // Use generated Convex references. Importing server modules directly in the
-  // browser can cause runtime failures because those modules are not client
-  // function references.
   const partnerNotifications = useQuery(
-    (api as any).partnerAdmin.adminGetNotifications,
+    api.partnerAdmin.adminGetNotifications,
     isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
   );
   const partnerRequestMarkContacted = useMutation(
-    (api as any).partnerAdmin.adminMarkPartnerRequestContacted,
+    api.partnerAdmin.adminMarkPartnerRequestContacted,
   );
   const partnerRequestDelete = useMutation(
-    (api as any).partnerAdmin.adminDeletePartnerRequest,
+    api.partnerAdmin.adminDeletePartnerRequest,
   );
   const partnerRequestCreate = useMutation(
-    (api as any).partnerAdmin.adminCreatePartnerRequest,
+    api.partnerAdmin.adminCreatePartnerRequest,
   );
 
   const resumes = useQuery(
-    (api as any).resumeAdmin.adminGetResumes,
+    api.resumeAdmin.adminGetResumes,
     isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
   );
-  const resumeDelete = useMutation((api as any).resumeAdmin.adminDeleteResume);
-  const resumeAddManual = useMutation((api as any).resumeAdmin.adminAddManualResume);
+  const resumeDelete = useMutation(api.resumeAdmin.adminDeleteResume);
+  const resumeAddManual = useMutation(api.resumeAdmin.adminAddManualResume);
 
+  // Every hook must run on every render — declared before the early return
+  // below so the hook count never changes between renders.
+  const [editingMember, setEditingMember] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<TabId>("accounts");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -255,30 +255,6 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleAddMember = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setMessage("");
-    try {
-      await addTeamMember({
-        name: memberName.trim() || "New Member",
-        role: memberRole.trim() || "Team Member",
-        bio: memberBio.trim() || undefined,
-        avatarColor: "#1E293B",
-        order: (teamMembers?.length ?? 0) + 1,
-        addedBy: userId as any,
-      });
-      setMessage("Team member added.");
-      setMemberName("");
-      setMemberRole("");
-      setMemberBio("");
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to add team member.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleAddPartnerNotification = async (e: FormEvent) => {
     e.preventDefault();
     if (!partnerName.trim() || !partnerEmail.trim() || !partnerRequirements.trim()) {
@@ -360,25 +336,45 @@ export default function AdminDashboard() {
     setEditingMember(member);
   };
 
-  const [editingMember, setEditingMember] = useState<any>(null);
+  const startAddingMember = () => {
+    setMemberName("");
+    setMemberRole("");
+    setMemberBio("");
+    setEditingMember({ _id: "" });
+  };
 
   const submitEditMember = async (e: FormEvent) => {
     e.preventDefault();
-    if (!editingMember._id) return;
+    if (!memberName.trim() || !memberRole.trim()) {
+      setMessage("Enter a name and role for this team member.");
+      return;
+    }
     setIsSubmitting(true);
     setMessage("");
     try {
-      await updateTeamMember({
-        memberId: editingMember._id as any,
-        name: memberName.trim() || "Team Member",
-        role: memberRole.trim() || "Team Member",
-        bio: memberBio.trim() || undefined,
-        updatedBy: userId as any,
-      });
-      setMessage("Team member updated.");
+      if (editingMember._id) {
+        await updateTeamMember({
+          memberId: editingMember._id as any,
+          name: memberName.trim(),
+          role: memberRole.trim(),
+          bio: memberBio.trim() || undefined,
+          updatedBy: userId as any,
+        });
+        setMessage("Team member updated.");
+      } else {
+        await addTeamMember({
+          name: memberName.trim(),
+          role: memberRole.trim(),
+          bio: memberBio.trim() || undefined,
+          avatarColor: "#1E293B",
+          order: (teamMembers?.length ?? 0) + 1,
+          addedBy: userId as any,
+        });
+        setMessage("Team member added.");
+      }
       setEditingMember(null);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to update team member.");
+      setMessage(error instanceof Error ? error.message : "Unable to save team member.");
     } finally {
       setIsSubmitting(false);
     }
@@ -695,7 +691,7 @@ export default function AdminDashboard() {
                 <Users className="size-4" />
                 View team
               </Button>
-              <Button variant="default" onClick={handleAddMember} className="gap-1" disabled={isSubmitting}>
+              <Button variant="default" onClick={startAddingMember} className="gap-1" disabled={isSubmitting}>
                 <Plus className="size-4" />
                 Add member
               </Button>
@@ -758,19 +754,23 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Edit2 className="size-5" />
-                    Edit team member
+                    {editingMember._id ? "Edit team member" : "Add team member"}
                   </CardTitle>
-                  <CardDescription>Update this team member's details.</CardDescription>
+                  <CardDescription>
+                    {editingMember._id
+                      ? "Update this team member's details."
+                      : "This person will appear on the public team page."}
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={submitEditMember} className="grid gap-4 max-w-lg">
                     <div>
                       <Label>Name</Label>
-                      <Input value={memberName || ""} onChange={(e) => setMemberName(e.target.value)} disabled={isSubmitting}/>
+                      <Input value={memberName || ""} onChange={(e) => setMemberName(e.target.value)} placeholder="Full name" disabled={isSubmitting}/>
                     </div>
                     <div>
                       <Label>Role</Label>
-                      <Input value={memberRole || "Team Member"} onChange={(e) => setMemberRole(e.target.value)} disabled={isSubmitting}/>
+                      <Input value={memberRole || ""} onChange={(e) => setMemberRole(e.target.value)} placeholder="e.g. Candidate Outreach" disabled={isSubmitting}/>
                     </div>
                     <div>
                       <Label>Bio <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>

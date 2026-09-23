@@ -30,25 +30,68 @@ export default function Jobs() {
   const [uploadingResume, setUploadingResume] = useState(false);
   const uploadUrlMutation = useMutation(api.jobs.generateUploadUrl);
   const resumeInputRef = useRef<HTMLInputElement>(null);
-  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  // Security limits (mirrored on the server — the client check is only for
+  // fast feedback; the server is the real gatekeeper):
+  // - 5MB max to prevent oversized uploads
+  // - only .pdf and .docx, verified by extension, browser type, AND file
+  //   signature so a renamed executable is rejected
+  const MAX_FILE_SIZE = 5 * 1024 * 1024;
   const [resumeError, setResumeError] = useState("");
 
-  const handleResumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  /** Read the first bytes of a file to confirm it really is what it claims. */
+  const checkFileSignature = async (file: File): Promise<boolean> => {
+    try {
+      const header = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+      if (header.length >= 4 && header[0] === 0x25 && header[1] === 0x50 && header[2] === 0x44 && header[3] === 0x46) {
+        return true; // "%PDF" — real PDF
+      }
+      if (header.length >= 4 && header[0] === 0x50 && header[1] === 0x4b) {
+        return true; // "PK" — ZIP container, which is what a .docx is
+      }
+      return false;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleResumeChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
-      setResumeError("Please select a PDF resume.");
+      setResumeError("No file chosen. Please select your resume.");
       return;
     }
-    if (file.type !== "application/pdf") {
-      setResumeError("Only PDF files are accepted.");
+
+    const lowerName = file.name.toLowerCase();
+    const hasValidExtension = lowerName.endsWith(".pdf") || lowerName.endsWith(".docx");
+    const hasValidType =
+      file.type === "application/pdf" ||
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      file.type === ""; // some browsers report empty type for docx
+
+    if (!hasValidExtension || !hasValidType) {
+      setResumeError("Resumes must be a PDF or Word (.docx) document. Other file types are not accepted.");
       event.target.value = "";
       return;
     }
+
     if (file.size > MAX_FILE_SIZE) {
-      setResumeError("Resume must be 10 MB or smaller.");
+      setResumeError("Your resume is too large. Please upload a file that is 5 MB or smaller.");
       event.target.value = "";
       return;
     }
+
+    if (file.size === 0) {
+      setResumeError("That file appears to be empty. Please choose your resume again.");
+      event.target.value = "";
+      return;
+    }
+
+    if (!(await checkFileSignature(file))) {
+      setResumeError("This file is not a real PDF or Word document. Please upload your actual resume.");
+      event.target.value = "";
+      return;
+    }
+
     setResumeFile(file);
     setResumePreview({ name: file.name, size: file.size });
     setResumeError("");
@@ -70,7 +113,7 @@ export default function Jobs() {
       return;
     }
     if (!resumeFile) {
-      setResumeError("Please upload a PDF resume to apply.");
+      setResumeError("Please attach your resume (PDF or Word document) to apply.");
       return;
     }
 
@@ -84,12 +127,15 @@ export default function Jobs() {
           const response = await fetch(uploadUrl, {
             method: "POST",
             body: resumeFile,
-            headers: { "Content-Type": "application/pdf" },
+            headers: { "Content-Type": resumeFile.type || "application/pdf" },
           });
+          if (!response.ok) {
+            throw new Error("Upload rejected");
+          }
           const data = await response.json();
           resumeStorageId = data.storageId;
         } catch (uploadErr) {
-          setApplyError("Resume upload failed. Please try again.");
+          setApplyError("Your resume couldn't be uploaded. Check your connection and try again.");
           setApplying(false);
           setUploadingResume(false);
           return;
@@ -232,7 +278,7 @@ export default function Jobs() {
             <CardHeader className="border-slate-200 pb-4">
               <CardTitle className="text-lg">Apply for {applyingTo?.title}</CardTitle>
               <CardDescription>
-                Share your details and a PDF resume so the team can review your fit.
+                Share your details and a PDF or Word (.docx) resume so the team can review your fit.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-5">
@@ -325,12 +371,12 @@ export default function Jobs() {
                         onClick={() => resumeInputRef.current?.click()}
                       >
                         <Upload className="size-4 text-slate-500" />
-                        <span className="text-sm">Choose a PDF resume</span>
+                        <span className="text-sm">Choose a PDF or Word (.docx) resume — max 5 MB</span>
                         <Input
                           ref={resumeInputRef}
                           id="resume-input"
                           type="file"
-                          accept=".pdf,application/pdf"
+                          accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
                           onChange={handleResumeChange}
                           className="sr-only"
                         />
