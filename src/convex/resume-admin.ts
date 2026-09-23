@@ -2,8 +2,13 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const adminGetResumes = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId);
+    if (!viewer || !isMasterAdmin(viewer)) {
+      return [];
+    }
+
     const resumes = await ctx.db.query("resumes").collect();
     const applications = await ctx.db.query("applications").collect();
     const jobs = await ctx.db.query("jobs").collect();

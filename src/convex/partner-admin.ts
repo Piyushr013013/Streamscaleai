@@ -2,8 +2,13 @@ import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
 export const adminGetNotifications = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId);
+    if (!viewer || !isMasterAdmin(viewer)) {
+      return { partnerRequests: [], applications: [] };
+    }
+
     const partnerRequests = await ctx.db
       .query("partnerRequests")
       .collect();
@@ -136,6 +141,7 @@ export const adminCreatePartnerRequest = mutation({
       services: serviceList,
       requirements: args.requirements.trim(),
       status: "new",
+      objectives: [],
     });
   },
 });

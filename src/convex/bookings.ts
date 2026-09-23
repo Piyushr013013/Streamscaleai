@@ -29,8 +29,9 @@ export const createBooking = mutation({
       service: args.bookingType,
       services: [args.bookingType],
       requirements: `${args.preferredTime}\n${args.notes ?? ""}`,
+      objectives: [],
       status: "new",
-    } as any);
+    });
     return { bookingId: requestId };
   },
 });
@@ -49,8 +50,9 @@ export const createPartnerRequest = mutation({
       service: args.service,
       services: [args.service],
       requirements: args.requirements,
+      objectives: [],
       status: "new",
-    } as any);
+    });
     // Send auto-reply to partner (best-effort)
     try {
       const serviceNames: Record<string, string> = {

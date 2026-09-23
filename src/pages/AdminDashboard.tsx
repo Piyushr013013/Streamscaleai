@@ -3,9 +3,6 @@ import { Link, useNavigate } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 
-import * as partnerAdmin from "@/convex/partner-admin";
-import * as resumeAdmin from "@/convex/resume-admin";
-
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,14 +42,29 @@ export default function AdminDashboard() {
   const updateTeamMember = useMutation(api.team.updateTeamMember);
   const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
-  const partnerNotifications = useQuery(partnerAdmin.adminGetNotifications as any);
-  const partnerRequestMarkContacted = useMutation(partnerAdmin.adminMarkPartnerRequestContacted as any);
-  const partnerRequestDelete = useMutation(partnerAdmin.adminDeletePartnerRequest as any);
-  const partnerRequestCreate = useMutation(partnerAdmin.adminCreatePartnerRequest as any);
+  // Use generated Convex references. Importing server modules directly in the
+  // browser can cause runtime failures because those modules are not client
+  // function references.
+  const partnerNotifications = useQuery(
+    (api as any).partnerAdmin.adminGetNotifications,
+    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+  );
+  const partnerRequestMarkContacted = useMutation(
+    (api as any).partnerAdmin.adminMarkPartnerRequestContacted,
+  );
+  const partnerRequestDelete = useMutation(
+    (api as any).partnerAdmin.adminDeletePartnerRequest,
+  );
+  const partnerRequestCreate = useMutation(
+    (api as any).partnerAdmin.adminCreatePartnerRequest,
+  );
 
-  const resumes = useQuery(resumeAdmin.adminGetResumes as any);
-  const resumeDelete = useMutation(resumeAdmin.adminDeleteResume as any);
-  const resumeAddManual = useMutation(resumeAdmin.adminAddManualResume as any);
+  const resumes = useQuery(
+    (api as any).resumeAdmin.adminGetResumes,
+    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+  );
+  const resumeDelete = useMutation((api as any).resumeAdmin.adminDeleteResume);
+  const resumeAddManual = useMutation((api as any).resumeAdmin.adminAddManualResume);
 
   const [activeTab, setActiveTab] = useState<TabId>("accounts");
   const [message, setMessage] = useState("");
