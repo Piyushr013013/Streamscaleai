@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import {
-  Briefcase, Users, FileText, Mail, Trash2
+  FileText, Mail, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -30,17 +30,11 @@ export default function Dashboard() {
     user && "isMasterAdmin" in user && user.isMasterAdmin === true
   );
 
-  const partnerRequests = useQuery(
-    isMasterAdmin ? api.auth.adminGetPartnerRequests : "skip"
-  );
-  const deletePartnerRequest = useMutation(
-    isMasterAdmin ? api.auth.adminDeletePartnerRequest : "skip"
-  );
+  const partnerRequests = isMasterAdmin ? useQuery(api.auth.adminGetPartnerRequests) ?? [] : [];
+  const deletePartnerRequestMutation = isMasterAdmin ? useMutation(api.auth.adminDeletePartnerRequest) : (null as any);
 
-  const resumes = useQuery(isMasterAdmin ? api.auth.adminGetResumes : "skip");
-  const deleteResume = useMutation(
-    isMasterAdmin ? api.auth.adminDeleteResume : "skip"
-  );
+  const resumes = isMasterAdmin ? useQuery(api.auth.adminGetResumes) ?? [] : [];
+  const deleteResumeMutation = isMasterAdmin ? useMutation(api.auth.adminDeleteResume) : (null as any);
 
   return (
     <div className="min-h-screen bg-[#f7f8fa]">
@@ -83,10 +77,10 @@ export default function Dashboard() {
                     <Mail className="size-4" />
                     Partnership requests
                   </CardTitle>
-                  <Badge variant="secondary">{partnerRequests?.length ?? 0}</Badge>
+                  <Badge variant="secondary">{partnerRequests.length}</Badge>
                 </CardHeader>
                 <CardContent className="p-0">
-                  {!partnerRequests || partnerRequests.length === 0 ? (
+                  {partnerRequests.length === 0 ? (
                     <p className="px-4 py-6 text-sm text-slate-500">No partnership requests yet.</p>
                   ) : (
                     <Table>
@@ -126,9 +120,9 @@ export default function Dashboard() {
                                   size="sm"
                                   className="text-emerald-600 hover:text-emerald-700"
                                   onClick={() =>
-                                    deletePartnerRequest({
+                                    deletePartnerRequestMutation.mutate({
                                       id: request._id,
-                                    }).catch(() => {})
+                                    })
                                   }
                                 >
                                   Mark contacted
@@ -139,7 +133,9 @@ export default function Dashboard() {
                                 size="sm"
                                 className="text-red-600 hover:text-red-700"
                                 onClick={() =>
-                                  deletePartnerRequest({ id: request._id }).catch(() => {})
+                                  deletePartnerRequestMutation.mutate({
+                                    id: request._id,
+                                  })
                                 }
                               >
                                 <Trash2 className="size-3.5" />
@@ -160,10 +156,10 @@ export default function Dashboard() {
                     <FileText className="size-4" />
                     Resumes received
                   </CardTitle>
-                  <Badge variant="secondary">{resumes?.length ?? 0}</Badge>
+                  <Badge variant="secondary">{resumes.length}</Badge>
                 </CardHeader>
                 <CardContent className="p-0">
-                  {!resumes || resumes.length === 0 ? (
+                  {resumes.length === 0 ? (
                     <p className="px-4 py-6 text-sm text-slate-500">No resumes received yet.</p>
                   ) : (
                     <Table>
@@ -189,7 +185,9 @@ export default function Dashboard() {
                                 size="sm"
                                 className="text-red-600 hover:text-red-700"
                                 onClick={() =>
-                                  deleteResume({ id: resume._id }).catch(() => {})
+                                  deleteResumeMutation.mutate({
+                                    id: resume._id,
+                                  })
                                 }
                               >
                                 <Trash2 className="size-3.5" />
