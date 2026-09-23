@@ -83,7 +83,11 @@ export const adminAddManualResume = mutation({
       contentType: "application/pdf",
       sizeBytes: 0,
       sanitizerStatus: "clean",
-      scanSummary: "Manually added by admin",
+      scanSummary: [
+        "[ADMIN] Manually added by administrator",
+        "[PASS] No file upload — metadata-only record",
+        "[INFO] Resume file must be uploaded separately via secure upload flow",
+      ].join("\n"),
     } as any);
 
     return { ok: true, resumeId: storedEntry };
