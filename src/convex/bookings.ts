@@ -21,7 +21,18 @@ export const createBooking = mutation({
     bookingType: v.union(v.literal("ai"), v.literal("testing_ai"), v.literal("recruitment")),
     preferredTime: v.string(), notes: v.optional(v.string()),
   },
-  handler: async (ctx, args) => ({ bookingId: await ctx.db.insert("partnerRequests", { name: args.name, email: args.email, phone: args.phone ?? "", service: args.bookingType, requirements: `${args.preferredTime}\n${args.notes ?? ""}`, status: "new" }) }),
+  handler: async (ctx, args) => {
+    const requestId = await ctx.db.insert("partnerRequests", {
+      name: args.name,
+      email: args.email,
+      phone: args.phone ?? "",
+      service: args.bookingType,
+      services: [args.bookingType],
+      requirements: `${args.preferredTime}\n${args.notes ?? ""}`,
+      status: "new",
+    } as any);
+    return { bookingId: requestId };
+  },
 });
 
 export const createPartnerRequest = mutation({
@@ -31,7 +42,15 @@ export const createPartnerRequest = mutation({
     requirements: v.string(),
   },
   handler: async (ctx, args) => {
-    const requestId = await ctx.db.insert("partnerRequests", { ...args, status: "new" });
+    const requestId = await ctx.db.insert("partnerRequests", {
+      name: args.name,
+      email: args.email,
+      phone: args.phone,
+      service: args.service,
+      services: [args.service],
+      requirements: args.requirements,
+      status: "new",
+    } as any);
     // Send auto-reply to partner (best-effort)
     try {
       const serviceNames: Record<string, string> = {

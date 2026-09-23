@@ -669,6 +669,7 @@ export const adminGetResumes = query({
   },
 });
 
+export const __placeholderAuthFunc = 1;
 export const adminDeleteResume = mutation({
   args: {
     id: v.id("applications"),

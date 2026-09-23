@@ -2,6 +2,10 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
+
+import * as partnerAdmin from "@/convex/partner-admin";
+import * as resumeAdmin from "@/convex/resume-admin";
+
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +13,21 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Shield, Trash2, UserPlus, Users, UserX, Edit2, Plus } from "lucide-react";
+import {
+  Shield,
+  Trash2,
+  UserPlus,
+  Users,
+  UserX,
+  Edit2,
+  Plus,
+  Mail,
+  FileText,
+  Bell,
+} from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+type TabId = "accounts" | "team" | "partnerships" | "resumes" | "notifications";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -21,12 +39,22 @@ export default function AdminDashboard() {
   const updateUser = useMutation(api.auth.adminUpdateUser);
   const deleteUser = useMutation(api.auth.adminDeleteUser);
   const deleteAllUsers = useMutation(api.auth.adminDeleteAllNonMasterUsers);
+
   const teamMembers = useQuery(api.team.getTeamMembers);
   const addTeamMember = useMutation(api.team.addTeamMember);
   const updateTeamMember = useMutation(api.team.updateTeamMember);
   const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
-  const [activeTab, setActiveTab] = useState<"accounts" | "team">("accounts");
+  const partnerNotifications = useQuery(partnerAdmin.adminGetNotifications);
+  const partnerRequestMarkContacted = useMutation(partnerAdmin.adminMarkPartnerRequestContacted);
+  const partnerRequestDelete = useMutation(partnerAdmin.adminDeletePartnerRequest);
+  const partnerRequestCreate = useMutation(partnerAdmin.adminCreatePartnerRequest);
+
+  const resumes = useQuery(resumeAdmin.adminGetResumes);
+  const resumeDelete = useMutation(resumeAdmin.adminDeleteResume);
+  const resumeAddManual = useMutation(resumeAdmin.adminAddManualResume);
+
+  const [activeTab, setActiveTab] = useState<TabId>("accounts");
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,6 +62,7 @@ export default function AdminDashboard() {
   const [newEmail, setNewEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState<"user" | "admin">("user");
+  const [newServices, setNewServices] = useState<string[]>([]);
   const [newPermissions, setNewPermissions] = useState<string[]>([]);
 
   const [managedId, setManagedId] = useState("");
@@ -47,6 +76,16 @@ export default function AdminDashboard() {
   const [memberName, setMemberName] = useState("New Member");
   const [memberRole, setMemberRole] = useState("Team Member");
   const [memberBio, setMemberBio] = useState("");
+
+  const [partnerName, setPartnerName] = useState("");
+  const [partnerEmail, setPartnerEmail] = useState("");
+  const [partnerPhone, setPartnerPhone] = useState("");
+  const [partnerRequirements, setPartnerRequirements] = useState("");
+  const [partnerServiceFilter, setPartnerServiceFilter] = useState<string | null>(null);
+
+  const [resumeApplicantEmail, setResumeApplicantEmail] = useState("");
+  const [resumeApplicantName, setResumeApplicantName] = useState("");
+  const [resumeJobTitle, setResumeJobTitle] = useState("");
 
   const defaultTeamMembers = [
     { _id: "default-ceo", name: "Vivikth Mantha", role: "CEO", bio: "Leading Streamscale's vision and strategy.", avatarColor: "#10b981" },
@@ -228,6 +267,66 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleAddPartnerNotification = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!partnerName.trim() || !partnerEmail.trim() || !partnerRequirements.trim()) {
+      setMessage("Enter name, email, and requirements.");
+      return;
+    }
+    if (newServices.length === 0) {
+      setMessage("Select at least one service.");
+      return;
+    }
+    setIsSubmitting(true);
+    setMessage("");
+    try {        await partnerRequestCreate({
+          name: partnerName.trim(),
+          email: partnerEmail.trim().toLowerCase(),
+          phone: partnerPhone.trim(),
+          services: newServices as Array<"ai" | "testing_ai" | "recruitment">,
+          requirements: partnerRequirements.trim(),
+          creatorId: userId as any,
+        });
+      setMessage("Partnership request added.");
+      setPartnerName("");
+      setPartnerEmail("");
+      setPartnerPhone("");
+      setPartnerRequirements("");
+      setNewServices([]);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to create partnership request.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeletePartnerRequest = async (requestId: string) => {
+    if (!window.confirm("Delete this partnership request?")) return;
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await partnerRequestDelete({ requestId: requestId as any, editorId: userId as any });
+      setMessage("Partnership request deleted.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to delete partnership request.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleMarkPartnerContacted = async (requestId: string) => {
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await partnerRequestMarkContacted({ requestId: requestId as any, editorId: userId as any });
+      setMessage("Marked as contacted.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to update status.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const requestDeleteMember = async (member: any) => {
     if (!window.confirm(`Remove ${member.name} from the team?`)) return;
     setIsSubmitting(true);
@@ -273,13 +372,64 @@ export default function AdminDashboard() {
     }
   };
 
-  const tabs = [
-    ["accounts", "Accounts", UserX],
-    ["team", "Team", Users],
-  ] as const;
+  const handleDeleteResume = async (resumeId: string) => {
+    if (!window.confirm("Delete this resume?")) return;
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await resumeDelete({ resumeId: resumeId as any, editorId: userId as any });
+      setMessage("Resume deleted.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to delete resume.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleAddManualResume = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!resumeApplicantEmail.trim() || !resumeApplicantName.trim()) {
+      setMessage("Enter applicant email and name.");
+      return;
+    }
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await resumeAddManual({
+        applicantEmail: resumeApplicantEmail.trim().toLowerCase(),
+        applicantName: resumeApplicantName.trim(),
+        jobTitle: resumeJobTitle.trim() || undefined,
+        fileId: userId as any,
+        editorId: userId as any,
+      });
+      setMessage("Resume added.");
+      setResumeApplicantEmail("");
+      setResumeApplicantName("");
+      setResumeJobTitle("");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to add resume.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const tabs: Array<[TabId, string, React.ReactNode]> = [
+    ["accounts", "Accounts", <UserX className="mr-2 size-4" />],
+    ["team", "Team", <Users className="mr-2 size-4" />],
+    ["partnerships", "Partnerships", <Mail className="mr-2 size-4" />],
+    ["resumes", "Resumes", <FileText className="mr-2 size-4" />],
+    ["notifications", "Notifications", <Bell className="mr-2 size-4" />],
+  ];
 
   const currentUsers = users ?? [];
   const currentTeam = teamMembers && teamMembers.length > 0 ? teamMembers : defaultTeamMembers;
+  const currentPartnerNotifications = partnerNotifications ?? { partnerRequests: [], applications: [] };
+  const currentResumes = resumes ?? [];
+  const serviceOptions = [
+    { value: "ai", label: "AI Work Diagnostics" },
+    { value: "testing_ai", label: "Custom Agent Deployment" },
+    { value: "recruitment", label: "Talent & Recruitment" },
+  ];
 
   return (
     <main className="min-h-screen bg-[#f7f8fa] text-slate-900">
@@ -295,10 +445,10 @@ export default function AdminDashboard() {
             <span className="hidden text-sm text-slate-500 sm:inline">{user && "email" in user ? user.email : ""}</span>
             <Button variant="outline" onClick={signOut}>
               <svg className="mr-2 size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1" />
-                <path d="M10 8H4" />
-                <path d="M16 12H8" />
-                <path d="M14 16H6" />
+                <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1"/>
+                <path d="M10 8H4"/>
+                <path d="M16 12H8"/>
+                <path d="M14 16H6"/>
               </svg>
               Sign out
             </Button>
@@ -308,9 +458,13 @@ export default function AdminDashboard() {
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
         <div className="mb-7 flex flex-wrap gap-2">
-          {tabs.map(([value, label, Icon]) => (
-            <Button key={value} variant={activeTab === value ? "default" : "outline"} onClick={() => setActiveTab(value as any)}>
-              <Icon className="mr-2 size-4" />
+          {tabs.map(([value, label, icon]) => (
+            <Button
+              key={value}
+              variant={activeTab === value ? "default" : "outline"}
+              onClick={() => setActiveTab(value)}
+            >
+              {icon}
               {label}
             </Button>
           ))}
@@ -332,7 +486,9 @@ export default function AdminDashboard() {
                 </CardTitle>
                 <CardDescription>
                   Current email:{" "}
-                  <span className="font-medium text-slate-900">{user && "email" in user ? user.email : "unknown"}</span>
+                  <span className="font-medium text-slate-900">
+                    {user && "email" in user ? user.email : "unknown"}
+                  </span>
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -351,7 +507,7 @@ export default function AdminDashboard() {
                     onChange={(e) => setProfilePassword(e.target.value)}
                     disabled={isSubmitting}
                   />
-                  <div className="md:col-span-3" />
+                  <div className="md:col-span-3"/>
                   <Button type="submit" className="md:col-span-5" disabled={isSubmitting}>
                     {isSubmitting ? "Updating..." : "Update my account"}
                   </Button>
@@ -373,17 +529,17 @@ export default function AdminDashboard() {
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <Label>Name</Label>
-                        <Input value={newName} onChange={(e) => setNewName(e.target.value)} disabled={isSubmitting} />
+                        <Input value={newName} onChange={(e) => setNewName(e.target.value)} disabled={isSubmitting}/>
                       </div>
                       <div>
                         <Label>Email</Label>
-                        <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} disabled={isSubmitting} />
+                        <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} disabled={isSubmitting}/>
                       </div>
                     </div>
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
                         <Label>Temporary password</Label>
-                        <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} minLength={6} disabled={isSubmitting} />
+                        <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} minLength={6} disabled={isSubmitting}/>
                       </div>
                       <div>
                         <Label>Role</Label>
@@ -402,37 +558,32 @@ export default function AdminDashboard() {
                       <div>
                         <Label className="block">Permissions</Label>
                         <div className="mt-1 space-y-2">
-                          <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={newPermissions.includes("manage_jobs")} onChange={(e) => {
-                              e.preventDefault();
-                              setNewPermissions((current) => current.includes("manage_jobs") ? current.filter((p) => p !== "manage_jobs") : [...current, "manage_jobs"]);
-                            }} disabled={isSubmitting} />
-                            Manage jobs
-                          </label>
-                          <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={newPermissions.includes("view_applications")} onChange={(e) => {
-                              e.preventDefault();
-                              setNewPermissions((current) => current.includes("view_applications") ? current.filter((p) => p !== "view_applications") : [...current, "view_applications"]);
-                            }} disabled={isSubmitting} />
-                            View applications
-                          </label>
-                          <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={newPermissions.includes("view_partner_requests")} onChange={(e) => {
-                              e.preventDefault();
-                              setNewPermissions((current) => current.includes("view_partner_requests") ? current.filter((p) => p !== "view_partner_requests") : [...current, "view_partner_requests"]);
-                            }} disabled={isSubmitting} />
-                            View partner requests
-                          </label>
-                          <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={newPermissions.includes("manage_notifications")} onChange={(e) => {
-                              e.preventDefault();
-                              setNewPermissions((current) => current.includes("manage_notifications") ? current.filter((p) => p !== "manage_notifications") : [...current, "manage_notifications"]);
-                            }} disabled={isSubmitting} />
-                            Manage notifications
-                          </label>
+                          {[
+                            ["manage_jobs", "Manage jobs"],
+                            ["view_applications", "View applications"],
+                            ["view_partner_requests", "View partner requests"],
+                            ["manage_notifications", "Manage notifications"],
+                          ].map(([key, label]) => (
+                            <label key={key} className="flex items-center gap-2 text-sm">
+                              <input
+                                type="checkbox"
+                                checked={newPermissions.includes(key)}
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setNewPermissions((current) =>
+                                    current.includes(key)
+                                      ? current.filter((p) => p !== key)
+                                      : [...current, key]
+                                  );
+                                }}
+                                disabled={isSubmitting}
+                              />
+                              {label}
+                            </label>
+                          ))}
                         </div>
                       </div>
-                      <div />
+                      <div/>
                     </div>
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                       {isSubmitting ? "Creating..." : "Create account"}
@@ -459,26 +610,36 @@ export default function AdminDashboard() {
                         </Badge>
                       </div>
                       <div className="mt-2 flex items-center gap-2">
-                        <Button variant="link" className="h-auto px-0" onClick={() => {
-                          setManagedId(item._id);
-                          setManagedName(item.name);
-                          setManagedEmail(item.email);
-                        }} disabled={isSubmitting}>
+                        <Button
+                          variant="link"
+                          className="h-auto px-0"
+                          onClick={() => {
+                            setManagedId(item._id);
+                            setManagedName(item.name);
+                            setManagedEmail(item.email);
+                          }}
+                          disabled={isSubmitting}
+                        >
                           Edit
                         </Button>
                         {item._id === userId || item.isMasterAdmin ? (
                           <span className="text-xs text-slate-400">Protected account</span>
                         ) : (
-                          <Button variant="link" className="h-auto px-0 text-red-600 hover:text-red-700" onClick={() => handleDeleteUser(item._id, item.name)} disabled={isSubmitting}>
+                          <Button
+                            variant="link"
+                            className="h-auto px-0 text-red-600 hover:text-red-700"
+                            onClick={() => handleDeleteUser(item._id, item.name)}
+                            disabled={isSubmitting}
+                          >
                             Delete
                           </Button>
                         )}
                       </div>
                       {managedId === item._id && (
                         <form onSubmit={submitManagedEdit} className="mt-2 grid gap-2 sm:grid-cols-3">
-                          <Input value={managedName} onChange={(e) => setManagedName(e.target.value)} placeholder="Name" disabled={isSubmitting} />
-                          <Input type="email" value={managedEmail} onChange={(e) => setManagedEmail(e.target.value)} placeholder="Email" disabled={isSubmitting} />
-                          <Input type="password" value={managedPassword} onChange={(e) => setManagedPassword(e.target.value)} placeholder="New password" disabled={isSubmitting} />
+                          <Input value={managedName} onChange={(e) => setManagedName(e.target.value)} placeholder="Name" disabled={isSubmitting}/>
+                          <Input type="email" value={managedEmail} onChange={(e) => setManagedEmail(e.target.value)} placeholder="Email" disabled={isSubmitting}/>
+                          <Input type="password" value={managedPassword} onChange={(e) => setManagedPassword(e.target.value)} placeholder="New password" disabled={isSubmitting}/>
                           <Button type="submit" className="sm:col-span-3" disabled={isSubmitting}>
                             {isSubmitting ? "Saving..." : "Save account changes"}
                           </Button>
@@ -501,7 +662,12 @@ export default function AdminDashboard() {
                   <CardDescription>Permanently delete all non-admin accounts and associated data.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50" onClick={handleDeleteAllAccounts} disabled={isSubmitting}>
+                  <Button
+                    variant="outline"
+                    className="text-red-600 border-red-200 hover:bg-red-50"
+                    onClick={handleDeleteAllAccounts}
+                    disabled={isSubmitting}
+                  >
                     <Trash2 className="mr-2 size-4" />
                     Delete all accounts and data
                   </Button>
@@ -534,7 +700,10 @@ export default function AdminDashboard() {
                   <div key={member._id} className="rounded-lg border border-slate-200 p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className="flex size-10 items-center justify-center rounded-full text-white text-sm font-semibold" style={{ backgroundColor: member.avatarColor || "#1E293B" }}>
+                        <div
+                          className="flex size-10 items-center justify-center rounded-full text-white text-sm font-semibold"
+                          style={{ backgroundColor: member.avatarColor || "#1E293B" }}
+                        >
                           {member.name.charAt(0)}
                         </div>
                         <div>
@@ -555,10 +724,15 @@ export default function AdminDashboard() {
                     </div>
                     {member.bio && <p className="mt-2 text-sm text-slate-600">{member.bio}</p>}
                     {member.linkedin && (
-                      <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline">
+                      <a
+                        href={member.linkedin}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs text-primary mt-2 hover:underline"
+                      >
                         <svg className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
                         </svg>
                         LinkedIn
                       </a>
@@ -581,15 +755,15 @@ export default function AdminDashboard() {
                   <form onSubmit={submitEditMember} className="grid gap-4 max-w-lg">
                     <div>
                       <Label>Name</Label>
-                      <Input value={memberName || ""} onChange={(e) => setMemberName(e.target.value)} disabled={isSubmitting} />
+                      <Input value={memberName || ""} onChange={(e) => setMemberName(e.target.value)} disabled={isSubmitting}/>
                     </div>
                     <div>
                       <Label>Role</Label>
-                      <Input value={memberRole || "Team Member"} onChange={(e) => setMemberRole(e.target.value)} disabled={isSubmitting} />
+                      <Input value={memberRole || "Team Member"} onChange={(e) => setMemberRole(e.target.value)} disabled={isSubmitting}/>
                     </div>
                     <div>
                       <Label>Bio <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
-                      <Textarea value={memberBio || ""} onChange={(e) => setMemberBio(e.target.value)} rows={3} disabled={isSubmitting} />
+                      <Textarea value={memberBio || ""} onChange={(e) => setMemberBio(e.target.value)} rows={3} disabled={isSubmitting}/>
                     </div>
                     <div className="flex gap-2">
                       <Button type="button" variant="outline" onClick={() => setEditingMember(null)} className="flex-1" disabled={isSubmitting}>
@@ -603,6 +777,386 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             )}
+          </div>
+        )}
+
+        {activeTab === "partnerships" && (
+          <div>
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="size-5" />
+                  Add partnership request
+                </CardTitle>
+                <CardDescription>Add partnership requests manually with multiple service selections.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddPartnerNotification} className="space-y-4">
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label>Name</Label>
+                      <Input value={partnerName} onChange={(e) => setPartnerName(e.target.value)} disabled={isSubmitting}/>
+                    </div>
+                    <div>
+                      <Label>Email</Label>
+                      <Input type="email" value={partnerEmail} onChange={(e) => setPartnerEmail(e.target.value)} disabled={isSubmitting}/>
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Phone <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                    <Input value={partnerPhone} onChange={(e) => setPartnerPhone(e.target.value)} disabled={isSubmitting}/>
+                  </div>
+                  <div>
+                    <Label className="block">Services <span className="text-slate-400 text-xs font-normal">(select all that apply)</span></Label>
+                    <div className="mt-1 space-y-2">
+                      {serviceOptions.map((option) => (
+                        <label key={option.value} className="flex items-center gap-2 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={newServices.includes(option.value)}
+                            onChange={(e) => {
+                              e.preventDefault();
+                              setNewServices((current) =>
+                                current.includes(option.value)
+                                  ? current.filter((s) => s !== option.value)
+                                  : [...current, option.value]
+                              );
+                            }}
+                            disabled={isSubmitting}
+                          />
+                          {option.label}
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Requirements</Label>
+                    <Textarea
+                      value={partnerRequirements}
+                      onChange={(e) => setPartnerRequirements(e.target.value)}
+                      rows={4}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? "Creating..." : "Add partnership request"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            <div className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Partnership requests</CardTitle>
+                  <CardDescription>
+                    Filter by service. Each request shows the services the partner selected, their resume if attached, and extra info.
+                  </CardDescription>
+                  <div className="flex items-center gap-2 pt-2">
+                    <select
+                      value={partnerServiceFilter ?? ""}
+                      onChange={(e) => setPartnerServiceFilter(e.target.value || null)}
+                      className="h-9 w-[160px] rounded-md border border-slate-200 bg-white px-3 text-sm"
+                    >
+                      <option value="">All services</option>
+                      {serviceOptions.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {(currentPartnerNotifications.partnerRequests.length === 0) ? (
+                    <p className="px-4 py-6 text-sm text-slate-500">No partnership requests yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[22%]">Name</TableHead>
+                          <TableHead className="w-[20%]">Email</TableHead>
+                          <TableHead className="w-[18%]">Services</TableHead>
+                          <TableHead className="w-[14%]">Status</TableHead>
+                          <TableHead className="w-[26%]">Extra info</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {currentPartnerNotifications.partnerRequests
+                          .filter((request: any) => !partnerServiceFilter || request.services?.includes(partnerServiceFilter))
+                          .map((request: any) => (
+                            <TableRow key={request._id}>
+                              <TableCell className="font-medium">{request.name}</TableCell>
+                              <TableCell className="text-slate-500">{request.email}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap gap-1">
+                                  {request.services?.length ? (
+                                    request.services.map((s: string) => {
+                                      const option = serviceOptions.find((o) => o.value === s);
+                                      return (
+                                        <Badge key={s} variant="outline">{option?.label ?? s}</Badge>
+                                      );
+                                    })
+                                  ) : (
+                                    <Badge variant="outline">{request.service}</Badge>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className={request.status === "contacted" ? "border-emerald-600 text-emerald-700" : ""}>
+                                  {request.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="text-xs text-slate-500 line-clamp-2 max-w-[200px]">{request.requirements}</span>
+                                  {request.status !== "contacted" && (
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="text-emerald-600 hover:text-emerald-700"
+                                      onClick={() => handleMarkPartnerContacted(request._id)}
+                                      disabled={isSubmitting}
+                                    >
+                                      Mark contacted
+                                    </Button>
+                                  )}
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700"
+                                    onClick={() => handleDeletePartnerRequest(request._id)}
+                                    disabled={isSubmitting}
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </Button>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "resumes" && (
+          <div>
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="size-5" />
+                  Add resume manually
+                </CardTitle>
+                <CardDescription>Attach a resume to an applicant record so it appears in the resumes list.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddManualResume} className="grid gap-4 max-w-lg">
+                  <div>
+                    <Label>Applicant email</Label>
+                    <Input
+                      type="email"
+                      value={resumeApplicantEmail}
+                      onChange={(e) => setResumeApplicantEmail(e.target.value)}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label>Applicant name</Label>
+                    <Input
+                      value={resumeApplicantName}
+                      onChange={(e) => setResumeApplicantName(e.target.value)}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <div>
+                    <Label>Job title <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                    <Input
+                      value={resumeJobTitle}
+                      onChange={(e) => setResumeJobTitle(e.target.value)}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800" disabled={isSubmitting}>
+                    {isSubmitting ? "Adding..." : "Add resume"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Resumes received</CardTitle>
+                <CardDescription>
+                  Each resume includes the applicant email, name, job applied for, file type, size, security status, and scan summary.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                {(currentResumes.length === 0) ? (
+                  <p className="px-4 py-6 text-sm text-slate-500">No resumes received yet.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[20%]">Applicant</TableHead>
+                        <TableHead className="w-[18%]">Email</TableHead>
+                        <TableHead className="w-[16%]">Job</TableHead>
+                        <TableHead className="w-[16%]">File</TableHead>
+                        <TableHead className="w-[12%]">Size</TableHead>
+                        <TableHead className="w-[12%]">Status</TableHead>
+                        <TableHead className="w-[6%]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentResumes.map((resume: any) => (
+                        <TableRow key={resume._id}>
+                          <TableCell className="font-medium">{resume.applicantName ?? "—"}</TableCell>
+                          <TableCell className="text-slate-500">{resume.applicantEmail ?? resume.originalName ?? "—"}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{resume.jobTitle ?? "—"}</Badge>
+                          </TableCell>
+                          <TableCell className="text-slate-500">{resume.originalName ?? "—"}</TableCell>
+                          <TableCell className="text-slate-500">{(resume.sizeBytes / 1024).toFixed(1)} KB</TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={
+                                resume.sanitizerStatus === "clean"
+                                  ? "border-emerald-600 text-emerald-700"
+                                  : resume.sanitizerStatus === "blocked"
+                                  ? "border-red-600 text-red-700"
+                                  : "border-amber-600 text-amber-700"
+                              }
+                            >
+                              {resume.sanitizerStatus}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteResume(resume._id)}
+                              disabled={isSubmitting}
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "notifications" && (
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Notifications</CardTitle>
+                <CardDescription>Recent partnership requests and applications with service details, resumes, and extra info.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Mail className="size-4" />
+                    Partnership requests
+                  </CardTitle>
+                  <CardContent className="p-0">
+                    {(currentPartnerNotifications.partnerRequests.length === 0) ? (
+                      <p className="px-4 py-6 text-sm text-slate-500">No partnership requests yet.</p>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[22%]">Name</TableHead>
+                            <TableHead className="w-[20%]">Email</TableHead>
+                            <TableHead className="w-[18%]">Services</TableHead>
+                            <TableHead className="w-[14%]">Status</TableHead>
+                            <TableHead className="w-[26%]">Requirements</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {currentPartnerNotifications.partnerRequests.map((request: any) => (
+                            <TableRow key={request._id}>
+                              <TableCell className="font-medium">{request.name}</TableCell>
+                              <TableCell className="text-slate-500">{request.email}</TableCell>
+                              <TableCell>
+                                <div className="flex flex-wrap gap-1">
+                                  {request.services?.length ? (
+                                    request.services.map((s: string) => {
+                                      const option = serviceOptions.find((o) => o.value === s);
+                                      return (
+                                        <Badge key={s} variant="outline">{option?.label ?? s}</Badge>
+                                      );
+                                    })
+                                  ) : (
+                                    <Badge variant="outline">{request.service}</Badge>
+                                  )}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant="outline" className={request.status === "contacted" ? "border-emerald-600 text-emerald-700" : ""}>
+                                  {request.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="text-slate-600">{request.requirements}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </CardContent>
+                </div>
+
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileText className="size-4" />
+                    Applications
+                  </CardTitle>
+                  <CardContent className="p-0">
+                    {(currentPartnerNotifications.applications.length === 0) ? (
+                      <p className="px-4 py-6 text-sm text-slate-500">No applications yet.</p>
+                    ) : (
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-[20%]">Applicant</TableHead>
+                            <TableHead className="w-[20%]">Email</TableHead>
+                            <TableHead className="w-[16%]">Status</TableHead>
+                            <TableHead className="w-[24%]">Message</TableHead>
+                            <TableHead className="w-[20%]">Resume</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {currentPartnerNotifications.applications.map((application: any) => (
+                            <TableRow key={application._id}>
+                              <TableCell className="font-medium">{application.applicantName}</TableCell>
+                              <TableCell className="text-slate-500">{application.applicantEmail}</TableCell>
+                              <TableCell>
+                                <Badge variant="outline">{application.status}</Badge>
+                              </TableCell>
+                              <TableCell className="text-slate-600">{application.message ?? "—"}</TableCell>
+                              <TableCell className="text-slate-500">
+                                {application.resumeStorageId ? (
+                                  <Badge variant="outline" className="text-emerald-700 border-emerald-600">Resume attached</Badge>
+                                ) : (
+                                  "—"
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
+                  </CardContent>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         )}
       </div>

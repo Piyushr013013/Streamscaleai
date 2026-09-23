@@ -62,9 +62,15 @@ export default defineSchema({
       v.literal("testing_ai"),
       v.literal("recruitment")
     ),
+    services: v.array(v.union(
+      v.literal("ai"),
+      v.literal("testing_ai"),
+      v.literal("recruitment")
+    )),
     requirements: v.string(),
     status: v.union(v.literal("new"), v.literal("contacted")),
-  }),
+  }).index("by_service", ["service"]),
+
 
   notificationSettings: defineTable({
     key: v.literal("default"),
@@ -74,7 +80,21 @@ export default defineSchema({
     updatedBy: v.id("users"),
   }).index("by_key", ["key"]),
 
-  resumes: defineTable({}),
+  resumes: defineTable({
+    applicantId: v.id("users"),
+    applicationId: v.optional(v.id("applications")),
+    name: v.string(),
+    contentType: v.string(),
+    sizeBytes: v.number(),
+    sanitizerStatus: v.union(
+      v.literal("pending"),
+      v.literal("clean"),
+      v.literal("blocked")
+    ),
+    scanSummary: v.optional(v.string()),
+    originalName: v.optional(v.string()),
+  }).index("by_application", ["applicationId"]),
+
 
   teamMembers: defineTable({
     name: v.string(),
