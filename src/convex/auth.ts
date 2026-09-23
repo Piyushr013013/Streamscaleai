@@ -52,6 +52,17 @@ function isMasterAccount(user: unknown) {
   return Boolean(user && (user as any).isMasterAdmin === true);
 }
 
+/**
+ * Returns the earliest-created master admin account. This is the "OG" admin:
+ * only this account may demote or delete other master admins, no matter what.
+ */
+async function getOriginalMasterAdmin(ctx: any) {
+  const masters = (await ctx.db.query("users").collect())
+    .filter((u: any) => isRealUser(u) && isMasterAccount(u))
+    .sort((a: any, b: any) => a._creationTime - b._creationTime);
+  return masters[0] ?? null;
+}
+
 function normalizePassword(password: string) {
   return password;
 }
@@ -309,6 +320,14 @@ export const getUserById = query({
       return null;
     }
 
+    // The "original" master admin is the earliest-created master account;
+    // only it may demote or delete other master admins.
+    let isOriginalMaster = false;
+    if (isMasterAccount(user)) {
+      const original = await getOriginalMasterAdmin(ctx);
+      isOriginalMaster = Boolean(original && original._id.toString() === user._id.toString());
+    }
+
     return {
       _id: user._id,
       _creationTime: user._creationTime,
@@ -316,6 +335,7 @@ export const getUserById = query({
       name: user.name,
       role: user.role,
       isMasterAdmin: isMasterAccount(user),
+      isOriginalMaster,
       emailVerified: user.emailVerified,
       permissions: user.permissions,
       socialLinks: user.socialLinks,
@@ -592,13 +612,15 @@ export const adminDemoteMasterAdmin = mutation({
       throw new Error("Master admin access required");
     }
 
-    // Only the original (first-created) master admin can demote others.
-    const originalMaster = await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
-      .first();
+    // Only the original (earliest-created) master admin can demote others.
+    const originalMaster = await getOriginalMasterAdmin(ctx);
     if (!originalMaster || originalMaster._id.toString() !== args.demoterId.toString()) {
       throw new Error("Only the original master admin can remove master admin access");
+    }
+
+    // The original master admin can never be demoted by anyone.
+    if (originalMaster._id.toString() === args.userId.toString()) {
+      throw new Error("The original master admin account cannot be removed");
     }
 
     if (args.userId.toString() === args.demoterId.toString()) {
@@ -639,13 +661,14 @@ export const adminDeleteUser = mutation({
     }
 
     if (target.isMasterAdmin) {
-      // Only the original master admin may delete another master admin account.
-      const originalMaster = await ctx.db
-        .query("users")
-        .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
-        .first();
+      // Only the original (earliest-created) master admin may delete another
+      // master admin account, and the original itself can never be deleted.
+      const originalMaster = await getOriginalMasterAdmin(ctx);
       const isOriginalMaster =
         originalMaster && originalMaster._id.toString() === args.deletedBy.toString();
+      if (originalMaster && originalMaster._id.toString() === args.userId.toString()) {
+        throw new Error("The original master admin account cannot be deleted");
+      }
       if (!isOriginalMaster) {
         throw new Error("Only the original master admin account can delete another master admin");
       }

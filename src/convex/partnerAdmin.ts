@@ -5,7 +5,7 @@ export const adminGetNotifications = query({
   args: { viewerId: v.id("users") },
   handler: async (ctx, args) => {
     const viewer = await ctx.db.get(args.viewerId);
-    if (!viewer || !isMasterAdmin(viewer)) {
+    if (!viewer || !canViewPartnerRequests(viewer)) {
       return { partnerRequests: [], applications: [] };
     }
 
@@ -74,8 +74,8 @@ export const adminMarkPartnerRequestContacted = mutation({
   },
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.editorId);
-    if (!editor || !isMasterAdmin(editor)) {
-      throw new Error("Master admin access required");
+    if (!editor || !canManageNotifications(editor)) {
+      throw new Error("You do not have permission to manage partner requests");
     }
 
     const request = await ctx.db.get(args.requestId);
@@ -95,8 +95,8 @@ export const adminDeletePartnerRequest = mutation({
   },
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.editorId);
-    if (!editor || !isMasterAdmin(editor)) {
-      throw new Error("Master admin access required");
+    if (!editor || !canManageNotifications(editor)) {
+      throw new Error("You do not have permission to manage partner requests");
     }
 
     const request = await ctx.db.get(args.requestId);
@@ -152,6 +152,16 @@ function isRealUser(u: any) {
 
 function isMasterAdmin(u: any) {
   return Boolean(u && u.isMasterAdmin === true);
+}
+
+/** Master admins and accounts with the partner-request permission may view. */
+function canViewPartnerRequests(u: any) {
+  return isMasterAdmin(u) || Boolean(u && (u.permissions ?? []).includes("view_partner_requests"));
+}
+
+/** Master admins and accounts with the notifications permission may manage. */
+function canManageNotifications(u: any) {
+  return isMasterAdmin(u) || Boolean(u && (u.permissions ?? []).includes("manage_notifications"));
 }
 
 function isPartnerRequest(r: any) {

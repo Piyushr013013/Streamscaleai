@@ -140,7 +140,7 @@ export const adminListApplications = query({
   args: { viewerId: v.id("users") },
   handler: async (ctx, args) => {
     const viewer = await ctx.db.get(args.viewerId) as any;
-    if (!viewer || viewer.isAnonymous || (viewer.role !== "admin" && !viewer.isMasterAdmin)) {
+    if (!viewer || viewer.isAnonymous || (viewer.role !== "admin" && !viewer.isMasterAdmin && !(viewer.permissions ?? []).includes("view_applications"))) {
       return [];
     }
 
@@ -173,7 +173,7 @@ export const deleteApplication = mutation({
   args: { applicationId: v.id("applications"), editorId: v.id("users") },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.editorId) as any;
-    if (!user || user.isAnonymous || (user.role !== "admin" && !user.isMasterAdmin)) {
+    if (!user || user.isAnonymous || (user.role !== "admin" && !user.isMasterAdmin && !(user.permissions ?? []).includes("view_applications"))) {
       throw new Error("You do not have permission to delete applications");
     }
 
@@ -203,7 +203,7 @@ export const adminListJobs = query({
   args: { viewerId: v.id("users") },
   handler: async (ctx, args) => {
     const viewer = await ctx.db.get(args.viewerId) as any;
-    if (!viewer || viewer.isAnonymous || (viewer.role !== "admin" && !viewer.isMasterAdmin)) {
+    if (!viewer || viewer.isAnonymous || (viewer.role !== "admin" && !viewer.isMasterAdmin && !(viewer.permissions ?? []).includes("manage_jobs"))) {
       return [];
     }
 

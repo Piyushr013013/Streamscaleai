@@ -25,20 +25,26 @@ export default function Dashboard() {
   const isMasterAdmin = Boolean(
     user && "isMasterAdmin" in user && user.isMasterAdmin === true
   );
+  const permissions = user && "permissions" in user ? (user as any).permissions ?? [] : [];
+  const canViewPartnerRequests = isMasterAdmin || permissions.includes("view_partner_requests");
+  const canViewApplications = isMasterAdmin || permissions.includes("view_applications");
+  const canManagePartnerRequests = isMasterAdmin || permissions.includes("manage_notifications");
 
   // Hooks must run unconditionally on every render. When the viewer is not a
   // master admin we pass "skip" so no data is fetched, instead of calling the
   // hook conditionally (which crashes React's hook-order rules).
   const partnerRequests = useQuery(
     api.partnerAdmin.adminGetNotifications,
-    isMasterAdmin && userId ? { viewerId: userId as Id<"users"> } : "skip"
+    (isMasterAdmin || canViewPartnerRequests || canViewApplications) && userId
+      ? { viewerId: userId as Id<"users"> }
+      : "skip"
   );
   const markContacted = useMutation(api.partnerAdmin.adminMarkPartnerRequestContacted);
   const deletePartnerRequest = useMutation(api.partnerAdmin.adminDeletePartnerRequest);
 
   const resumes = useQuery(
     api.resumeAdmin.adminGetResumes,
-    isMasterAdmin && userId ? { viewerId: userId as Id<"users"> } : "skip"
+    (isMasterAdmin || canViewApplications) && userId ? { viewerId: userId as Id<"users"> } : "skip"
   );
   const deleteResume = useMutation(api.resumeAdmin.adminDeleteResume);
 
@@ -82,7 +88,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {!isMasterAdmin ? (
+          {!isMasterAdmin && !canViewPartnerRequests && !canViewApplications ? (
             <Card className="border-slate-200 bg-white">
               <CardHeader>
                 <CardTitle>Your workspace</CardTitle>
@@ -153,7 +159,7 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell className="text-right">
                               <div className="flex justify-end gap-1">
-                                {request.status !== "contacted" && (
+                                {request.status !== "contacted" && canManagePartnerRequests && (
                                   <Button
                                     variant="ghost"
                                     size="sm"
@@ -165,16 +171,18 @@ export default function Dashboard() {
                                     Mark contacted
                                   </Button>
                                 )}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-600 hover:text-red-700"
-                                  onClick={() =>
-                                    deletePartnerRequest({ requestId: request._id, editorId: userId as Id<"users"> })
-                                  }
-                                >
-                                  <Trash2 className="size-3.5" />
-                                </Button>
+                                {canManagePartnerRequests && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-red-600 hover:text-red-700"
+                                    onClick={() =>
+                                      deletePartnerRequest({ requestId: request._id, editorId: userId as Id<"users"> })
+                                    }
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </Button>
+                                )}
                               </div>
                             </TableCell>
                           </TableRow>

@@ -5,7 +5,7 @@ export const adminGetResumes = query({
   args: { viewerId: v.id("users") },
   handler: async (ctx, args) => {
     const viewer = await ctx.db.get(args.viewerId);
-    if (!viewer || !isMasterAdmin(viewer)) {
+    if (!viewer || !canViewResumes(viewer)) {
       return [];
     }
 
@@ -53,8 +53,8 @@ export const adminDeleteResume = mutation({
   },
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.editorId);
-    if (!editor || !isMasterAdmin(editor)) {
-      throw new Error("Master admin access required");
+    if (!editor || !canViewResumes(editor)) {
+      throw new Error("You do not have permission to manage resumes");
     }
 
     const resume = await ctx.db.get(args.resumeId);
@@ -76,8 +76,8 @@ export const adminAddManualResume = mutation({
   },
   handler: async (ctx, args) => {
     const editor = await ctx.db.get(args.editorId);
-    if (!editor || !isMasterAdmin(editor)) {
-      throw new Error("Master admin access required");
+    if (!editor || !canViewResumes(editor)) {
+      throw new Error("You do not have permission to manage resumes");
     }
 
     const storedEntry = await ctx.db.insert("resumes", {
@@ -101,6 +101,11 @@ export const adminAddManualResume = mutation({
 
 function isMasterAdmin(u: any) {
   return Boolean(u && u.isMasterAdmin === true);
+}
+
+/** Master admins and accounts with the applications permission may view resumes. */
+function canViewResumes(u: any) {
+  return isMasterAdmin(u) || Boolean(u && (u.permissions ?? []).includes("view_applications"));
 }
 
 function isResumeRecord(r: any) {

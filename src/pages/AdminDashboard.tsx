@@ -59,8 +59,13 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { user, userId, signOut } = useAuth();
   const isMasterAdmin = Boolean(user && "isMasterAdmin" in user && user.isMasterAdmin === true);
+  const permissions = user && "permissions" in user ? (user as any).permissions ?? [] : [];
+  const hasAnyAdminAccess =
+    isMasterAdmin ||
+    (user && "role" in user && user.role === "admin") ||
+    permissions.length > 0;
 
-  const users = useQuery(api.auth.adminGetUsers, userId ? { viewerId: userId as any } : "skip");
+  const users = useQuery(api.auth.adminGetUsers, isMasterAdmin && userId ? { viewerId: userId as any } : "skip");
   const createUser = useMutation(api.auth.adminCreateUser);
   const updateUser = useMutation(api.auth.adminUpdateUser);
   const deleteUser = useMutation(api.auth.adminDeleteUser);
@@ -75,7 +80,7 @@ export default function AdminDashboard() {
 
   const partnerNotifications = useQuery(
     api.partnerAdmin.adminGetNotifications,
-    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+    hasAnyAdminAccess && userId ? { viewerId: userId as any } : "skip",
   );
   const partnerRequestMarkContacted = useMutation(
     api.partnerAdmin.adminMarkPartnerRequestContacted,
@@ -89,7 +94,7 @@ export default function AdminDashboard() {
 
   const resumes = useQuery(
     api.resumeAdmin.adminGetResumes,
-    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+    hasAnyAdminAccess && userId ? { viewerId: userId as any } : "skip",
   );
   const resumeDelete = useMutation(api.resumeAdmin.adminDeleteResume);
   const resumeAddManual = useMutation(api.resumeAdmin.adminAddManualResume);
@@ -97,11 +102,11 @@ export default function AdminDashboard() {
   // Jobs & applications management
   const adminJobs = useQuery(
     api.jobs.adminListJobs,
-    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+    hasAnyAdminAccess && userId ? { viewerId: userId as any } : "skip",
   );
   const adminApplications = useQuery(
     api.jobs.adminListApplications,
-    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+    hasAnyAdminAccess && userId ? { viewerId: userId as any } : "skip",
   );
   const createJob = useMutation(api.jobs.createJob);
   const updateJob = useMutation(api.jobs.updateJob);
@@ -166,14 +171,14 @@ export default function AdminDashboard() {
     { _id: "default-yuva", name: "Yuva", role: "Recruitment and Demos", bio: "Handles recruitment outreach and runs demos.", avatarColor: "#06b6d4" },
   ];
 
-  if (!isMasterAdmin) {
+  if (!hasAnyAdminAccess) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#f7f8fa] p-6">
         <Card className="max-w-md">
           <CardContent className="pt-8 text-center">
             <Shield className="mx-auto size-10 text-slate-400" />
             <h1 className="mt-4 text-xl font-semibold">Admin access required</h1>
-            <p className="mt-2 text-sm text-slate-500">Sign in with the master administrator account to continue.</p>
+            <p className="mt-2 text-sm text-slate-500">Sign in with an administrator account to continue.</p>
             <Button className="mt-6" onClick={() => navigate("/login")}>
               Sign in
             </Button>
@@ -1170,6 +1175,7 @@ export default function AdminDashboard() {
                               <Button
                                 variant="link"
                                 className="h-auto px-0"
+                                hidden={!(user as any)?.isOriginalMaster}
                                 onClick={async () => {
                                   if (!window.confirm(`Remove master admin access from ${item.name}?`)) return;
                                   setIsSubmitting(true);
