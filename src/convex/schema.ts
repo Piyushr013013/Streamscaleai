@@ -107,6 +107,7 @@ export default defineSchema({
 
   teamMembers: defineTable({
     name: v.string(),
+    email: v.optional(v.string()),
     role: v.string(),
     bio: v.optional(v.string()),
     linkedin: v.optional(v.string()),

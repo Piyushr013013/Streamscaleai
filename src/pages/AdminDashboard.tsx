@@ -128,8 +128,9 @@ export default function AdminDashboard() {
   const [profileEmail, setProfileEmail] = useState("");
   const [profilePassword, setProfilePassword] = useState("");
 
-  const [memberName, setMemberName] = useState("New Member");
-  const [memberRole, setMemberRole] = useState("Team Member");
+  const [memberName, setMemberName] = useState("");
+  const [memberEmail, setMemberEmail] = useState("");
+  const [memberRole, setMemberRole] = useState("");
   const [memberBio, setMemberBio] = useState("");
 
   const [partnerName, setPartnerName] = useState("");
@@ -384,13 +385,15 @@ export default function AdminDashboard() {
 
   const startEditingMember = (member: any) => {
     setMemberName(member.name || "");
-    setMemberRole(member.role || "Team Member");
+    setMemberEmail(member.email || "");
+    setMemberRole(member.role || "");
     setMemberBio(member.bio || "");
     setEditingMember(member);
   };
 
   const startAddingMember = () => {
     setMemberName("");
+    setMemberEmail("");
     setMemberRole("");
     setMemberBio("");
     setEditingMember({ _id: "" });
@@ -399,7 +402,12 @@ export default function AdminDashboard() {
   const submitEditMember = async (e: FormEvent) => {
     e.preventDefault();
     if (!memberName.trim() || !memberRole.trim()) {
-      setMessage("Enter a name and role for this team member.");
+      setMessage("Enter a name and position for this team member.");
+      return;
+    }
+    const email = memberEmail.trim().toLowerCase();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setMessage("Enter a valid email address (or leave it blank).");
       return;
     }
     setIsSubmitting(true);
@@ -410,6 +418,7 @@ export default function AdminDashboard() {
           memberId: editingMember._id as any,
           name: memberName.trim(),
           role: memberRole.trim(),
+          email: email || undefined,
           bio: memberBio.trim() || undefined,
           updatedBy: userId as any,
         });
@@ -418,12 +427,13 @@ export default function AdminDashboard() {
         await addTeamMember({
           name: memberName.trim(),
           role: memberRole.trim(),
+          email: email || undefined,
           bio: memberBio.trim() || undefined,
           avatarColor: "#1E293B",
           order: (teamMembers?.length ?? 0) + 1,
           addedBy: userId as any,
         });
-        setMessage("Team member added.");
+        setMessage("Team member added. They now appear on the public team page.");
       }
       setEditingMember(null);
     } catch (error) {
@@ -1219,6 +1229,14 @@ export default function AdminDashboard() {
                         <div>
                           <p className="font-medium">{member.name}</p>
                           <p className="text-sm text-slate-500">{member.role}</p>
+                          {member.email && (
+                            <a
+                              href={`mailto:${member.email}`}
+                              className="text-xs text-slate-400 hover:text-slate-600"
+                            >
+                              {member.email}
+                            </a>
+                          )}
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -1272,12 +1290,16 @@ export default function AdminDashboard() {
                       <Input value={memberName || ""} onChange={(e) => setMemberName(e.target.value)} placeholder="Full name" disabled={isSubmitting}/>
                     </div>
                     <div>
-                      <Label>Role</Label>
+                      <Label>Email address <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                      <Input type="email" value={memberEmail || ""} onChange={(e) => setMemberEmail(e.target.value)} placeholder="name@streamscale.com" disabled={isSubmitting}/>
+                    </div>
+                    <div>
+                      <Label>Position</Label>
                       <Input value={memberRole || ""} onChange={(e) => setMemberRole(e.target.value)} placeholder="e.g. Candidate Outreach" disabled={isSubmitting}/>
                     </div>
                     <div>
-                      <Label>Bio <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
-                      <Textarea value={memberBio || ""} onChange={(e) => setMemberBio(e.target.value)} rows={3} disabled={isSubmitting}/>
+                      <Label>Extra info <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                      <Textarea value={memberBio || ""} onChange={(e) => setMemberBio(e.target.value)} rows={3} placeholder="A short bio shown under their name on the team page" disabled={isSubmitting}/>
                     </div>
                     <div className="flex gap-2">
                       <Button type="button" variant="outline" onClick={() => setEditingMember(null)} className="flex-1" disabled={isSubmitting}>

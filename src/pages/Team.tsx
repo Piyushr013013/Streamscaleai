@@ -27,6 +27,11 @@ function TeamMemberCard({ member }: { member: (typeof defaultTeam)[number] | any
           </div>
           <h3 className="font-semibold text-foreground">{member.name}</h3>
           <p className="mt-1 text-sm text-muted-foreground">{member.role}</p>
+          {member.email && (
+            <a href={`mailto:${member.email}`} className="mt-1 block text-xs text-primary hover:underline">
+              {member.email}
+            </a>
+          )}
           {member.bio && <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-muted-foreground">{member.bio}</p>}
           {member.linkedin && <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-1 text-xs text-primary hover:underline"><ExternalLink className="size-3" /> LinkedIn</a>}
         </CardContent>

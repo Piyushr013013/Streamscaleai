@@ -1,6 +1,15 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
+async function requireAdmin(ctx: any, userId: any) {
+  const user = await ctx.db.get(userId);
+  if (!user || (user as any).isAnonymous) throw new Error("Sign in required");
+  if ((user as any).role !== "admin" && (user as any).isMasterAdmin !== true) {
+    throw new Error("Admin access required");
+  }
+  return user;
+}
+
 export const initTeam = mutation({
   args: {},
   handler: async (ctx) => {
@@ -34,6 +43,7 @@ export const addTeamMember = mutation({
   args: {
     name: v.string(),
     role: v.string(),
+    email: v.optional(v.string()),
     bio: v.optional(v.string()),
     linkedin: v.optional(v.string()),
     avatarColor: v.optional(v.string()),
@@ -41,11 +51,11 @@ export const addTeamMember = mutation({
     addedBy: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.addedBy) as any;
-    if (!user || user.role !== "admin") throw new Error("Admin access required");
+    await requireAdmin(ctx, args.addedBy);
     return await ctx.db.insert("teamMembers", {
       name: args.name,
       role: args.role,
+      email: args.email,
       bio: args.bio,
       linkedin: args.linkedin,
       avatarColor: args.avatarColor ?? "#1E293B",
@@ -59,6 +69,7 @@ export const updateTeamMember = mutation({
     memberId: v.id("teamMembers"),
     name: v.optional(v.string()),
     role: v.optional(v.string()),
+    email: v.optional(v.string()),
     bio: v.optional(v.string()),
     linkedin: v.optional(v.string()),
     avatarColor: v.optional(v.string()),
@@ -66,8 +77,7 @@ export const updateTeamMember = mutation({
     updatedBy: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.updatedBy) as any;
-    if (!user || user.role !== "admin") throw new Error("Admin access required");
+    await requireAdmin(ctx, args.updatedBy);
     const { memberId, updatedBy, ...updates } = args;
     await ctx.db.patch(memberId, Object.fromEntries(Object.entries(updates).filter(([, v]) => v !== undefined)));
     return { success: true };
@@ -80,8 +90,7 @@ export const deleteTeamMember = mutation({
     deletedBy: v.id("users"),
   },
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.deletedBy) as any;
-    if (!user || user.role !== "admin") throw new Error("Admin access required");
+    await requireAdmin(ctx, args.deletedBy);
     await ctx.db.delete(args.memberId);
     return { success: true };
   },
