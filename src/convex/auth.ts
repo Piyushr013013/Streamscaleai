@@ -5,8 +5,6 @@ const MASTER_EMAIL = "piyushr013013@gmail.com";
 const MASTER_PASSWORD = "admin123";
 const MASTER_PASSWORD_PREFIX = "master:";
 
-
-
 function normalizeStoredPassword(raw: unknown): string {
   if (typeof raw !== "string") return raw as any;
   if (raw.startsWith(MASTER_PASSWORD_PREFIX)) return raw;
@@ -95,8 +93,6 @@ export const initMasterAccount = mutation({
   },
 });
 
-
-
 export const login = mutation({
   args: {
     email: v.string(),
@@ -105,9 +101,6 @@ export const login = mutation({
   handler: async (ctx, args) => {
     const normalizedEmail = args.email.toLowerCase().trim();
 
-    // If the user signs in with the exact default master credentials, do not
-    // treat that as a request to reset the master account. Let the normal login
-    // path handle it so an existing master account is not replaced.
     if (normalizedEmail === MASTER_EMAIL && args.password === MASTER_PASSWORD) {
       // no-op guard only; fall through to normal lookup below
     }
@@ -117,8 +110,6 @@ export const login = mutation({
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
 
-    // Only bootstrap the default master account when no master account exists yet.
-    // Once a master account exists, do not replace it on login.
     if (normalizedEmail === MASTER_EMAIL) {
       const existingMaster = (await ctx.db.query("users").collect()).find(
         (candidate) => isRealUser(candidate) && candidate.isMasterAdmin === true,
@@ -146,7 +137,6 @@ export const login = mutation({
       throw new Error("Email not verified");
     }
 
-    let isMasterCredential = false;
     let passwordValid = false;
 
     if (typeof user.passwordHash !== "string") {
@@ -174,9 +164,6 @@ export const login = mutation({
     }
 
     if (!passwordValid) {
-      if (isMasterCredential) {
-        throw new Error("Incorrect master password. The master password is not valid for this email.");
-      }
       throw new Error("Incorrect password");
     }
 
@@ -349,7 +336,6 @@ export const updateProfile = mutation({
     }
 
     if (args.password !== undefined) {
-      args.password; // noop
       if (args.password.length < 6) {
         throw new Error("Password must be at least 6 characters");
       }
@@ -490,10 +476,6 @@ export const adminUpdateUser = mutation({
       patch.name = args.name.trim();
     }
 
-    if (args.permissions !== undefined) {
-      patch.permissions = args.permissions;
-    }
-
     if (
       args.linkedin !== undefined ||
       args.twitter !== undefined ||
@@ -611,5 +593,102 @@ export const adminDeleteAllNonMasterUsers = mutation({
     }
 
     return { ok: true, deletedCount: idsToDelete.length };
+  },
+});
+
+export const adminGetPartnerRequests = query({
+  args: {},
+  handler: async (ctx) => {
+    const viewer = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+      .first();
+
+    if (!viewer || !isRealUser(viewer) || !isMasterAccount(viewer)) {
+      return [];
+    }
+
+    const requests = await ctx.db.query("partnerRequests").collect();
+    return requests.map((r: any) => ({
+      _id: r._id,
+      name: r.name,
+      email: r.email,
+      service: r.service,
+      status: r.status,
+      createdAt: r._creationTime,
+    }));
+  },
+});
+
+export const adminDeletePartnerRequest = mutation({
+  args: {
+    id: v.id("partnerRequests"),
+  },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+      .first();
+
+    if (!viewer || !isRealUser(viewer) || !isMasterAccount(viewer)) {
+      throw new Error("Master admin access required");
+    }
+
+    const request = await ctx.db.get(args.id);
+    if (!request) {
+      throw new Error("Partner request not found");
+    }
+
+    await ctx.db.delete(args.id);
+    return { ok: true };
+  },
+});
+
+export const adminGetResumes = query({
+  args: {},
+  handler: async (ctx) => {
+    const viewer = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+      .first();
+
+    if (!viewer || !isRealUser(viewer) || !isMasterAccount(viewer)) {
+      return [];
+    }
+
+    const applications = await ctx.db.query("applications").collect();
+    return applications.map((a: any) => ({
+      _id: a._id,
+      applicantName: a.applicantName,
+      applicantEmail: a.applicantEmail,
+      applicantPhone: a.applicantPhone,
+      jobTitle: a.jobId,
+      status: a.status,
+      createdAt: a._creationTime,
+    }));
+  },
+});
+
+export const adminDeleteResume = mutation({
+  args: {
+    id: v.id("applications"),
+  },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db
+      .query("users")
+      .withIndex("by_email", (q) => q.eq("email", MASTER_EMAIL))
+      .first();
+
+    if (!viewer || !isRealUser(viewer) || !isMasterAccount(viewer)) {
+      throw new Error("Master admin access required");
+    }
+
+    const application = await ctx.db.get(args.id);
+    if (!application) {
+      throw new Error("Application not found");
+    }
+
+    await ctx.db.delete(args.id);
+    return { ok: true };
   },
 });

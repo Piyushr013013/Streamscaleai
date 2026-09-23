@@ -1,10 +1,21 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { LogOut, Settings, Shield } from "lucide-react";
 import { useNavigate } from "react-router";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import {
+  Briefcase, Users, FileText, Mail, Trash2
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card, CardContent, CardDescription, CardHeader, CardTitle
+} from "@/components/ui/card";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -15,20 +26,38 @@ export default function Dashboard() {
     navigate("/");
   };
 
+  const isMasterAdmin = Boolean(
+    user && "isMasterAdmin" in user && user.isMasterAdmin === true
+  );
+
+  const partnerRequests = useQuery(
+    isMasterAdmin ? api.auth.adminGetPartnerRequests : "skip"
+  );
+  const deletePartnerRequest = useMutation(
+    isMasterAdmin ? api.auth.adminDeletePartnerRequest : "skip"
+  );
+
+  const resumes = useQuery(isMasterAdmin ? api.auth.adminGetResumes : "skip");
+  const deleteResume = useMutation(
+    isMasterAdmin ? api.auth.adminDeleteResume : "skip"
+  );
+
   return (
     <div className="min-h-screen bg-[#f7f8fa]">
       <Navigation />
       <main className="pt-8 pb-16">
-        <div className="mx-auto max-w-3xl px-4 py-8">
+        <div className="mx-auto max-w-5xl px-4 py-8">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-slate-500">Dashboard</p>
               <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mt-1">
-                Welcome{user && "name" in user ? `, ${user.name}` : "User"}
+                {user && "name" in user
+                  ? `Welcome, ${user.name}`
+                  : "Welcome"}
               </h1>
             </div>
             <div className="flex items-center gap-2">
-              {user && "isMasterAdmin" in user && user.isMasterAdmin === true && (
+              {isMasterAdmin && (
                 <Button variant="outline" className="gap-2" onClick={() => navigate("/admin")}>
                   <Shield className="size-4" />
                   Admin
@@ -45,113 +74,137 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <Card className="p-4">
-              <CardContent className="pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Active Streams</p>
-                    <p className="text-xl font-semibold text-slate-900 mt-1">24</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {isMasterAdmin && (
+            <div className="space-y-6">
+              {/* Partnerships */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <Mail className="size-4" />
+                    Partnership requests
+                  </CardTitle>
+                  <Badge variant="secondary">{partnerRequests?.length ?? 0}</Badge>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {!partnerRequests || partnerRequests.length === 0 ? (
+                    <p className="px-4 py-6 text-sm text-slate-500">No partnership requests yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[30%]">Name</TableHead>
+                          <TableHead className="w-[22%]">Email</TableHead>
+                          <TableHead className="w-[18%]">Service</TableHead>
+                          <TableHead className="w-[18%]">Status</TableHead>
+                          <TableHead className="w-[12%]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {partnerRequests.map((request: any) => (
+                          <TableRow key={request._id}>
+                            <TableCell className="font-medium">{request.name}</TableCell>
+                            <TableCell className="text-slate-500">{request.email}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{request.service}</Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={
+                                  request.status === "contacted"
+                                    ? "border-emerald-600 text-emerald-700"
+                                    : "border-slate-300 text-slate-600"
+                                }
+                              >
+                                {request.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {request.status !== "contacted" && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-emerald-600 hover:text-emerald-700"
+                                  onClick={() =>
+                                    deletePartnerRequest({
+                                      id: request._id,
+                                    }).catch(() => {})
+                                  }
+                                >
+                                  Mark contacted
+                                </Button>
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() =>
+                                  deletePartnerRequest({ id: request._id }).catch(() => {})
+                                }
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
 
-            <Card className="p-4">
-              <CardContent className="pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Events Today</p>
-                    <p className="text-xl font-semibold text-slate-900 mt-1">1.2M</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="p-4">
-              <CardContent className="pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Connected Clients</p>
-                    <p className="text-xl font-semibold text-slate-900 mt-1">847</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="p-4">
-              <CardContent className="pt-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">Uptime</p>
-                    <p className="text-xl font-semibold text-slate-900 mt-1">99.99%</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="mt-6 p-4">
-            <CardContent className="pt-4">
-              <p className="text-lg font-semibold text-slate-900 mb-3">Recent Activity</p>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">Stream deployed: user-events</p>
-                    <p className="text-xs text-slate-500">Production environment in us-east-1</p>
-                  </div>
-                  <p className="text-xs text-slate-500 ml-auto">2 min ago</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M3 3v18h18" />
-                      <path d="M7 14h4v4H7z" />
-                      <path d="M13 10h4v8h-4z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">Analytics query completed</p>
-                    <p className="text-xs text-slate-500">Real-time dashboard updated</p>
-                  </div>
-                  <p className="text-xs text-slate-500 ml-auto">5 min ago</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">New client connected</p>
-                    <p className="text-xs text-slate-500">Webhook endpoint active</p>
-                  </div>
-                  <p className="text-xs text-slate-500 ml-auto">12 min ago</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
-                    <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <circle cx="12" cy="12" r="3" />
-                      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.04a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.04a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.04a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.04a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H4a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.04a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.04a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V4a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.04a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.04a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H20a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-slate-900">Configuration updated</p>
-                    <p className="text-xs text-slate-500">Retry policy modified</p>
-                  </div>
-                  <p className="text-xs text-slate-500 ml-auto">34 min ago</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              {/* Resumes */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <FileText className="size-4" />
+                    Resumes received
+                  </CardTitle>
+                  <Badge variant="secondary">{resumes?.length ?? 0}</Badge>
+                </CardHeader>
+                <CardContent className="p-0">
+                  {!resumes || resumes.length === 0 ? (
+                    <p className="px-4 py-6 text-sm text-slate-500">No resumes received yet.</p>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[34%]">Applicant</TableHead>
+                          <TableHead className="w-[24%]">Email</TableHead>
+                          <TableHead className="w-[20%]">Applied for</TableHead>
+                          <TableHead className="w-[22%]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {resumes.map((resume: any) => (
+                          <TableRow key={resume._id}>
+                            <TableCell className="font-medium">{resume.applicantName}</TableCell>
+                            <TableCell className="text-slate-500">{resume.applicantEmail}</TableCell>
+                            <TableCell className="text-slate-500">
+                              <Badge variant="outline">{resume.jobTitle ?? "job"}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() =>
+                                  deleteResume({ id: resume._id }).catch(() => {})
+                                }
+                              >
+                                <Trash2 className="size-3.5" />
+                                Delete
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
