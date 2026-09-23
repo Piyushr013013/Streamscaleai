@@ -648,63 +648,6 @@ function CTA() {
   );
 }
 
-function TeamSection() {
-  const team = [
-    { name: "Vivikth Mantha", role: "CEO", initials: "V", color: "#10b981" },
-    { name: "Jaiveer", role: "IT Manager & Board Member", initials: "J", color: "#1E293B" },
-    { name: "Akash", role: "Chairman of Board", initials: "A", color: "#3b82f6" },
-    { name: "Piyush", role: "CTO", initials: "P", color: "#8b5cf6" },
-    { name: "Zain", role: "Candidate Outreach", initials: "Z", color: "#ec4899" },
-    { name: "Roni", role: "General Demo Leader", initials: "R", color: "#f59e0b" },
-    { name: "Pranit", role: "Client Relations Manager", initials: "P", color: "#10b981" },
-    { name: "Yuva", role: "Recruitment and Demos", initials: "Y", color: "#06b6d4" },
-  ];
-  const [selectedMember, setSelectedMember] = useState<typeof team[0] | null>(null);
-  return (
-    <section className="py-24 bg-card/30 border-y border-border/30" id="team">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-            The team behind Streamscale
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            A small, focused group running benchmarks, placing candidates, and working directly with every partner.
-          </p>
-          <Button asChild variant="outline" className="mt-6 border-border">
-            <Link to="/team">Meet the full team</Link>
-          </Button>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-          {team.map((member, index) => (
-            <motion.div
-              key={member.name}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: index * 0.08 }}
-              className="cursor-pointer"
-              onClick={() => setSelectedMember(member)}
-            >
-              <Card className="border-border/30 bg-card/50 hover:border-primary/30 transition-all h-full">
-                <CardContent className="pt-6 text-center">
-                  <div
-                    className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full text-white text-lg font-semibold shadow-md"
-                    style={{ backgroundColor: member.color }}
-                  >
-                    {member.initials}
-                  </div>
-                  <h3 className="font-semibold text-foreground">{member.name}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{member.role}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function FaqSection() {
   return (
     <section className="py-24 bg-background">
@@ -769,7 +712,6 @@ export default function Landing() {
       <IndustriesSection />
       <EnterpriseSection />
       <CTA />
-      <TeamSection />
       <FaqSection />
       <Footer />
     </div>

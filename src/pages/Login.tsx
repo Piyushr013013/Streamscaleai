@@ -14,8 +14,8 @@ export default function Login() {
   const { signIn } = useAuth();
   const loginMutation = useMutation(api.auth.login);
 
-  const [email, setEmail] = useState("piyushr013013@gmail.com");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -100,7 +100,8 @@ export default function Login() {
                     onChange={(event) => setEmail(event.target.value)}
                     className="h-11 pl-10"
                     placeholder="you@company.com"
-                    autoComplete="email"
+                    autoComplete="off"
+                    name="streamscale-login-email"
                     required
                   />
                 </div>
@@ -117,7 +118,8 @@ export default function Login() {
                     onChange={(event) => setPassword(event.target.value)}
                     className="h-11 px-10"
                     placeholder="Your password"
-                    autoComplete="current-password"
+                    autoComplete="new-password"
+                    name="streamscale-login-password"
                     required
                   />
                   <button

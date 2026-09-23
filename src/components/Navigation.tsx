@@ -48,23 +48,8 @@ const navLinks = [
       },
       {
         title: "Talent & Recruitment",
-        href: "/team",
+        href: "/jobs",
         description: "Find the people who make AI work",
-      },
-    ],
-  },
-  {
-    title: "Team",
-    items: [
-      {
-        title: "Leadership",
-        href: "/team",
-        description: "Board, CEO, and executive team",
-      },
-      {
-        title: "Operations",
-        href: "/team",
-        description: "Outreach, demos, and client relations",
       },
     ],
   },
