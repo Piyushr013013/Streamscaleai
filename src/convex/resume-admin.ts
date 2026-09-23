@@ -67,7 +67,6 @@ export const adminAddManualResume = mutation({
     applicantEmail: v.string(),
     applicantName: v.string(),
     jobTitle: v.optional(v.string()),
-    fileId: v.id("resumes"),
     editorId: v.id("users"),
   },
   handler: async (ctx, args) => {
@@ -76,14 +75,18 @@ export const adminAddManualResume = mutation({
       throw new Error("Master admin access required");
     }
 
-    await ctx.db.patch(args.fileId, {
+    const storedEntry = await ctx.db.insert("resumes", {
       applicantId: args.editorId,
-      name: `resumes:manual:${args.fileId}`,
+      applicationId: undefined,
+      name: `resumes:manual:${Date.now()}`,
       originalName: `manual-upload-${Date.now()}.pdf`,
+      contentType: "application/pdf",
+      sizeBytes: 0,
       sanitizerStatus: "clean",
       scanSummary: "Manually added by admin",
     } as any);
-    return { ok: true };
+
+    return { ok: true, resumeId: storedEntry };
   },
 });
 

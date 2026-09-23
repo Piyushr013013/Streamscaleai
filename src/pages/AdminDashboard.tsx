@@ -45,14 +45,14 @@ export default function AdminDashboard() {
   const updateTeamMember = useMutation(api.team.updateTeamMember);
   const deleteTeamMember = useMutation(api.team.deleteTeamMember);
 
-  const partnerNotifications = useQuery(partnerAdmin.adminGetNotifications);
-  const partnerRequestMarkContacted = useMutation(partnerAdmin.adminMarkPartnerRequestContacted);
-  const partnerRequestDelete = useMutation(partnerAdmin.adminDeletePartnerRequest);
-  const partnerRequestCreate = useMutation(partnerAdmin.adminCreatePartnerRequest);
+  const partnerNotifications = useQuery(partnerAdmin.adminGetNotifications as any);
+  const partnerRequestMarkContacted = useMutation(partnerAdmin.adminMarkPartnerRequestContacted as any);
+  const partnerRequestDelete = useMutation(partnerAdmin.adminDeletePartnerRequest as any);
+  const partnerRequestCreate = useMutation(partnerAdmin.adminCreatePartnerRequest as any);
 
-  const resumes = useQuery(resumeAdmin.adminGetResumes);
-  const resumeDelete = useMutation(resumeAdmin.adminDeleteResume);
-  const resumeAddManual = useMutation(resumeAdmin.adminAddManualResume);
+  const resumes = useQuery(resumeAdmin.adminGetResumes as any);
+  const resumeDelete = useMutation(resumeAdmin.adminDeleteResume as any);
+  const resumeAddManual = useMutation(resumeAdmin.adminAddManualResume as any);
 
   const [activeTab, setActiveTab] = useState<TabId>("accounts");
   const [message, setMessage] = useState("");
@@ -399,7 +399,6 @@ export default function AdminDashboard() {
         applicantEmail: resumeApplicantEmail.trim().toLowerCase(),
         applicantName: resumeApplicantName.trim(),
         jobTitle: resumeJobTitle.trim() || undefined,
-        fileId: userId as any,
         editorId: userId as any,
       });
       setMessage("Resume added.");

@@ -454,7 +454,7 @@ export const adminUpdateUser = mutation({
           .query("users")
           .withIndex("by_email", (q) => q.eq("email", normalized))
           .first();
-        if (conflict && conflict._id !== args.userId) {
+        if (conflict && conflict._id.toString() !== args.userId.toString()) {
           throw new Error("That email is already in use");
         }
         patch.email = normalized;
