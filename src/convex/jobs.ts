@@ -135,6 +135,105 @@ export const listApplications = query({
     (await _ctx.db.query("applications").collect()).sort((a, b) => b._creationTime - a._creationTime),
 });
 
+/** Admin view: applications joined with the job they were submitted for. */
+export const adminListApplications = query({
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId) as any;
+    if (!viewer || viewer.isAnonymous || (viewer.role !== "admin" && !viewer.isMasterAdmin)) {
+      return [];
+    }
+
+    const applications = await ctx.db.query("applications").collect();
+    const jobs = await ctx.db.query("jobs").collect();
+    const jobById = new Map(jobs.map((j) => [j._id.toString(), j]));
+
+    return applications
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .map((a) => {
+        const job = jobById.get(a.jobId.toString());
+        return {
+          _id: a._id,
+          applicantName: a.applicantName,
+          applicantEmail: a.applicantEmail,
+          applicantPhone: a.applicantPhone,
+          status: a.status,
+          message: a.message,
+          resumeStorageId: a.resumeStorageId,
+          jobTitle: job?.title ?? null,
+          jobRole: job?.role ?? null,
+          createdAt: a._creationTime,
+        };
+      });
+  },
+});
+
+/** Permanently delete a job application (admin only). */
+export const deleteApplication = mutation({
+  args: { applicationId: v.id("applications"), editorId: v.id("users") },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.editorId) as any;
+    if (!user || user.isAnonymous || (user.role !== "admin" && !user.isMasterAdmin)) {
+      throw new Error("You do not have permission to delete applications");
+    }
+
+    const application = await ctx.db.get(args.applicationId);
+    if (!application) {
+      throw new Error("Application not found");
+    }
+
+    // Delete the resume document that belongs to this application, if any.
+    const resumes = await ctx.db.query("resumes").collect();
+    for (const resume of resumes) {
+      if (
+        resume.applicationId &&
+        resume.applicationId.toString() === args.applicationId.toString()
+      ) {
+        await ctx.db.delete(resume._id);
+      }
+    }
+
+    await ctx.db.delete(args.applicationId);
+    return { ok: true };
+  },
+});
+
+/** Admin list of all posted jobs with the number of applications each received. */
+export const adminListJobs = query({
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId) as any;
+    if (!viewer || viewer.isAnonymous || (viewer.role !== "admin" && !viewer.isMasterAdmin)) {
+      return [];
+    }
+
+    const jobs = await ctx.db.query("jobs").collect();
+    const applications = await ctx.db.query("applications").collect();
+
+    const counts = new Map<string, number>();
+    for (const app of applications) {
+      const key = app.jobId.toString();
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+
+    return jobs
+      .sort((a, b) => b._creationTime - a._creationTime)
+      .map((job) => ({
+        _id: job._id,
+        title: job.title,
+        role: job.role,
+        jobType: job.jobType,
+        companyName: job.companyName,
+        requirements: job.requirements,
+        salary: job.salary,
+        benefits: job.benefits,
+        extraInfo: job.extraInfo,
+        applicationCount: counts.get(job._id.toString()) ?? 0,
+        createdAt: job._creationTime,
+      }));
+  },
+});
+
 export const updateApplicationStatus = mutation({
   args: {
     applicationId: v.id("applications"),

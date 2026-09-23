@@ -44,7 +44,11 @@ export default function ForgotPassword() {
       const message = err?.message ?? "Could not send code. Try again.";
 
       if (message === "No account found with that email") {
-        setError("No account found with that email.");
+        setError("No Streamscale account exists with that email. Check the address, or contact your administrator — accounts are created by admins only.");
+      } else if (message.includes("Email is not set up")) {
+        setError("We couldn't send your code because email isn't configured yet. Please contact a Streamscale administrator to reset your password.");
+      } else if (message.includes("couldn't send the code")) {
+        setError("The email couldn't be sent right now. Please try again in a moment.");
       } else {
         setError(message);
       }

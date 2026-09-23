@@ -21,10 +21,13 @@ import {
   Mail,
   FileText,
   Bell,
+  Briefcase,
+  Inbox,
+  CircleCheck,
 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-type TabId = "accounts" | "team" | "partnerships" | "resumes" | "notifications";
+type TabId = "overview" | "accounts" | "team" | "jobs" | "applications" | "partnerships" | "resumes" | "notifications";
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -63,6 +66,19 @@ export default function AdminDashboard() {
   const resumeDelete = useMutation(api.resumeAdmin.adminDeleteResume);
   const resumeAddManual = useMutation(api.resumeAdmin.adminAddManualResume);
 
+  // Jobs & applications management
+  const adminJobs = useQuery(
+    api.jobs.adminListJobs,
+    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+  );
+  const adminApplications = useQuery(
+    api.jobs.adminListApplications,
+    isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
+  );
+  const createJob = useMutation(api.jobs.createJob);
+  const deleteJob = useMutation(api.jobs.deleteJob);
+  const deleteApplication = useMutation(api.jobs.deleteApplication);
+
   // Every hook must run on every render — declared before the early return
   // below so the hook count never changes between renders.
   const [editingMember, setEditingMember] = useState<any>(null);
@@ -98,6 +114,15 @@ export default function AdminDashboard() {
   const [resumeApplicantEmail, setResumeApplicantEmail] = useState("");
   const [resumeApplicantName, setResumeApplicantName] = useState("");
   const [resumeJobTitle, setResumeJobTitle] = useState("");
+
+  const [jobTitle, setJobTitle] = useState("");
+  const [jobRole, setJobRole] = useState("");
+  const [jobType, setJobType] = useState("Full-time");
+  const [jobRequirements, setJobRequirements] = useState("");
+  const [jobSalary, setJobSalary] = useState("");
+  const [jobBenefits, setJobBenefits] = useState("");
+  const [jobExtraInfo, setJobExtraInfo] = useState("");
+  const [showJobForm, setShowJobForm] = useState(false);
 
   const defaultTeamMembers = [
     { _id: "default-ceo", name: "Vivikth Mantha", role: "CEO", bio: "Leading Streamscale's vision and strategy.", avatarColor: "#10b981" },
@@ -420,18 +445,85 @@ export default function AdminDashboard() {
     }
   };
 
-  const tabs: Array<[TabId, string, React.ReactNode]> = [
-    ["accounts", "Accounts", <UserX className="mr-2 size-4" />],
-    ["team", "Team", <Users className="mr-2 size-4" />],
-    ["partnerships", "Partnerships", <Mail className="mr-2 size-4" />],
-    ["resumes", "Resumes", <FileText className="mr-2 size-4" />],
-    ["notifications", "Notifications", <Bell className="mr-2 size-4" />],
-  ];
+  const handlePostJob = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!jobTitle.trim() || !jobRole.trim() || !jobRequirements.trim() || !jobSalary.trim()) {
+      setMessage("Fill in the job title, role, requirements, and salary.");
+      return;
+    }
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await createJob({
+        title: jobTitle.trim(),
+        role: jobRole.trim(),
+        jobType: jobType,
+        requirements: jobRequirements.trim(),
+        salary: jobSalary.trim(),
+        benefits: jobBenefits.trim() || undefined,
+        extraInfo: jobExtraInfo.trim() || undefined,
+        createdBy: userId as any,
+      });
+      setMessage("Job posted. It is now visible on the public jobs page.");
+      setJobTitle("");
+      setJobRole("");
+      setJobType("Full-time");
+      setJobRequirements("");
+      setJobSalary("");
+      setJobBenefits("");
+      setJobExtraInfo("");
+      setShowJobForm(false);
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to post job.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteJob = async (job: any) => {
+    if (!window.confirm(`Delete the "${job.title}" posting? Applications tied to it stay in the Applications tab.`)) return;
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await deleteJob({ jobId: job._id as any, editorId: userId as any });
+      setMessage("Job posting deleted.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to delete job.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteApplication = async (application: any) => {
+    if (!window.confirm(`Delete ${application.applicantName}'s application? Their attached resume is deleted too.`)) return;
+    setIsSubmitting(true);
+    setMessage("");
+    try {
+      await deleteApplication({ applicationId: application._id as any, editorId: userId as any });
+      setMessage("Application deleted.");
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "Unable to delete application.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const currentUsers = users ?? [];
   const currentTeam = teamMembers && teamMembers.length > 0 ? teamMembers : defaultTeamMembers;
   const currentPartnerNotifications = partnerNotifications ?? { partnerRequests: [], applications: [] };
   const currentResumes = resumes ?? [];
+  const currentJobs = adminJobs ?? [];
+  const currentApplications = adminApplications ?? [];
+
+  const tabs: Array<[TabId, string, React.ReactNode, number | null]> = [
+    ["overview", "Overview", <Bell className="size-3.5" />, null],
+    ["jobs", "Jobs", <Briefcase className="size-3.5" />, currentJobs.length],
+    ["applications", "Applications", <Inbox className="size-3.5" />, currentApplications.length],
+    ["partnerships", "Partnerships", <Mail className="size-3.5" />, currentPartnerNotifications.partnerRequests.length],
+    ["resumes", "Resumes", <FileText className="size-3.5" />, currentResumes.length],
+    ["team", "Team", <Users className="size-3.5" />, null],
+    ["accounts", "Accounts", <UserX className="size-3.5" />, currentUsers.length],
+  ];
   const serviceOptions = [
     { value: "ai", label: "AI Work Diagnostics" },
     { value: "testing_ai", label: "Custom Agent Deployment" },
@@ -439,21 +531,26 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <main className="min-h-screen bg-[#f7f8fa] text-slate-900">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
-          <div>
-            <Link to="/" className="text-sm text-slate-500 hover:text-slate-900">
-              ← Back home
-            </Link>
-            <h1 className="mt-1 text-xl font-semibold">Streamscale admin</h1>
+    <main className="min-h-screen bg-slate-50 text-slate-900">
+      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-0 z-40">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
+          <div className="flex items-center gap-3">
+            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white">S</div>
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Streamscale</p>
+              <h1 className="text-base font-semibold leading-tight">Admin workspace</h1>
+            </div>
           </div>
           <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-slate-500 sm:inline">{user && "email" in user ? user.email : ""}</span>
-            <Button variant="outline" onClick={signOut}>
-              <svg className="mr-2 size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <Link to="/" className="hidden text-sm text-slate-500 transition hover:text-slate-900 sm:inline">
+              View site
+            </Link>
+            <span className="hidden max-w-[220px] truncate rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-500 md:inline">
+              {user && "email" in user ? user.email : ""}
+            </span>
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
+              <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1"/>
-                <path d="M10 8H4"/>
                 <path d="M16 12H8"/>
                 <path d="M14 16H6"/>
               </svg>
@@ -463,23 +560,330 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-        <div className="mb-7 flex flex-wrap gap-2">
-          {tabs.map(([value, label, icon]) => (
-            <Button
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-slate-200/80 bg-white p-1.5 shadow-sm">
+          {tabs.map(([value, label, icon, count]) => (
+            <button
               key={value}
-              variant={activeTab === value ? "default" : "outline"}
+              type="button"
               onClick={() => setActiveTab(value)}
+              className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
+                activeTab === value
+                  ? "bg-slate-900 text-white shadow-sm"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
             >
               {icon}
               {label}
-            </Button>
+              {count !== null && count > 0 && (
+                <span
+                  className={`ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
+                    activeTab === value ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                  }`}
+                >
+                  {count}
+                </span>
+              )}
+            </button>
           ))}
         </div>
 
         {message && (
-          <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
-            {message}
+          <div className="mb-6 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-800 shadow-sm">
+            <CircleCheck className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+            <span>{message}</span>
+            <button
+              type="button"
+              onClick={() => setMessage("")}
+              className="ml-auto text-emerald-600 hover:text-emerald-800"
+              aria-label="Dismiss message"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {activeTab === "overview" && (
+          <div className="space-y-6">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {[
+                { label: "Open jobs", value: currentJobs.length, icon: <Briefcase className="size-4" /> },
+                { label: "Applications", value: currentApplications.length, icon: <Inbox className="size-4" /> },
+                { label: "Partner requests", value: currentPartnerNotifications.partnerRequests.length, icon: <Mail className="size-4" /> },
+                { label: "Resumes", value: currentResumes.length, icon: <FileText className="size-4" /> },
+              ].map((stat) => (
+                <Card key={stat.label} className="border-slate-200/80 shadow-sm">
+                  <CardContent className="flex items-center gap-3 pt-5">
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">
+                      {stat.icon}
+                    </div>
+                    <div>
+                      <p className="text-2xl font-semibold leading-none">{stat.value}</p>
+                      <p className="mt-1 text-xs text-slate-500">{stat.label}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <Card className="border-slate-200/80 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-slate-500">Latest applications</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {currentApplications.length === 0 ? (
+                    <p className="py-4 text-sm text-slate-400">Nothing yet — applications show up here as they come in.</p>
+                  ) : (
+                    currentApplications.slice(0, 4).map((application: any) => (
+                      <button
+                        key={application._id}
+                        type="button"
+                        onClick={() => setActiveTab("applications")}
+                        className="flex w-full items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5 text-left transition hover:border-slate-200 hover:bg-slate-50"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{application.applicantName}</p>
+                          <p className="truncate text-xs text-slate-500">{application.jobTitle ?? "General application"}</p>
+                        </div>
+                        <Badge variant="outline" className="shrink-0">{application.status}</Badge>
+                      </button>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="border-slate-200/80 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-slate-500">Latest partner requests</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {currentPartnerNotifications.partnerRequests.length === 0 ? (
+                    <p className="py-4 text-sm text-slate-400">Nothing yet — partnership requests show up here.</p>
+                  ) : (
+                    currentPartnerNotifications.partnerRequests.slice(0, 4).map((request: any) => (
+                      <button
+                        key={request._id}
+                        type="button"
+                        onClick={() => setActiveTab("partnerships")}
+                        className="flex w-full items-center justify-between rounded-lg border border-slate-100 px-3 py-2.5 text-left transition hover:border-slate-200 hover:bg-slate-50"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium">{request.name}</p>
+                          <p className="truncate text-xs text-slate-500">
+                            {request.services?.length ? request.services.join(", ") : request.service}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="shrink-0">{request.status}</Badge>
+                      </button>
+                    ))
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "jobs" && (
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg font-semibold">Job postings</h2>
+                <p className="text-sm text-slate-500">Jobs you post here appear immediately on the public jobs page.</p>
+              </div>
+              <Button onClick={() => setShowJobForm((open) => !open)} className="gap-1.5 bg-slate-900 hover:bg-slate-800">
+                {showJobForm ? "Close form" : (
+                  <>
+                    <Plus className="size-4" />
+                    Post a job
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {showJobForm && (
+              <Card className="border-slate-200/80 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Briefcase className="size-4 text-slate-500" />
+                    New job posting
+                  </CardTitle>
+                  <CardDescription>Applicants see everything except the internal notes field.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handlePostJob} className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <Label>Job title</Label>
+                      <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="Senior AI Engineer" disabled={isSubmitting} />
+                    </div>
+                    <div>
+                      <Label>Role category</Label>
+                      <Input value={jobRole} onChange={(e) => setJobRole(e.target.value)} placeholder="Software Engineer" disabled={isSubmitting} />
+                    </div>
+                    <div>
+                      <Label>Job type</Label>
+                      <select
+                        value={jobType}
+                        onChange={(e) => setJobType(e.target.value)}
+                        className="h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm"
+                        disabled={isSubmitting}
+                      >
+                        {["Full-time", "Part-time", "Contract", "Internship"].map((type) => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <Label>Salary / compensation</Label>
+                      <Input value={jobSalary} onChange={(e) => setJobSalary(e.target.value)} placeholder="$140k – $180k" disabled={isSubmitting} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Label>Requirements</Label>
+                      <Textarea value={jobRequirements} onChange={(e) => setJobRequirements(e.target.value)} rows={4} placeholder="What the day-to-day looks like and what you're looking for..." disabled={isSubmitting} />
+                    </div>
+                    <div>
+                      <Label>Benefits <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                      <Input value={jobBenefits} onChange={(e) => setJobBenefits(e.target.value)} placeholder="Health, equity, remote-friendly" disabled={isSubmitting} />
+                    </div>
+                    <div>
+                      <Label>Extra info <span className="text-slate-400 text-xs font-normal">(optional)</span></Label>
+                      <Input value={jobExtraInfo} onChange={(e) => setJobExtraInfo(e.target.value)} placeholder="Internal notes or hiring timeline" disabled={isSubmitting} />
+                    </div>
+                    <div className="flex gap-2 sm:col-span-2">
+                      <Button type="button" variant="outline" className="flex-1" onClick={() => setShowJobForm(false)} disabled={isSubmitting}>
+                        Cancel
+                      </Button>
+                      <Button type="submit" className="flex-1 bg-slate-900 hover:bg-slate-800" disabled={isSubmitting}>
+                        {isSubmitting ? "Posting..." : "Post job"}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card className="border-slate-200/80 shadow-sm">
+              <CardContent className="p-0">
+                {currentJobs.length === 0 ? (
+                  <p className="px-4 py-10 text-center text-sm text-slate-400">No jobs posted yet. Click “Post a job” above to create the first one.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[26%]">Title</TableHead>
+                        <TableHead className="w-[16%]">Role</TableHead>
+                        <TableHead className="w-[12%]">Type</TableHead>
+                        <TableHead className="w-[16%]">Salary</TableHead>
+                        <TableHead className="w-[12%]">Applicants</TableHead>
+                        <TableHead className="w-[10%]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentJobs.map((job: any) => (
+                        <TableRow key={job._id}>
+                          <TableCell>
+                            <p className="font-medium">{job.title}</p>
+                            <p className="line-clamp-1 text-xs text-slate-400">{job.requirements}</p>
+                          </TableCell>
+                          <TableCell><Badge variant="outline">{job.role}</Badge></TableCell>
+                          <TableCell className="text-slate-500">{job.jobType}</TableCell>
+                          <TableCell className="text-slate-500">{job.salary}</TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              onClick={() => setActiveTab("applications")}
+                              className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:bg-slate-200"
+                            >
+                              <Users className="size-3" />
+                              {job.applicationCount}
+                            </button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteJob(job)}
+                              disabled={isSubmitting}
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === "applications" && (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-lg font-semibold">Job applications</h2>
+              <p className="text-sm text-slate-500">Every application submitted through the public jobs page. Deleting one removes its attached resume too.</p>
+            </div>
+
+            <Card className="border-slate-200/80 shadow-sm">
+              <CardContent className="p-0">
+                {currentApplications.length === 0 ? (
+                  <p className="px-4 py-10 text-center text-sm text-slate-400">No applications yet. They'll appear here as candidates apply.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-[22%]">Applicant</TableHead>
+                        <TableHead className="w-[20%]">Email</TableHead>
+                        <TableHead className="w-[18%]">Applied for</TableHead>
+                        <TableHead className="w-[10%]">Status</TableHead>
+                        <TableHead className="w-[20%]">Message</TableHead>
+                        <TableHead className="w-[10%]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {currentApplications.map((application: any) => (
+                        <TableRow key={application._id}>
+                          <TableCell>
+                            <p className="font-medium">{application.applicantName}</p>
+                            {application.applicantPhone && (
+                              <p className="text-xs text-slate-400">{application.applicantPhone}</p>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-slate-500">{application.applicantEmail}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{application.jobTitle ?? "—"}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <Badge
+                              variant="outline"
+                              className={application.status === "contacted" ? "border-emerald-600 text-emerald-700" : ""}
+                            >
+                              {application.status}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <span className="line-clamp-2 max-w-[240px] text-xs text-slate-500">{application.message ?? "—"}</span>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 hover:text-red-700"
+                              onClick={() => handleDeleteApplication(application)}
+                              disabled={isSubmitting}
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
 

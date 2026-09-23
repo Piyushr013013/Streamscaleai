@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { sendEmail, emailConfigured } from "./email";
 
 const MASTER_EMAIL = "piyushr013013@gmail.com";
 const MASTER_PASSWORD = "admin123";
@@ -199,6 +200,33 @@ export const requestResetCode = mutation({
       otp: code,
       otpExpiry: Date.now() + 10 * 60 * 1000,
     } as any);
+
+    if (!emailConfigured()) {
+      throw new Error(
+        "Email is not set up yet, so we couldn't send your code. Please contact a Streamscale administrator to reset your password."
+      );
+    }
+
+    try {
+      await sendEmail(
+        user.email,
+        "Your Streamscale password reset code",
+        `<div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">`
+        + `<h2 style="color: #0f172a; margin-bottom: 8px;">Reset your password</h2>`
+        + `<p style="color: #475569;">Hi ${user.name ?? "there"},</p>`
+        + `<p style="color: #475569;">Use this 6-digit code to reset your Streamscale password. It expires in 10 minutes.</p>`
+        + `<div style="background: #f1f5f9; border-radius: 12px; padding: 20px; text-align: center; margin: 24px 0;">`
+        + `<span style="font-size: 32px; letter-spacing: 8px; font-weight: 700; color: #0f172a;">${code}</span>`
+        + `</div>`
+        + `<p style="color: #94a3b8; font-size: 13px;">If you didn't request this, you can ignore this email — your password won't change.</p>`
+        + `<p style="color: #94a3b8; font-size: 13px;">Streamscale</p></div>`
+      );
+    } catch (err) {
+      console.error("[auth] reset-code email failed:", err);
+      throw new Error(
+        "We couldn't send the code email right now. Please try again in a moment, or contact a Streamscale administrator."
+      );
+    }
 
     return { ok: true };
   },
