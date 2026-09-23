@@ -1,15 +1,8 @@
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, ArrowRight, ChevronRight } from "lucide-react";
+import { Menu, ArrowRight, ChevronRight, ChevronDown } from "lucide-react";
 import { Link } from "react-router";
 
 const navLinks = [
@@ -71,9 +64,14 @@ const navLinks = [
 ];
 
 export function Navigation() {
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur-xl">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <header
+      className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/95 backdrop-blur-xl"
+      onMouseLeave={() => setOpenMenu(null)}
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
         <div className="flex h-14 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
@@ -109,41 +107,78 @@ export function Navigation() {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <NavigationMenu className="hidden md:flex">
-            <NavigationMenuList>
-              {navLinks.map((linkGroup) => (
-                <NavigationMenuItem key={linkGroup.title}>
-                  <NavigationMenuTrigger className={navigationMenuTriggerStyle()}>
-                    {linkGroup.title}
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent>
-                    <ul className="w-80 space-y-1 p-2">
-                      {linkGroup.items.map((item) => (
-                        <li key={item.title}>
-                          <NavigationMenuLink
-                            asChild
-                            className="block select-none rounded-lg px-4 py-3 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+          {/* Desktop Navigation — Staples-style full-width hover mega-menu */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navLinks.map((linkGroup) => (
+              <div key={linkGroup.title} onMouseEnter={() => setOpenMenu(linkGroup.title)}>
+                <button
+                  type="button"
+                  onClick={() => setOpenMenu((current) => (current === linkGroup.title ? null : linkGroup.title))}
+                  className={`flex items-center gap-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                    openMenu === linkGroup.title
+                      ? "bg-accent text-foreground"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/60"
+                  }`}
+                  aria-expanded={openMenu === linkGroup.title}
+                >
+                  {linkGroup.title}
+                  <ChevronDown
+                    className={`size-3.5 transition-transform duration-200 ${
+                      openMenu === linkGroup.title ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+              </div>
+            ))}
+          </nav>
+
+          {/* Full-width mega-menu panel, spans the entire top of the screen */}
+          <AnimatePresence>
+            {openMenu && (
+              <motion.div
+                key={openMenu}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.18, ease: "easeOut" }}
+                className="absolute inset-x-0 top-full hidden md:block border-b border-border/40 bg-background/98 shadow-xl backdrop-blur-xl"
+                onMouseEnter={() => setOpenMenu(openMenu)}
+              >
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                  <div className="py-8">
+                    <p className="mb-5 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                      {openMenu}
+                    </p>
+                    <div
+                      className={`grid gap-x-8 gap-y-2 ${
+                        (navLinks.find((g) => g.title === openMenu)?.items.length ?? 0) >= 4
+                          ? "grid-cols-2 lg:grid-cols-4"
+                          : "grid-cols-2 lg:grid-cols-3"
+                      }`}
+                    >
+                      {navLinks
+                        .find((g) => g.title === openMenu)
+                        ?.items.map((item) => (
+                          <Link
+                            key={item.title}
+                            to={item.href}
+                            onClick={() => setOpenMenu(null)}
+                            className="group rounded-xl px-4 py-3 transition-colors hover:bg-accent"
                           >
-                            <Link to={item.href}>
-                              <div className="flex flex-col gap-1">
-                                <span className="text-sm font-semibold text-foreground">
-                                  {item.title}
-                                </span>
-                                <span className="text-[13px] leading-relaxed text-muted-foreground">
-                                  {item.description}
-                                </span>
-                              </div>
-                            </Link>
-                          </NavigationMenuLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-              ))}
-            </NavigationMenuList>
-          </NavigationMenu>
+                            <span className="block text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                              {item.title}
+                            </span>
+                            <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
+                              {item.description}
+                            </span>
+                          </Link>
+                        ))}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Right side actions */}
           <div className="flex items-center gap-3">
