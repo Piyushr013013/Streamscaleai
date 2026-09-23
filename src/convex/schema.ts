@@ -57,6 +57,9 @@ export default defineSchema({
     name: v.string(),
     email: v.string(),
     phone: v.string(),
+    companyName: v.optional(v.string()),
+    website: v.optional(v.string()),
+    aboutCompany: v.optional(v.string()),
     service: v.union(
       v.literal("ai"),
       v.literal("testing_ai"),

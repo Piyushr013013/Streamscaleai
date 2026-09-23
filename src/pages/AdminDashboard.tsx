@@ -1420,8 +1420,8 @@ export default function AdminDashboard() {
                           .filter((request: any) => !partnerServiceFilter || request.services?.includes(partnerServiceFilter))
                           .map((request: any) => (
                             <TableRow key={request._id}>
-                              <TableCell className="font-medium">{request.name}</TableCell>
-                              <TableCell className="text-slate-500">{request.email}</TableCell>
+                              <TableCell className="font-medium"><span>{request.name}</span>{request.companyName && <span className="block text-xs font-normal text-slate-500">{request.companyName}</span>}</TableCell>
+                              <TableCell className="text-slate-500"><span>{request.email}</span>{request.website && <a href={request.website} target="_blank" rel="noopener noreferrer" className="block text-xs text-primary hover:underline">{request.website}</a>}</TableCell>
                               <TableCell>
                                 <div className="flex flex-wrap gap-1">
                                   {request.services?.length ? (
@@ -1444,6 +1444,11 @@ export default function AdminDashboard() {
                               <TableCell>
                                 <div className="flex flex-wrap items-center gap-2">
                                   <span className="text-xs text-slate-500 line-clamp-2 max-w-[200px]">{request.requirements}</span>
+{request.aboutCompany && (
+  <span className="block text-xs text-slate-400 line-clamp-1 max-w-[200px]">
+    About: {request.aboutCompany}
+  </span>
+)}
                                   {request.status !== "contacted" && (
                                     <Button
                                       variant="ghost"
@@ -1619,8 +1624,8 @@ export default function AdminDashboard() {
                         <TableBody>
                           {currentPartnerNotifications.partnerRequests.map((request: any) => (
                             <TableRow key={request._id}>
-                              <TableCell className="font-medium">{request.name}</TableCell>
-                              <TableCell className="text-slate-500">{request.email}</TableCell>
+                              <TableCell className="font-medium"><span>{request.name}</span>{request.companyName && <span className="block text-xs font-normal text-slate-500">{request.companyName}</span>}</TableCell>
+                              <TableCell className="text-slate-500"><span>{request.email}</span>{request.website && <a href={request.website} target="_blank" rel="noopener noreferrer" className="block text-xs text-primary hover:underline">{request.website}</a>}</TableCell>
                               <TableCell>
                                 <div className="flex flex-wrap gap-1">
                                   {request.services?.length ? (

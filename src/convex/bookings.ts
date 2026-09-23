@@ -39,6 +39,9 @@ export const createBooking = mutation({
 export const createPartnerRequest = mutation({
   args: {
     name: v.string(), email: v.string(), phone: v.string(),
+    companyName: v.optional(v.string()),
+    website: v.optional(v.string()),
+    aboutCompany: v.optional(v.string()),
     services: v.array(v.union(v.literal("ai"), v.literal("testing_ai"), v.literal("recruitment"))),
     requirements: v.string(),
   },
@@ -48,6 +51,9 @@ export const createPartnerRequest = mutation({
       name: args.name,
       email: args.email,
       phone: args.phone,
+      companyName: args.companyName,
+      website: args.website,
+      aboutCompany: args.aboutCompany,
       service: selected[0] as "ai" | "testing_ai" | "recruitment" | "compliance" | "monitoring" | "integration",
       services: selected as ("ai" | "testing_ai" | "recruitment" | "compliance" | "monitoring" | "integration")[],
       requirements: args.requirements,
@@ -62,10 +68,13 @@ export const createPartnerRequest = mutation({
         recruitment: "Talent & Recruitment",
       };
       const selectedNames = selected.map((s) => serviceNames[s] || s).join(", ");
+      const companyLine = args.companyName ? `<strong>Company:</strong> ${args.companyName}<br>` : "";
+      const websiteLine = args.website ? `<strong>Website:</strong> ${args.website}<br>` : "";
+      const aboutLine = args.aboutCompany ? `<br><strong>About the company:</strong><br>${args.aboutCompany}<br>` : "";
       await sendEmail(
         args.email,
         `Thanks for reaching out to Streamscale — ${selectedNames}`,
-        `Hi ${args.name},<br><br>We received your request for <strong>${selectedNames}</strong> and our team will review it shortly.<br><br>Here's a summary of what you sent:<br><br><strong>Services:</strong> ${selectedNames}<br><br><strong>Requirements:</strong><br>${args.requirements}<br><br>We'll follow up within 1-2 business days to scope what you need.<br><br><a href="${process.env.VITE_SITE_URL || "https://streamscale.com"}/jobs" style="color: #3b82f6;">View open jobs →</a><br><br>Streamscale — We test AI before your company bets on it.`
+        `Hi ${args.name},<br><br>We received your request for <strong>${selectedNames}</strong> and our team will review it shortly.<br><br>Here's a summary of what you sent:<br><br>${companyLine}${websiteLine}<strong>Services:</strong> ${selectedNames}<br>${aboutLine}<br><strong>Requirements:</strong><br>${args.requirements}<br><br>We'll follow up within 1-2 business days to scope what you need.<br><br><a href="${process.env.VITE_SITE_URL || "https://streamscale.com"}/jobs" style="color: #3b82f6;">View open jobs →</a><br><br>Streamscale — We test AI before your company bets on it.`
       );
     } catch (emailErr) {
       console.error("Auto-reply email failed:", emailErr);

@@ -39,6 +39,9 @@ export default function Partner() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [website, setWebsite] = useState("");
+  const [aboutCompany, setAboutCompany] = useState("");
   const [requirements, setRequirements] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -62,6 +65,9 @@ export default function Partner() {
         name,
         email,
         phone: phone || "",
+        companyName: companyName.trim() || undefined,
+        website: website.trim() || undefined,
+        aboutCompany: aboutCompany.trim() || undefined,
         services: selectedServices as ("ai" | "testing_ai" | "recruitment")[],
         requirements,
       });
@@ -246,6 +252,31 @@ export default function Partner() {
                 </div>
               </div>
 
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <Label htmlFor="companyName">Company name</Label>
+                  <Input
+                    id="companyName"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Acme AI Labs"
+                    required
+                    className="h-11"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="website">Company website</Label>
+                  <Input
+                    id="website"
+                    type="url"
+                    value={website}
+                    onChange={(e) => setWebsite(e.target.value)}
+                    placeholder="https://acme-ai.com"
+                    className="h-11"
+                  />
+                </div>
+              </div>
+
               <div>
                 <Label htmlFor="phone">Phone <span className="text-muted-foreground text-xs font-normal">(optional)</span></Label>
                 <Input
@@ -255,6 +286,17 @@ export default function Partner() {
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+1 (555) 123-4567"
                   className="h-11"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="aboutCompany">What does your company do?</Label>
+                <Textarea
+                  id="aboutCompany"
+                  value={aboutCompany}
+                  onChange={(e) => setAboutCompany(e.target.value)}
+                  placeholder="A quick summary of your business, industry, and team size..."
+                  rows={3}
                 />
               </div>
 
