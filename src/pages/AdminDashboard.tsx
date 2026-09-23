@@ -3,6 +3,32 @@ import { Link, useNavigate } from "react-router";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 
+/**
+ * Auto-formats a salary string like "50-150k", "50k - 150k", "$50,000 to 150000"
+ * into "$50,000 - $150,000". Falls back to the raw input when it can't parse it.
+ */
+export function formatSalary(raw: string): string {
+  const cleaned = raw.replace(/[$,\s]/g, "").toLowerCase();
+  const range = cleaned.match(/^(\d+(?:\.\d+)?)(k|m)?\s*(?:-|–|—|to|through)\s*(\d+(?:\.\d+)?)(k|m)?$/);
+  if (range) {
+    const toNumber = (value: string, suffix?: string) => {
+      let num = parseFloat(value);
+      if (suffix === "k") num *= 1_000;
+      if (suffix === "m") num *= 1_000_000;
+      return Math.round(num).toLocaleString("en-US");
+    };
+    return `$${toNumber(range[1], range[2])} - $${toNumber(range[3], range[4])}`;
+  }
+  const single = cleaned.match(/^(\d+(?:\.\d+)?)(k|m)?$/);
+  if (single) {
+    let num = parseFloat(single[1]);
+    if (single[2] === "k") num *= 1_000;
+    if (single[2] === "m") num *= 1_000_000;
+    return `$${Math.round(num).toLocaleString("en-US")}`;
+  }
+  return raw.trim();
+}
+
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -76,6 +102,7 @@ export default function AdminDashboard() {
     isMasterAdmin && userId ? { viewerId: userId as any } : "skip",
   );
   const createJob = useMutation(api.jobs.createJob);
+  const updateJob = useMutation(api.jobs.updateJob);
   const deleteJob = useMutation(api.jobs.deleteJob);
   const deleteApplication = useMutation(api.jobs.deleteApplication);
 
@@ -123,6 +150,7 @@ export default function AdminDashboard() {
   const [jobBenefits, setJobBenefits] = useState("");
   const [jobExtraInfo, setJobExtraInfo] = useState("");
   const [showJobForm, setShowJobForm] = useState(false);
+  const [editingJob, setEditingJob] = useState<any>(null);
 
   const defaultTeamMembers = [
     { _id: "default-ceo", name: "Vivikth Mantha", role: "CEO", bio: "Leading Streamscale's vision and strategy.", avatarColor: "#10b981" },
@@ -445,26 +473,77 @@ export default function AdminDashboard() {
     }
   };
 
+  const startEditingJob = (job: any) => {
+    setEditingJob(job);
+    setJobTitle(job.title ?? "");
+    setJobRole(job.role ?? "");
+    setJobType(job.jobType ?? "Full-time");
+    setJobRequirements(job.requirements ?? "");
+    setJobSalary(job.salary ?? "");
+    setJobBenefits(job.benefits ?? "");
+    setJobExtraInfo(job.extraInfo ?? "");
+    setShowJobForm(true);
+  };
+
+  const startPostingJob = () => {
+    setEditingJob(null);
+    setJobTitle("");
+    setJobRole("");
+    setJobType("Full-time");
+    setJobRequirements("");
+    setJobSalary("");
+    setJobBenefits("");
+    setJobExtraInfo("");
+    setShowJobForm(true);
+  };
+
+  const handleSalaryChange = (value: string) => {
+    setJobSalary(value);
+  };
+
+  const handleSalaryBlur = () => {
+    if (jobSalary.trim()) {
+      setJobSalary(formatSalary(jobSalary));
+    }
+  };
+
   const handlePostJob = async (e: FormEvent) => {
     e.preventDefault();
     if (!jobTitle.trim() || !jobRole.trim() || !jobRequirements.trim() || !jobSalary.trim()) {
       setMessage("Fill in the job title, role, requirements, and salary.");
       return;
     }
+    const formattedSalary = formatSalary(jobSalary);
     setIsSubmitting(true);
     setMessage("");
     try {
-      await createJob({
-        title: jobTitle.trim(),
-        role: jobRole.trim(),
-        jobType: jobType,
-        requirements: jobRequirements.trim(),
-        salary: jobSalary.trim(),
-        benefits: jobBenefits.trim() || undefined,
-        extraInfo: jobExtraInfo.trim() || undefined,
-        createdBy: userId as any,
-      });
-      setMessage("Job posted. It is now visible on the public jobs page.");
+      if (editingJob?._id) {
+        await updateJob({
+          jobId: editingJob._id as any,
+          title: jobTitle.trim(),
+          role: jobRole.trim(),
+          jobType: jobType,
+          requirements: jobRequirements.trim(),
+          salary: formattedSalary,
+          benefits: jobBenefits.trim() || undefined,
+          extraInfo: jobExtraInfo.trim() || undefined,
+          editorId: userId as any,
+        });
+        setMessage("Job posting updated. The public jobs page reflects the change immediately.");
+      } else {
+        await createJob({
+          title: jobTitle.trim(),
+          role: jobRole.trim(),
+          jobType: jobType,
+          requirements: jobRequirements.trim(),
+          salary: formattedSalary,
+          benefits: jobBenefits.trim() || undefined,
+          extraInfo: jobExtraInfo.trim() || undefined,
+          createdBy: userId as any,
+        });
+        setMessage("Job posted. It is now visible on the public jobs page.");
+      }
+      setEditingJob(null);
       setJobTitle("");
       setJobRole("");
       setJobType("Full-time");
@@ -474,7 +553,7 @@ export default function AdminDashboard() {
       setJobExtraInfo("");
       setShowJobForm(false);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Unable to post job.");
+      setMessage(error instanceof Error ? error.message : "Unable to save job.");
     } finally {
       setIsSubmitting(false);
     }
@@ -691,7 +770,10 @@ export default function AdminDashboard() {
                 <h2 className="text-lg font-semibold">Job postings</h2>
                 <p className="text-sm text-slate-500">Jobs you post here appear immediately on the public jobs page.</p>
               </div>
-              <Button onClick={() => setShowJobForm((open) => !open)} className="gap-1.5 bg-slate-900 hover:bg-slate-800">
+              <Button
+                onClick={() => (showJobForm ? (setShowJobForm(false), setEditingJob(null)) : startPostingJob())}
+                className="gap-1.5 bg-slate-900 hover:bg-slate-800"
+              >
                 {showJobForm ? "Close form" : (
                   <>
                     <Plus className="size-4" />
@@ -706,9 +788,9 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Briefcase className="size-4 text-slate-500" />
-                    New job posting
+                    {editingJob?._id ? "Edit job posting" : "New job posting"}
                   </CardTitle>
-                  <CardDescription>Applicants see everything except the internal notes field.</CardDescription>
+                  <CardDescription>Applicants see everything except the internal notes field. Salary auto-formats — type 50-150k and it becomes $50,000 - $150,000.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handlePostJob} className="grid gap-4 sm:grid-cols-2">
@@ -735,7 +817,13 @@ export default function AdminDashboard() {
                     </div>
                     <div>
                       <Label>Salary / compensation</Label>
-                      <Input value={jobSalary} onChange={(e) => setJobSalary(e.target.value)} placeholder="$140k – $180k" disabled={isSubmitting} />
+                      <Input
+                        value={jobSalary}
+                        onChange={(e) => handleSalaryChange(e.target.value)}
+                        onBlur={handleSalaryBlur}
+                        placeholder="$50,000 - $150,000 (or 50-150k)"
+                        disabled={isSubmitting}
+                      />
                     </div>
                     <div className="sm:col-span-2">
                       <Label>Requirements</Label>
@@ -754,7 +842,7 @@ export default function AdminDashboard() {
                         Cancel
                       </Button>
                       <Button type="submit" className="flex-1 bg-slate-900 hover:bg-slate-800" disabled={isSubmitting}>
-                        {isSubmitting ? "Posting..." : "Post job"}
+                        {isSubmitting ? "Saving..." : editingJob?._id ? "Save changes" : "Post job"}
                       </Button>
                     </div>
                   </form>
@@ -799,15 +887,26 @@ export default function AdminDashboard() {
                             </button>
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600 hover:text-red-700"
-                              onClick={() => handleDeleteJob(job)}
-                              disabled={isSubmitting}
-                            >
-                              <Trash2 className="size-3.5" />
-                            </Button>
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-slate-600 hover:text-slate-900"
+                                onClick={() => startEditingJob(job)}
+                                disabled={isSubmitting}
+                              >
+                                <Edit2 className="size-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-red-600 hover:text-red-700"
+                                onClick={() => handleDeleteJob(job)}
+                                disabled={isSubmitting}
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}

@@ -191,10 +191,6 @@ export const requestResetCode = mutation({
       throw new Error("No account found with that email");
     }
 
-    if (!user.emailVerified) {
-      throw new Error("That account has not been verified yet");
-    }
-
     const code = String(Math.floor(100000 + Math.random() * 900000));
     await ctx.db.patch(user._id, {
       otp: code,
