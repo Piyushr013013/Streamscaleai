@@ -398,14 +398,6 @@ export default function AdminDashboard() {
     setEditingMember(member);
   };
 
-  const startAddingMember = () => {
-    setMemberName("");
-    setMemberEmail("");
-    setMemberRole("");
-    setMemberBio("");
-    setEditingMember({ _id: "" });
-  };
-
   const submitEditMember = async (e: FormEvent) => {
     e.preventDefault();
     if (!memberName.trim() || !memberRole.trim()) {
@@ -1279,14 +1271,9 @@ export default function AdminDashboard() {
         {activeTab === "team" && (
           <div>
             <div className="mb-6 flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => setEditingMember(null)} className="gap-1" disabled={isSubmitting}>
-                <Users className="size-4" />
-                View team
-              </Button>
-              <Button variant="default" onClick={startAddingMember} className="gap-1" disabled={isSubmitting}>
-                <Plus className="size-4" />
-                Add member
-              </Button>
+              <p className="text-sm text-slate-500">
+                Existing team members can be edited or removed below. New members are added by an administrator through the accounts tab.
+              </p>
             </div>
 
             <Card>
@@ -1354,12 +1341,10 @@ export default function AdminDashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Edit2 className="size-5" />
-                    {editingMember._id ? "Edit team member" : "Add team member"}
+                    Edit team member
                   </CardTitle>
                   <CardDescription>
-                    {editingMember._id
-                      ? "Update this team member's details."
-                      : "This person will appear on the public team page."}
+                    Update this team member's details. Changes appear on the public site immediately.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>

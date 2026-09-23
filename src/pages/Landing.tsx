@@ -8,6 +8,7 @@ import { Link } from "react-router";
 import { useState } from "react";
 import {
   ArrowRight,
+  ChevronDown,
   ChevronRight,
 } from "lucide-react";
 
@@ -278,28 +279,14 @@ function HowItWorksSection() {
           </p>
         </div>
 
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto rounded-2xl border border-border/30 bg-card/30 divide-y divide-border/30 overflow-hidden">
           {steps.map((step, index) => (
-            <motion.div
+            <HowItWorksItem
               key={index}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="flex gap-6"
-            >
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm font-medium">
-                {index + 1}
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-foreground mb-2">
-                  {step.title}
-                </h3>
-                <p className="text-muted-foreground leading-relaxed">
-                  {step.description}
-                </p>
-              </div>
-            </motion.div>
+              index={index}
+              title={step.title}
+              description={step.description}
+            />
           ))}
         </div>
 
@@ -341,6 +328,55 @@ const steps = [
       "If you want the flaws fixed, that becomes the basis for what we deploy. If you'd rather monetize your data, we can broker that too.",
   },
 ];
+
+function HowItWorksItem({
+  index,
+  title,
+  description,
+}: {
+  index: number;
+  title: string;
+  description: string;
+}) {
+  const [isOpen, setIsOpen] = useState(index === 0);
+
+  return (
+    <div>
+      <button
+        onClick={() => setIsOpen((open) => !open)}
+        className="flex w-full items-center gap-4 px-6 py-5 text-left transition-colors hover:bg-accent/50"
+        aria-expanded={isOpen}
+      >
+        <span
+          className={`flex size-9 shrink-0 items-center justify-center rounded-full text-sm font-semibold transition-colors ${
+            isOpen ? "bg-primary text-primary-foreground" : "bg-primary/10 text-primary"
+          }`}
+        >
+          {index + 1}
+        </span>
+        <span className="flex-1 text-base md:text-lg font-medium text-foreground">{title}</span>
+        <ChevronDown
+          className={`size-5 shrink-0 text-muted-foreground transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+      <motion.div
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+        }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
+        <p className="px-6 pb-6 pl-[76px] text-muted-foreground leading-relaxed">
+          {description}
+        </p>
+      </motion.div>
+    </div>
+  );
+}
 
 function IndustriesSection() {
   return (
