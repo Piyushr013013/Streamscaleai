@@ -60,15 +60,22 @@ export default defineSchema({
     service: v.union(
       v.literal("ai"),
       v.literal("testing_ai"),
-      v.literal("recruitment")
+      v.literal("recruitment"),
+      v.literal("compliance"),
+      v.literal("monitoring"),
+      v.literal("integration")
     ),
     services: v.array(v.union(
       v.literal("ai"),
       v.literal("testing_ai"),
-      v.literal("recruitment")
+      v.literal("recruitment"),
+      v.literal("compliance"),
+      v.literal("monitoring"),
+      v.literal("integration")
     )),
     requirements: v.string(),
-    status: v.union(v.literal("new"), v.literal("contacted")),
+    objectives: v.array(v.string()),
+    status: v.union(v.literal("new"), v.literal("contacted"), v.literal("active"), v.literal("closed")),
   }).index("by_service", ["service"]),
 
 
