@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import {
-  FileText, Mail, Trash2
+  FileText, Mail, Trash2, Wallet
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +48,17 @@ export default function Dashboard() {
   );
   const deleteResume = useMutation(api.resumeAdmin.adminDeleteResume);
 
+  const billingAccess = useQuery(
+    api.billing.getBillingAccess,
+    userId ? { userId: userId as Id<"users"> } : "skip"
+  );
+  const showBillingLink =
+    billingAccess !== undefined &&
+    billingAccess !== null &&
+    (billingAccess.access === "cfo" ||
+      billingAccess.access === "master" ||
+      billingAccess.access === "person");
+
   const handleSignOut = async () => {
     await signOut();
     navigate("/");
@@ -71,6 +82,12 @@ export default function Dashboard() {
               </h1>
             </div>
             <div className="flex items-center gap-2">
+              {showBillingLink && (
+                <Button variant="outline" className="gap-2" onClick={() => navigate("/billing")}>
+                  <Wallet className="size-4" />
+                  {billingAccess?.access === "person" ? "My earnings" : "Accounting"}
+                </Button>
+              )}
               {isMasterAdmin && (
                 <Button variant="outline" className="gap-2" onClick={() => navigate("/admin")}>
                   <Shield className="size-4" />

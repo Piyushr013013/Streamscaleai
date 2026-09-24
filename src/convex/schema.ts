@@ -8,7 +8,7 @@ export default defineSchema({
         email: v.string(),
         name: v.string(),
         passwordHash: v.string(),
-        role: v.union(v.literal("admin"), v.literal("user")),
+        role: v.union(v.literal("admin"), v.literal("user"), v.literal("billing")),
         isMasterAdmin: v.optional(v.boolean()),
         isMaster: v.optional(v.boolean()),
         emailVerified: v.boolean(),
@@ -120,6 +120,67 @@ export default defineSchema({
     avatarColor: v.string(),
     order: v.number(),
   }),
+
+  // ---- Accounting / billing system ----
+
+  // A person who receives a share of revenue (percentage) or a fixed salary.
+  // May be linked to a login account (userId) so they can see their earnings.
+  billingPeople: defineTable({
+    name: v.string(),
+    // "percent" = share of contract fee; "fixed" = fixed payout per contract
+    compType: v.union(v.literal("percent"), v.literal("fixed")),
+    percent: v.optional(v.number()), // e.g. 12.5 (percent of fee)
+    fixedAmount: v.optional(v.number()), // dollars per fulfilled contract
+    userId: v.optional(v.id("users")), // optional linked login account
+    note: v.optional(v.string()),
+    createdBy: v.id("users"),
+  }),
+
+  // A company that booked with Streamscale.
+  billingClients: defineTable({
+    companyName: v.string(),
+    contactName: v.optional(v.string()),
+    contactEmail: v.optional(v.string()),
+    note: v.optional(v.string()),
+    createdBy: v.id("users"),
+  }),
+
+  // A contract with a client. Fee = custom percent of combined first-year
+  // salaries of the placed workers, or a flat fee.
+  billingContracts: defineTable({
+    clientId: v.id("billingClients"),
+    // "percent_of_salaries" or "flat"
+    feeType: v.union(v.literal("percent_of_salaries"), v.literal("flat")),
+    // percent of combined first-year salaries (e.g. 20 for 20%)
+    feePercent: v.optional(v.number()),
+    flatFee: v.optional(v.number()),
+    // workers placed: name + first-year salary each
+    workers: v.array(
+      v.object({
+        name: v.string(),
+        salary: v.number(),
+      })
+    ),
+    status: v.union(
+      v.literal("in_progress"),
+      v.literal("fulfilled"),
+      v.literal("cancelled")
+    ),
+    // How much the client has paid us so far (CFO-editable).
+    amountPaid: v.optional(v.number()),
+    note: v.optional(v.string()),
+    createdBy: v.id("users"),
+  }),
+
+  // A payment made out of a fulfilled contract to people with comp plans.
+  billingPayouts: defineTable({
+    contractId: v.id("billingContracts"),
+    personId: v.id("billingPeople"),
+    // Snapshotted at payment time so later comp changes don't rewrite history.
+    amount: v.number(),
+    note: v.optional(v.string()),
+    createdBy: v.id("users"),
+  }).index("by_person", ["personId"]).index("by_contract", ["contractId"]),
 
   bookings: defineTable({
     name: v.string(),

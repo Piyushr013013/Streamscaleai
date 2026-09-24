@@ -630,6 +630,9 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <Link to="/billing" className="hidden text-sm text-slate-500 transition hover:text-slate-900 sm:inline">
+              Accounting
+            </Link>
             <Link to="/" className="hidden text-sm text-slate-500 transition hover:text-slate-900 sm:inline">
               View site
             </Link>
