@@ -1,27 +1,96 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { sendEmail, emailConfigured } from "./email";
 
 const MASTER_EMAIL = "piyushr013013@gmail.com";
-const MASTER_PASSWORD = "admin123";
 const MASTER_PASSWORD_PREFIX = "master:";
 
-function normalizeStoredPassword(raw: unknown): string {
-  if (typeof raw !== "string") return raw as any;
-  if (raw.startsWith(MASTER_PASSWORD_PREFIX)) return raw;
-  if (raw.startsWith("v1:")) return raw;
-  try {
-    const decoded = atob(raw);
-    if (typeof decoded === "string" && decoded.length > 0) {
-      return "v1:" + decoded;
-    }
-  } catch {
-    // fall through
-  }
-  return "v1:" + raw;
+// ---- Brute-force protection ----
+const MAX_FAILED_LOGINS = 5;              // attempts before lockout
+const LOCKOUT_MINUTES = 15;               // how long sign-in is blocked
+
+// ---- Input caps (defense against oversized-payload abuse) ----
+export const MAX_INPUT_LENGTHS = {
+  email: 254,
+  name: 120,
+  password: 128,
+  shortText: 300,
+  longText: 5000,
+  url: 500,
+};
+
+/**
+ * PBKDF2-SHA256 password hashing (Web Crypto, available in Convex runtime).
+ * Stored format: pbkdf2$<iterations>$<salt-b64>$<hash-b64>
+ * Legacy formats ("v1:<password>", "master:<password>", base64) are still
+ * accepted at sign-in and transparently upgraded to PBKDF2 on next login.
+ */
+const PBKDF2_ITERATIONS = 100_000;
+
+function toBase64(bytes: Uint8Array): string {
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
 }
 
-const MASTER_PASSWORD_V1_HASH = "v1:" + normalizePassword(MASTER_PASSWORD);
+function fromBase64(value: string): Uint8Array {
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+async function pbkdf2Derive(password: string, salt: Uint8Array, iterations: number): Promise<Uint8Array> {
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(password),
+    "PBKDF2",
+    false,
+    ["deriveBits"],
+  );
+  const bits = await crypto.subtle.deriveBits(
+    { name: "PBKDF2", hash: "SHA-256", salt: salt as unknown as BufferSource, iterations },
+    keyMaterial,
+    256,
+  );
+  return new Uint8Array(bits);
+}
+
+export async function hashPassword(password: string): Promise<string> {
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const hash = await pbkdf2Derive(password, salt, PBKDF2_ITERATIONS);
+  return `pbkdf2$${PBKDF2_ITERATIONS}$${toBase64(salt)}$${toBase64(hash)}`;
+}
+
+async function verifyPassword(password: string, stored: string): Promise<boolean> {
+  try {
+    if (stored.startsWith("pbkdf2$")) {
+      const [, iterationsRaw, saltB64, hashB64] = stored.split("$");
+      const iterations = parseInt(iterationsRaw, 10);
+      if (!iterations || iterations < 10_000 || iterations > 5_000_000) return false;
+      const expected = fromBase64(hashB64);
+      const actual = await pbkdf2Derive(password, fromBase64(saltB64), iterations);
+      // Constant-time comparison to avoid timing leaks.
+      if (expected.length !== actual.length) return false;
+      let diff = 0;
+      for (let i = 0; i < expected.length; i++) diff |= expected[i] ^ actual[i];
+      return diff === 0;
+    }
+    // Legacy formats — verified, then upgraded to PBKDF2 by the caller.
+    if (stored.startsWith("v1:")) return stored.slice(3) === password;
+    if (stored.startsWith(MASTER_PASSWORD_PREFIX)) return stored.slice(MASTER_PASSWORD_PREFIX.length) === password;
+    try {
+      return atob(stored) === password;
+    } catch {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+}
+
+function isLegacyHash(stored: string): boolean {
+  return !stored.startsWith("pbkdf2$");
+}
 
 function isRealUser(
   user: unknown
@@ -41,6 +110,8 @@ function isRealUser(
   };
   otp?: string;
   otpExpiry?: number;
+  failedLoginCount?: number;
+  lockoutUntil?: number;
   _creationTime: number;
 } {
   if (!user || typeof user !== "object") return false;
@@ -63,16 +134,6 @@ async function getOriginalMasterAdmin(ctx: any) {
   return masters[0] ?? null;
 }
 
-function normalizePassword(password: string) {
-  return password;
-}
-
-function hashPassword(password: string): string {
-  return "v1:" + normalizePassword(password);
-}
-
-const MASTER_LOOKUP_KEY = "master:" + normalizePassword(MASTER_PASSWORD);
-
 export const initMasterAccount = mutation({
   args: {},
   handler: async (ctx) => {
@@ -85,17 +146,16 @@ export const initMasterAccount = mutation({
       await ctx.db.patch(existing._id, {
         isMasterAdmin: true,
         emailVerified: true,
-        passwordHash:
-          MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD),
-      });
+      } as any);
       return { exists: true };
     }
 
     await ctx.db.insert("users", {
       email: MASTER_EMAIL,
       name: "Admin",
-      passwordHash:
-        MASTER_PASSWORD_PREFIX + normalizePassword(MASTER_PASSWORD),
+      // Initial master password is hashed at rest; change it from Profile
+      // settings after first sign-in.
+      passwordHash: await hashPassword("changeme-streamscale"),
       role: "admin",
       isMasterAdmin: true,
       emailVerified: true,
@@ -113,70 +173,54 @@ export const login = mutation({
   handler: async (ctx, args) => {
     const normalizedEmail = args.email.toLowerCase().trim();
 
-    if (normalizedEmail === MASTER_EMAIL && args.password === MASTER_PASSWORD) {
-      // no-op guard only; fall through to normal lookup below
-    }
-
     let user = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
       .first();
 
-    if (normalizedEmail === MASTER_EMAIL) {
-      const existingMaster = (await ctx.db.query("users").collect()).find(
-        (candidate) => isRealUser(candidate) && candidate.isMasterAdmin === true,
-      );
-
-      if (!existingMaster && !user) {
-        const masterId = await ctx.db.insert("users", {
-          email: MASTER_EMAIL,
-          name: "Master Admin",
-          passwordHash: MASTER_PASSWORD_PREFIX + MASTER_PASSWORD,
-          role: "admin",
-          isMasterAdmin: true,
-          emailVerified: true,
-          permissions: [],
-        });
-        user = await ctx.db.get(masterId);
-      }
-    }
-
     if (!user || !isRealUser(user)) {
-      throw new Error("User not found");
+      // Same message for unknown email and wrong password so attackers can't
+      // probe which email addresses have accounts (user enumeration).
+      throw new Error("That email and password combination doesn't match an account. Double-check both and try again.");
     }
 
-    if (!user.emailVerified) {
-      throw new Error("Email not verified");
-    }
-
-    let passwordValid = false;
-
-    if (typeof user.passwordHash !== "string") {
-      throw new Error("Incorrect password");
+    // ---- Brute-force lockout ----
+    const now = Date.now();
+    if (user.lockoutUntil && user.lockoutUntil > now) {
+      const minutesLeft = Math.max(1, Math.ceil((user.lockoutUntil - now) / 60_000));
+      throw new Error(`Too many failed sign-in attempts. For security, this account is locked for ${minutesLeft} more minute${minutesLeft === 1 ? "" : "s"}. Try again shortly.`);
     }
 
     const stored = user.passwordHash;
-
-    if (stored === MASTER_PASSWORD_V1_HASH && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
-      passwordValid = true;
-    } else if (stored === MASTER_LOOKUP_KEY && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
-      passwordValid = true;
-    } else if (stored.startsWith(MASTER_PASSWORD_PREFIX) && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
-      passwordValid = stored.slice(MASTER_PASSWORD_PREFIX.length) === normalizePassword(args.password);
-    } else if (stored === MASTER_PASSWORD_V1_HASH && user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
-      passwordValid = args.password === MASTER_PASSWORD;
-    } else if (stored.startsWith("v1:")) {
-      passwordValid = stored.slice(3) === normalizePassword(args.password);
-    } else {
-      try {
-        passwordValid = atob(stored) === normalizePassword(args.password);
-      } catch {
-        passwordValid = false;
-      }
+    if (typeof stored !== "string") {
+      throw new Error("This account doesn't have a password set yet. Ask your Streamscale administrator to assign one.");
     }
 
+    const passwordValid = await verifyPassword(args.password, stored);
+
     if (!passwordValid) {
-      throw new Error("Incorrect password");
+      const failed = (user.failedLoginCount ?? 0) + 1;
+      if (failed >= MAX_FAILED_LOGINS) {
+        await ctx.db.patch(user._id, {
+          failedLoginCount: 0,
+          lockoutUntil: now + LOCKOUT_MINUTES * 60_000,
+        } as any);
+        throw new Error(`Too many failed sign-in attempts. For security, this account is locked for ${LOCKOUT_MINUTES} minutes.`);
+      }
+      await ctx.db.patch(user._id, { failedLoginCount: failed } as any);
+      throw new Error("That email and password combination doesn't match an account. Double-check both and try again.");
+    }
+
+    // Successful sign-in: clear any failed-attempt counters.
+    if (user.failedLoginCount || user.lockoutUntil) {
+      await ctx.db.patch(user._id, { failedLoginCount: 0, lockoutUntil: undefined } as any);
+    }
+
+    // Transparent upgrade: re-hash legacy passwords with PBKDF2 at sign-in.
+    if (isLegacyHash(stored)) {
+      await ctx.db.patch(user._id, {
+        passwordHash: await hashPassword(args.password),
+      } as any);
     }
 
     return { userId: user._id, role: user.role };
@@ -254,7 +298,7 @@ export const updateProfile = mutation({
       if (args.password.length < 6) {
         throw new Error("Password must be at least 6 characters");
       }
-      patch.passwordHash = hashPassword(args.password);
+      patch.passwordHash = await hashPassword(args.password);
       patch.emailVerified = true;
     }
 
@@ -319,7 +363,7 @@ export const adminCreateUser = mutation({
     return (await ctx.db.insert("users", {
       email,
       name: args.name.trim(),
-      passwordHash: hashPassword(args.password),
+      passwordHash: await hashPassword(args.password),
       role: args.role,
       isMasterAdmin: false,
       emailVerified: true,
@@ -380,7 +424,7 @@ export const adminUpdateUser = mutation({
       if (args.password.length < 6) {
         throw new Error("Password must be at least 6 characters");
       }
-      patch.passwordHash = hashPassword(args.password);
+      patch.passwordHash = await hashPassword(args.password);
       patch.emailVerified = true;
     }
 

@@ -22,6 +22,9 @@ export default defineSchema({
         ),
         otp: v.optional(v.string()),
         otpExpiry: v.optional(v.float64()),
+        // Brute-force protection: failed sign-in attempts and lockout window.
+        failedLoginCount: v.optional(v.number()),
+        lockoutUntil: v.optional(v.float64()),
       }),
       v.object({ isAnonymous: v.literal(true) })
     )

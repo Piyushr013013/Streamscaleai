@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, ArrowRight, ChevronRight, ChevronDown } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const navLinks = [
   {
@@ -65,6 +65,23 @@ const navLinks = [
 
 export function Navigation() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  // Anchor links ("#section") need manual scrolling: React Router does not
+  // scroll for hash-only paths, and the fixed header would cover the target.
+  const goTo = (href: string) => {
+    setOpenMenu(null);
+    if (href.startsWith("#")) {
+      const el = document.getElementById(href.slice(1));
+      if (el) {
+        const top = el.getBoundingClientRect().top + window.scrollY - 72;
+        window.scrollTo({ top, behavior: "smooth" });
+      }
+    } else {
+      navigate(href);
+      window.scrollTo({ top: 0 });
+    }
+  };
 
   return (
     <header
@@ -162,7 +179,10 @@ export function Navigation() {
                           <Link
                             key={item.title}
                             to={item.href}
-                            onClick={() => setOpenMenu(null)}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              goTo(item.href);
+                            }}
                             className="group rounded-xl px-4 py-3 transition-colors hover:bg-accent"
                           >
                             <span className="block text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
@@ -243,6 +263,10 @@ export function Navigation() {
                             <Link
                               key={item.title}
                               to={item.href}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                goTo(item.href);
+                              }}
                               className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-between rounded-lg px-3 py-2.5 hover:bg-accent"
                             >
                               <span>{item.title}</span>
