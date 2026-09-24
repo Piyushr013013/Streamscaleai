@@ -51,7 +51,7 @@ const navLinks = [
     items: [
       {
         title: "Benchmarks",
-        href: "/industries/software-engineering",
+        href: "/benchmarks",
         description: "See pass rates by industry",
       },
       {

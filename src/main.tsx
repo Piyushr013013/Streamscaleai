@@ -10,6 +10,7 @@ import AdminDashboard from "./pages/AdminDashboard.tsx";
 
 // Lazy load route components for better code splitting
 const Landing = lazy(() => import("./pages/Landing.tsx"));
+const Benchmarks = lazy(() => import("./pages/Benchmarks.tsx"));
 const Login = lazy(() => import("./pages/Login.tsx"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings.tsx"));
 const Jobs = lazy(() => import("./pages/Jobs.tsx"));
@@ -159,6 +160,7 @@ createRoot(document.getElementById("root")!).render(
           <Suspense fallback={<RouteLoading />}>
             <Routes>
               <Route path="/" element={<Landing />} />
+              <Route path="/benchmarks" element={<Benchmarks />} />
               <Route path="/auth" element={<Login />} />
               <Route
                 path="/dashboard"

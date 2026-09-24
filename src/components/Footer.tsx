@@ -160,7 +160,7 @@ const footerLinks = [
     links: [
       { title: "How it works", href: "#how-it-works" },
       { title: "FAQ", href: "#faq" },
-      { title: "Benchmarks", href: "#industries" },
+      { title: "Benchmarks", href: "/benchmarks" },
     ],
   },
 ];
