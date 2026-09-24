@@ -512,6 +512,56 @@ export const getMyEarnings = query({
   },
 });
 
+/** CFO can change their own email/password from the billing Settings tab. */
+export const changeCfoCredentials = mutation({
+  args: {
+    currentPassword: v.string(),
+    newEmail: v.optional(v.string()),
+    newPassword: v.optional(v.string()),
+    actorId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const actor = await requireCfo(ctx, args.actorId);
+    const { verifyPassword, hashPassword: hash } = await import("./auth");
+
+    const ok = await verifyPassword(args.currentPassword, actor.passwordHash);
+    if (!ok) {
+      throw new Error("That current password doesn't match. Nothing was changed.");
+    }
+
+    const patch: any = {};
+    if (args.newEmail !== undefined && args.newEmail.trim()) {
+      const email = args.newEmail.toLowerCase().trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error("That new email doesn't look like a valid email address.");
+      }
+      if (email !== actor.email) {
+        const conflict = await ctx.db
+          .query("users")
+          .withIndex("by_email", (q) => q.eq("email", email))
+          .first();
+        if (conflict && conflict._id.toString() !== actor._id.toString()) {
+          throw new Error("That email is already used by another account.");
+        }
+        patch.email = email;
+      }
+    }
+    if (args.newPassword !== undefined && args.newPassword.length > 0) {
+      if (args.newPassword.length < 6) {
+        throw new Error("The new password must be at least 6 characters.");
+      }
+      patch.passwordHash = await hash(args.newPassword);
+    }
+
+    if (Object.keys(patch).length === 0) {
+      throw new Error("Enter a new email or a new password to change something.");
+    }
+
+    await ctx.db.patch(actor._id, patch);
+    return { ok: true };
+  },
+});
+
 /** List of users available to link a billing person to (CFO only). */
 export const listLinkableUsers = query({
   args: { viewerId: v.id("users") },

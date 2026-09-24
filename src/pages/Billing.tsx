@@ -29,7 +29,7 @@ import {
 const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-type TabId = "contracts" | "people" | "clients" | "payments" | "viewers";
+type TabId = "contracts" | "people" | "earnings" | "settings";
 
 export default function Billing() {
   const navigate = useNavigate();
@@ -75,11 +75,17 @@ export default function Billing() {
   const deleteContract = useMutation(api.billing.deleteContract);
   const recordPayment = useMutation(api.billing.recordPayment);
   const createViewer = useMutation(api.billing.createViewerAccount);
+  const changeCreds = useMutation(api.billing.changeCfoCredentials);
 
   const [activeTab, setActiveTab] = useState<TabId>("contracts");
   const [message, setMessage] = useState("");
   const [messageError, setMessageError] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  // Settings form (email/password change)
+  const [curPassword, setCurPassword] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   // Client form
   const [clientName, setClientName] = useState("");
@@ -93,7 +99,7 @@ export default function Billing() {
   const [personFixed, setPersonFixed] = useState("");
 
   // Contract form
-  const [contractClientId, setContractClientId] = useState("");
+  const [contractCompanyName, setContractCompanyName] = useState("");
   const [contractFeeType, setContractFeeType] = useState<"percent_of_salaries" | "flat">("percent_of_salaries");
   const [contractFeePercent, setContractFeePercent] = useState("");
   const [contractFlatFee, setContractFlatFee] = useState("");
@@ -278,15 +284,19 @@ export default function Billing() {
 
   const submitContract = async (e: FormEvent) => {
     e.preventDefault();
-    if (!contractClientId) return flash("Pick the company this contract is with.", true);
+    if (!contractCompanyName.trim()) return flash("Enter the company name for this contract.", true);
     const cleanWorkers = workers
       .map((w) => ({ name: w.name.trim(), salary: parseFloat(w.salary) || 0 }))
       .filter((w) => w.name);
     if (cleanWorkers.length === 0) return flash("Add at least one worker with a name and first-year salary.", true);
     setBusy(true);
     try {
+      // Find or create the company by name so contracts can be entered fast.
+      const name = contractCompanyName.trim();
+      const existing = (clients ?? []).find((c: any) => c.companyName.toLowerCase() === name.toLowerCase());
+      const clientId = existing?._id ?? (await createClient({ companyName: name, actorId: userId as any }));
       await createContract({
-        clientId: contractClientId as any,
+        clientId: clientId as any,
         feeType: contractFeeType,
         feePercent: contractFeeType === "percent_of_salaries" ? parseFloat(contractFeePercent) || 0 : undefined,
         flatFee: contractFeeType === "flat" ? parseFloat(contractFlatFee) || 0 : undefined,
@@ -295,7 +305,7 @@ export default function Billing() {
         actorId: userId as any,
       });
       flash("Contract created. It starts as in progress.");
-      setContractClientId(""); setContractFeePercent(""); setContractFlatFee("");
+      setContractCompanyName(""); setContractFeePercent(""); setContractFlatFee("");
       setWorkers([{ name: "", salary: "" }]); setContractNote("");
     } catch (err) {
       flash(err instanceof Error ? err.message : "Could not create the contract.", true);
@@ -319,6 +329,25 @@ export default function Billing() {
       setPaymentAmount(""); setPaymentNote(""); setPaymentContractId("");
     } catch (err) {
       flash(err instanceof Error ? err.message : "Could not record the payment.", true);
+    } finally { setBusy(false); }
+  };
+
+  const submitSettings = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!curPassword) return flash("Enter your current password to confirm the change.", true);
+    if (!newEmail.trim() && !newPassword) return flash("Enter a new email or a new password.", true);
+    setBusy(true);
+    try {
+      await changeCreds({
+        currentPassword: curPassword,
+        newEmail: newEmail.trim() || undefined,
+        newPassword: newPassword || undefined,
+        actorId: userId as any,
+      });
+      flash("Account updated. Use the new credentials next time you sign in.");
+      setCurPassword(""); setNewEmail(""); setNewPassword("");
+    } catch (err) {
+      flash(err instanceof Error ? err.message : "Could not update the account.", true);
     } finally { setBusy(false); }
   };
 
@@ -360,10 +389,9 @@ export default function Billing() {
 
   const tabs: Array<[TabId, string, React.ReactNode, number | null]> = [
     ["contracts", "Contracts", <Briefcase className="size-3.5" />, contracts?.length ?? 0],
-    ["payments", "Payments", <Banknote className="size-3.5" />, fulfilledContracts.length],
-    ["people", "Payout plans", <Users className="size-3.5" />, people?.length ?? 0],
-    ["clients", "Companies", <Building2 className="size-3.5" />, clients?.length ?? 0],
-    ...(isCfo ? [["viewers", "Viewer accounts", <UserPlus className="size-3.5" />, linkableUsers?.length ?? 0] as [TabId, string, React.ReactNode, number | null]] : []),
+    ["people", "People", <Users className="size-3.5" />, people?.length ?? 0],
+    ["earnings", "Earnings", <Coins className="size-3.5" />, fulfilledContracts.length],
+    ["settings", "Settings", <Shield className="size-3.5" />, null],
   ];
 
   return (
@@ -451,21 +479,15 @@ export default function Billing() {
                   <form onSubmit={submitContract} className="space-y-4">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div>
-                        <Label>Company</Label>
-                        <select
-                          value={contractClientId}
-                          onChange={(e) => setContractClientId(e.target.value)}
-                          className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm"
+                        <Label>Company name</Label>
+                        <Input
+                          value={contractCompanyName}
+                          onChange={(e) => setContractCompanyName(e.target.value)}
+                          placeholder="Acme Corp"
                           disabled={busy}
-                        >
-                          <option value="">Select a company…</option>
-                          {(clients ?? []).map((c: any) => (
-                            <option key={c._id} value={c._id}>{c.companyName}</option>
-                          ))}
-                        </select>
-                        {(clients ?? []).length === 0 && (
-                          <p className="mt-1 text-xs text-amber-600">No companies yet — add one in the Companies tab first.</p>
-                        )}
+                          className="mt-2"
+                        />
+                        <p className="mt-1 text-xs text-slate-400">The company is created automatically if it doesn't exist yet.</p>
                       </div>
                       <div>
                         <Label>Fee basis</Label>
@@ -643,8 +665,8 @@ export default function Billing() {
           </div>
         )}
 
-        {/* Payments */}
-        {activeTab === "payments" && (
+        {/* Earnings: record payments + payout summary */}
+        {activeTab === "earnings" && (
           <div className="space-y-6">
             {isCfo && (
               <Card>
@@ -814,14 +836,14 @@ export default function Billing() {
           </div>
         )}
 
-        {/* Clients */}
-        {activeTab === "clients" && (
+        {/* Clients — part of Contracts view */}
+        {activeTab === "contracts" && (
           <div className="space-y-6">
             {isCfo && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-base"><Building2 className="size-4" /> Add a company</CardTitle>
-                  <CardDescription>Companies that booked with Streamscale. Add contracts against them in the Contracts tab.</CardDescription>
+                  <CardTitle className="flex items-center gap-2 text-base"><Building2 className="size-4" /> Companies booked with us</CardTitle>
+                  <CardDescription>Add each company that booked with Streamscale, then create contracts for them above.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={submitClient} className="grid gap-4 sm:grid-cols-4">
@@ -847,7 +869,7 @@ export default function Billing() {
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Companies</CardTitle>
+                <CardTitle className="text-base">All companies</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
                 {(clients ?? []).length === 0 ? (
@@ -878,8 +900,121 @@ export default function Billing() {
           </div>
         )}
 
-        {/* Viewer accounts (CFO only) */}
-        {activeTab === "viewers" && isCfo && (
+        {/* Settings */}
+        {activeTab === "settings" && (
+          <div className="space-y-6">
+            {isCfo && (
+              <Card className="max-w-lg">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base"><Shield className="size-4" /> Account settings</CardTitle>
+                  <CardDescription>
+                    Signed in as <span className="font-medium text-slate-900">{user && "email" in user ? user.email : ""}</span>. Change your email or password here.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={submitSettings} className="space-y-4">
+                    <div>
+                      <Label>Current password (required)</Label>
+                      <Input type="password" value={curPassword} onChange={(e) => setCurPassword(e.target.value)} disabled={busy} className="mt-2" />
+                    </div>
+                    <div>
+                      <Label>New email (optional)</Label>
+                      <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder={(user as any)?.email ?? ""} disabled={busy} className="mt-2" />
+                    </div>
+                    <div>
+                      <Label>New password (optional, min 6 chars)</Label>
+                      <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} disabled={busy} className="mt-2" />
+                    </div>
+                    <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800" disabled={busy}>
+                      {busy ? "Saving…" : "Save changes"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+
+            {isCfo && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base"><UserPlus className="size-4" /> Create a person account</CardTitle>
+                  <CardDescription>
+                    Create a brand-new login, or connect billing to an account the master admin already made. They'll see their own earnings when they sign in.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={submitViewer} className="space-y-4">
+                    <div className="flex gap-2">
+                      <Button type="button" size="sm" variant={viewerMode === "new" ? "default" : "outline"} onClick={() => setViewerMode("new")} className={viewerMode === "new" ? "bg-slate-900" : ""}>
+                        New account
+                      </Button>
+                      <Button type="button" size="sm" variant={viewerMode === "link" ? "default" : "outline"} onClick={() => setViewerMode("link")} className={viewerMode === "link" ? "bg-slate-900" : ""}>
+                        Connect existing account
+                      </Button>
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div>
+                        <Label>Name</Label>
+                        <Input value={viewerName} onChange={(e) => setViewerName(e.target.value)} placeholder="Full name" disabled={busy} className="mt-2" />
+                      </div>
+                      {viewerMode === "new" ? (
+                        <>
+                          <div>
+                            <Label>Email</Label>
+                            <Input type="email" value={viewerEmail} onChange={(e) => setViewerEmail(e.target.value)} placeholder="their@email.com" disabled={busy} className="mt-2" />
+                          </div>
+                          <div>
+                            <Label>Temporary password (min 6 chars)</Label>
+                            <Input type="password" value={viewerPassword} onChange={(e) => setViewerPassword(e.target.value)} disabled={busy} className="mt-2" />
+                          </div>
+                        </>
+                      ) : (
+                        <div>
+                          <Label>Existing account</Label>
+                          <select value={viewerLinkUserId} onChange={(e) => setViewerLinkUserId(e.target.value)} className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm" disabled={busy}>
+                            <option value="">Select an account…</option>
+                            {(linkableUsers ?? []).map((u: any) => (
+                              <option key={u._id} value={u._id}>{u.name} ({u.email})</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="grid gap-4 sm:grid-cols-3">
+                      <div>
+                        <Label>Pay type</Label>
+                        <select value={viewerType} onChange={(e) => setViewerType(e.target.value as any)} className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm" disabled={busy}>
+                          <option value="percent">Percent of fee</option>
+                          <option value="fixed">Fixed per contract</option>
+                        </select>
+                      </div>
+                      {viewerType === "percent" ? (
+                        <div>
+                          <Label>Percent (%)</Label>
+                          <Input type="number" min="0" max="100" step="0.5" value={viewerPercent} onChange={(e) => setViewerPercent(e.target.value)} placeholder="e.g. 10" disabled={busy} className="mt-2" />
+                        </div>
+                      ) : (
+                        <div>
+                          <Label>Fixed amount ($)</Label>
+                          <Input type="number" min="0" value={viewerFixed} onChange={(e) => setViewerFixed(e.target.value)} placeholder="e.g. 5000" disabled={busy} className="mt-2" />
+                        </div>
+                      )}
+                      <div className="flex items-end">
+                        <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800" disabled={busy}>
+                          {busy ? "Saving…" : viewerMode === "new" ? "Create account" : "Connect account"}
+                        </Button>
+                      </div>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        )}
+
+        {/* Viewer accounts (CFO only) — legacy block kept hidden */}
+        {false && isCfo && (
           <div className="space-y-6">
             <Card>
               <CardHeader>

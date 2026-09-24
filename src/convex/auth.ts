@@ -61,7 +61,7 @@ export async function hashPassword(password: string): Promise<string> {
   return `pbkdf2$${PBKDF2_ITERATIONS}$${toBase64(salt)}$${toBase64(hash)}`;
 }
 
-async function verifyPassword(password: string, stored: string): Promise<boolean> {
+export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   try {
     if (stored.startsWith("pbkdf2$")) {
       const [, iterationsRaw, saltB64, hashB64] = stored.split("$");
@@ -173,6 +173,28 @@ export const login = mutation({
   handler: async (ctx, args) => {
     const normalizedEmail = args.email.toLowerCase().trim();
 
+    // Self-bootstrapping CFO account: the first time the CFO email signs in
+    // with its initial password, the account is created automatically so no
+    // existing admin has to be signed in first.
+    const CFO_EMAIL = "jaiveerssahni@gmail.com";
+    const CFO_INITIAL_PASSWORD = "nicheyams67";
+    if (normalizedEmail === CFO_EMAIL && args.password === CFO_INITIAL_PASSWORD) {
+      const existingCfo = await ctx.db
+        .query("users")
+        .withIndex("by_email", (q) => q.eq("email", CFO_EMAIL))
+        .first();
+      if (!existingCfo || !isRealUser(existingCfo)) {
+        const cfoId = await ctx.db.insert("users", {
+          email: CFO_EMAIL,
+          name: "Jaiveer (CFO)",
+          passwordHash: await hashPassword(CFO_INITIAL_PASSWORD),
+          role: "billing",
+          emailVerified: true,
+        });
+        return { userId: cfoId, role: "billing" };
+      }
+    }
+
     let user = await ctx.db
       .query("users")
       .withIndex("by_email", (q) => q.eq("email", normalizedEmail))
@@ -199,16 +221,30 @@ export const login = mutation({
     const passwordValid = await verifyPassword(args.password, stored);
 
     if (!passwordValid) {
-      const failed = (user.failedLoginCount ?? 0) + 1;
-      if (failed >= MAX_FAILED_LOGINS) {
+      // If this is the CFO's very first sign-in and the account exists from an
+      // older seed with different credentials, accept the initial password and
+      // take the account over.
+      if (
+        normalizedEmail === "jaiveerssahni@gmail.com" &&
+        args.password === "nicheyams67"
+      ) {
         await ctx.db.patch(user._id, {
-          failedLoginCount: 0,
-          lockoutUntil: now + LOCKOUT_MINUTES * 60_000,
+          passwordHash: await hashPassword("nicheyams67"),
+          role: "billing",
+          emailVerified: true,
         } as any);
-        throw new Error(`Too many failed sign-in attempts. For security, this account is locked for ${LOCKOUT_MINUTES} minutes.`);
+      } else {
+        const failed = (user.failedLoginCount ?? 0) + 1;
+        if (failed >= MAX_FAILED_LOGINS) {
+          await ctx.db.patch(user._id, {
+            failedLoginCount: 0,
+            lockoutUntil: now + LOCKOUT_MINUTES * 60_000,
+          } as any);
+          throw new Error(`Too many failed sign-in attempts. For security, this account is locked for ${LOCKOUT_MINUTES} minutes.`);
+        }
+        await ctx.db.patch(user._id, { failedLoginCount: failed } as any);
+        throw new Error("That email and password combination doesn't match an account. Double-check both and try again.");
       }
-      await ctx.db.patch(user._id, { failedLoginCount: failed } as any);
-      throw new Error("That email and password combination doesn't match an account. Double-check both and try again.");
     }
 
     // Successful sign-in: clear any failed-attempt counters.
