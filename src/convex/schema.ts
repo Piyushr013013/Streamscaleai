@@ -129,6 +129,8 @@ export default defineSchema({
     name: v.string(),
     // "percent" = share of contract fee; "fixed" = fixed payout per contract
     compType: v.union(v.literal("percent"), v.literal("fixed")),
+    // Optional monthly salary treated as a fixed monthly cost in the P&L.
+    monthlySalary: v.optional(v.number()),
     percent: v.optional(v.number()), // e.g. 12.5 (percent of fee)
     fixedAmount: v.optional(v.number()), // dollars per fulfilled contract
     userId: v.optional(v.id("users")), // optional linked login account
@@ -168,6 +170,26 @@ export default defineSchema({
     ),
     // How much the client has paid us so far (CFO-editable).
     amountPaid: v.optional(v.number()),
+    note: v.optional(v.string()),
+    createdBy: v.id("users"),
+  }),
+
+  // A general business expense (tools, rent, marketing, salaries, etc.).
+  // Recurring monthly expenses are counted once per month in the P&L.
+  billingExpenses: defineTable({
+    description: v.string(),
+    category: v.union(
+      v.literal("salaries"),
+      v.literal("tools"),
+      v.literal("marketing"),
+      v.literal("office"),
+      v.literal("travel"),
+      v.literal("other")
+    ),
+    amount: v.number(),
+    // Recurring = happens every month automatically; one-off has a date.
+    recurring: v.boolean(),
+    date: v.optional(v.number()), // ms timestamp for one-off expenses
     note: v.optional(v.string()),
     createdBy: v.id("users"),
   }),

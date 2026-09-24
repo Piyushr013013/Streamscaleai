@@ -111,6 +111,7 @@ export const listPeople = query({
         compType: p.compType,
         percent: p.percent,
         fixedAmount: p.fixedAmount,
+        monthlySalary: p.monthlySalary ?? 0,
         note: p.note,
         userId: p.userId,
         totalPaid: paid,
@@ -125,6 +126,7 @@ export const createPerson = mutation({
     compType: v.union(v.literal("percent"), v.literal("fixed")),
     percent: v.optional(v.number()),
     fixedAmount: v.optional(v.number()),
+    monthlySalary: v.optional(v.number()),
     note: v.optional(v.string()),
     userId: v.optional(v.id("users")),
     actorId: v.id("users"),
@@ -144,6 +146,7 @@ export const createPerson = mutation({
       compType: args.compType,
       percent: args.compType === "percent" ? args.percent : undefined,
       fixedAmount: args.compType === "fixed" ? args.fixedAmount : undefined,
+      monthlySalary: args.monthlySalary ?? undefined,
       note: args.note?.trim() || undefined,
       userId: args.userId || undefined,
       createdBy: args.actorId,
@@ -185,6 +188,151 @@ export const deletePerson = mutation({
   handler: async (ctx, args) => {
     await requireCfo(ctx, args.actorId);
     await ctx.db.delete(args.personId);
+    return { ok: true };
+  },
+});
+
+// ---- Expenses ----
+
+export const listExpenses = query({
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId);
+    if (!viewer || (!isCfo(viewer) && !isMasterAdmin(viewer))) return [];
+    const expenses = await ctx.db.query("billingExpenses").collect();
+    return expenses.sort((a: any, b: any) => b._creationTime - a._creationTime);
+  },
+});
+
+export const createExpense = mutation({
+  args: {
+    description: v.string(),
+    category: v.union(
+      v.literal("salaries"),
+      v.literal("tools"),
+      v.literal("marketing"),
+      v.literal("office"),
+      v.literal("travel"),
+      v.literal("other")
+    ),
+    amount: v.number(),
+    recurring: v.boolean(),
+    date: v.optional(v.number()),
+    note: v.optional(v.string()),
+    actorId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    await requireCfo(ctx, args.actorId);
+    if (!args.description.trim()) throw new Error("Enter a description for the expense.");
+    if (args.amount <= 0) throw new Error("Enter an amount greater than zero.");
+    return await ctx.db.insert("billingExpenses", {
+      description: args.description.trim(),
+      category: args.category,
+      amount: args.amount,
+      recurring: args.recurring,
+      date: args.recurring ? undefined : args.date ?? Date.now(),
+      note: args.note?.trim() || undefined,
+      createdBy: args.actorId,
+    });
+  },
+});
+
+export const deleteExpense = mutation({
+  args: { expenseId: v.id("billingExpenses"), actorId: v.id("users") },
+  handler: async (ctx, args) => {
+    await requireCfo(ctx, args.actorId);
+    await ctx.db.delete(args.expenseId);
+    return { ok: true };
+  },
+});
+
+// ---- Financial summary (P&L) ----
+
+/**
+ * Full profit & loss view for the CFO/master admin:
+ * - Revenue = payments actually received from clients.
+ * - Commissions = payouts recorded to people.
+ * - Salaries = sum of monthly salaries on people (fixed costs) + recurring
+ *   "salaries" expenses.
+ * - Other expenses = one-off expenses + recurring non-salary expenses (monthly).
+ * - Profit = revenue - commissions - salaries - other expenses.
+ */
+export const getFinancialSummary = query({
+  args: { viewerId: v.id("users") },
+  handler: async (ctx, args) => {
+    const viewer = await ctx.db.get(args.viewerId);
+    if (!viewer || (!isCfo(viewer) && !isMasterAdmin(viewer))) return null;
+
+    const contracts = await ctx.db.query("billingContracts").collect();
+    const people = await ctx.db.query("billingPeople").collect();
+    const payouts = await ctx.db.query("billingPayouts").collect();
+    const expenses = await ctx.db.query("billingExpenses").collect();
+
+    const totalFees = contracts.reduce((sum: number, c: any) => {
+      if (c.status === "cancelled") return sum;
+      const totalSalaries = (c.workers ?? []).reduce(
+        (s: number, w: any) => s + (w.salary ?? 0),
+        0
+      );
+      const fee =
+        c.feeType === "percent_of_salaries"
+          ? Math.round(totalSalaries * ((c.feePercent ?? 0) / 100))
+          : c.flatFee ?? 0;
+      return sum + fee;
+    }, 0);
+
+    const revenue = contracts.reduce(
+      (sum: number, c: any) => sum + (c.amountPaid ?? 0),
+      0
+    );
+
+    const commissions = payouts.reduce(
+      (sum: number, p: any) => sum + (p.amount ?? 0),
+      0
+    );
+
+    const monthlySalaries = people.reduce(
+      (sum: number, p: any) => sum + (p.monthlySalary ?? 0),
+      0
+    );
+
+    let recurringOther = 0;
+    let oneOffExpenses = 0;
+    for (const e of expenses as any[]) {
+      if (e.recurring) {
+        if (e.category !== "salaries") recurringOther += e.amount;
+      } else {
+        oneOffExpenses += e.amount;
+      }
+    }
+
+    const totalCosts = commissions + monthlySalaries + recurringOther + oneOffExpenses;
+
+    return {
+      totalFees,
+      revenue,
+      outstanding: totalFees - revenue,
+      commissions,
+      monthlySalaries,
+      recurringOther,
+      oneOffExpenses,
+      totalCosts,
+      profit: revenue - totalCosts,
+      margin: revenue > 0 ? Math.round(((revenue - totalCosts) / revenue) * 100) : 0,
+    };
+  },
+});
+
+export const updatePersonSalary = mutation({
+  args: {
+    personId: v.id("billingPeople"),
+    monthlySalary: v.number(),
+    actorId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    await requireCfo(ctx, args.actorId);
+    if (args.monthlySalary < 0) throw new Error("Salary cannot be negative.");
+    await ctx.db.patch(args.personId, { monthlySalary: args.monthlySalary });
     return { ok: true };
   },
 });

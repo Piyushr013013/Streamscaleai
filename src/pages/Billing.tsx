@@ -23,13 +23,15 @@ import {
   UserPlus,
   Users,
   Wallet,
+  Receipt,
+  TrendingUp,
   X,
 } from "lucide-react";
 
 const money = (n: number) =>
   n.toLocaleString("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 
-type TabId = "contracts" | "people" | "earnings" | "settings";
+type TabId = "contracts" | "people" | "earnings" | "expenses" | "settings";
 
 export default function Billing() {
   const navigate = useNavigate();
@@ -65,6 +67,14 @@ export default function Billing() {
     api.billing.listLinkableUsers,
     isCfo ? { viewerId: userId as any } : "skip"
   );
+  const expenses = useQuery(
+    api.billing.listExpenses,
+    isCfo || isMaster ? { viewerId: userId as any } : "skip"
+  );
+  const financials = useQuery(
+    api.billing.getFinancialSummary,
+    isCfo || isMaster ? { viewerId: userId as any } : "skip"
+  );
 
   const createPerson = useMutation(api.billing.createPerson);
   const deletePerson = useMutation(api.billing.deletePerson);
@@ -76,6 +86,9 @@ export default function Billing() {
   const recordPayment = useMutation(api.billing.recordPayment);
   const createViewer = useMutation(api.billing.createViewerAccount);
   const changeCreds = useMutation(api.billing.changeCfoCredentials);
+  const createExpense = useMutation(api.billing.createExpense);
+  const deleteExpense = useMutation(api.billing.deleteExpense);
+  const updatePersonSalary = useMutation(api.billing.updatePersonSalary);
 
   const [activeTab, setActiveTab] = useState<TabId>("contracts");
   const [message, setMessage] = useState("");
@@ -97,6 +110,9 @@ export default function Billing() {
   const [personType, setPersonType] = useState<"percent" | "fixed">("percent");
   const [personPercent, setPersonPercent] = useState("");
   const [personFixed, setPersonFixed] = useState("");
+  const [personMonthlySalary, setPersonMonthlySalary] = useState("");
+  // Inline monthly-salary editing per person row
+  const [salaryEdits, setSalaryEdits] = useState<Record<string, string>>({});
 
   // Contract form
   const [contractCompanyName, setContractCompanyName] = useState("");
@@ -120,6 +136,12 @@ export default function Billing() {
   const [viewerType, setViewerType] = useState<"percent" | "fixed">("percent");
   const [viewerPercent, setViewerPercent] = useState("");
   const [viewerFixed, setViewerFixed] = useState("");
+
+  // Expense form
+  const [expenseDesc, setExpenseDesc] = useState("");
+  const [expenseCategory, setExpenseCategory] = useState<"salaries" | "tools" | "marketing" | "office" | "travel" | "other">("tools");
+  const [expenseAmount, setExpenseAmount] = useState("");
+  const [expenseRecurring, setExpenseRecurring] = useState(false);
 
   // Seed the CFO account once on mount.
   const initCfo = useMutation(api.billing.initCfoAccount);
@@ -273,10 +295,11 @@ export default function Billing() {
         compType: personType,
         percent: personType === "percent" ? parseFloat(personPercent) || 0 : undefined,
         fixedAmount: personType === "fixed" ? parseFloat(personFixed) || 0 : undefined,
+        monthlySalary: parseFloat(personMonthlySalary) || undefined,
         actorId: userId as any,
       });
       flash(`${personName.trim()} added to the payout plan.`);
-      setPersonName(""); setPersonPercent(""); setPersonFixed("");
+      setPersonName(""); setPersonPercent(""); setPersonFixed(""); setPersonMonthlySalary("");
     } catch (err) {
       flash(err instanceof Error ? err.message : "Could not add the person.", true);
     } finally { setBusy(false); }
@@ -381,6 +404,42 @@ export default function Billing() {
   };
 
   const fulfilledContracts = (contracts ?? []).filter((c: any) => c.status === "fulfilled");
+
+  const submitExpense = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!expenseDesc.trim()) return flash("Enter a description for the expense.", true);
+    if (!(parseFloat(expenseAmount) > 0)) return flash("Enter an amount greater than zero.", true);
+    setBusy(true);
+    try {
+      await createExpense({
+        description: expenseDesc,
+        category: expenseCategory,
+        amount: parseFloat(expenseAmount) || 0,
+        recurring: expenseRecurring,
+        actorId: userId as any,
+      });
+      flash(expenseRecurring ? "Monthly expense added — it counts toward costs every month." : "Expense added.");
+      setExpenseDesc(""); setExpenseAmount("");
+    } catch (err) {
+      flash(err instanceof Error ? err.message : "Could not add the expense.", true);
+    } finally { setBusy(false); }
+  };
+
+  const saveSalary = async (p: any) => {
+    const value = salaryEdits[p._id];
+    if (value === undefined) return;
+    const amount = parseFloat(value);
+    if (isNaN(amount) || amount < 0) return flash("Enter a valid monthly salary.", true);
+    setBusy(true);
+    try {
+      await updatePersonSalary({ personId: p._id, monthlySalary: amount, actorId: userId as any });
+      flash(`${p.name}'s monthly salary set to ${money(amount)}.`);
+      setSalaryEdits((cur) => { const next = { ...cur }; delete next[p._id]; return next; });
+    } catch (err) {
+      flash(err instanceof Error ? err.message : "Could not update the salary.", true);
+    } finally { setBusy(false); }
+  };
+
   const statusBadge = (status: string) => {
     if (status === "fulfilled") return <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200">Fulfilled</Badge>;
     if (status === "cancelled") return <Badge className="bg-red-50 text-red-700 border border-red-200">Cancelled</Badge>;
@@ -391,6 +450,7 @@ export default function Billing() {
     ["contracts", "Contracts", <Briefcase className="size-3.5" />, contracts?.length ?? 0],
     ["people", "People", <Users className="size-3.5" />, people?.length ?? 0],
     ["earnings", "Earnings", <Coins className="size-3.5" />, fulfilledContracts.length],
+    ["expenses", "Expenses", <Receipt className="size-3.5" />, expenses?.length ?? 0],
     ["settings", "Settings", <Shield className="size-3.5" />, null],
   ];
 
@@ -442,21 +502,19 @@ export default function Billing() {
             <span>{message}</span>
             <button type="button" onClick={() => setMessage("")} className="ml-auto" aria-label="Dismiss message">×</button>
           </div>
-        )}
-
-        {/* Summary */}
+        )}        {/* Summary — full P&L */}
         <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { label: "Total contract fees (fulfilled)", value: money(fulfilledContracts.reduce((s: number, c: any) => s + c.fee, 0)), icon: <Coins className="size-4" /> },
-            { label: "Client payments received", value: money((contracts ?? []).reduce((s: number, c: any) => s + (c.amountPaid ?? 0), 0)), icon: <Banknote className="size-4" /> },
-            { label: "Paid out to the team", value: money((contracts ?? []).reduce((s: number, c: any) => s + (c.totalPaidOut ?? 0), 0)), icon: <Wallet className="size-4" /> },
-            { label: "Active contracts", value: String((contracts ?? []).filter((c: any) => c.status === "in_progress").length), icon: <Briefcase className="size-4" /> },
+            { label: "Revenue (payments received)", value: money(financials?.revenue ?? 0), icon: <Banknote className="size-4" />, tone: "" },
+            { label: `Total costs (incl. ${money((financials?.monthlySalaries ?? 0))}/mo salaries)`, value: money(financials?.totalCosts ?? 0), icon: <Receipt className="size-4" />, tone: "" },
+            { label: "Profit", value: money(financials?.profit ?? 0), icon: <TrendingUp className="size-4" />, tone: (financials?.profit ?? 0) >= 0 ? "text-emerald-700" : "text-red-600" },
+            { label: `Outstanding fees (margin ${financials?.margin ?? 0}%)`, value: money(financials?.outstanding ?? 0), icon: <Wallet className="size-4" />, tone: "" },
           ].map((stat) => (
             <Card key={stat.label} className="border-slate-200/80 shadow-sm">
               <CardContent className="flex items-center gap-3 pt-5">
                 <div className="flex size-10 items-center justify-center rounded-xl bg-slate-100 text-slate-600">{stat.icon}</div>
                 <div>
-                  <p className="text-xl font-semibold leading-none">{stat.value}</p>
+                  <p className={`text-xl font-semibold leading-none ${stat.tone}`}>{stat.value}</p>
                   <p className="mt-1 text-xs text-slate-500">{stat.label}</p>
                 </div>
               </CardContent>
@@ -767,7 +825,7 @@ export default function Billing() {
                   <CardDescription>Choose a percent of every fulfilled contract fee, or a fixed amount per contract.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={submitPerson} className="grid gap-4 sm:grid-cols-4">
+                  <form onSubmit={submitPerson} className="grid gap-4 sm:grid-cols-5">
                     <div>
                       <Label>Name</Label>
                       <Input value={personName} onChange={(e) => setPersonName(e.target.value)} placeholder="Full name" disabled={busy} className="mt-2" />
@@ -790,6 +848,10 @@ export default function Billing() {
                         <Input type="number" min="0" value={personFixed} onChange={(e) => setPersonFixed(e.target.value)} placeholder="e.g. 5000" disabled={busy} className="mt-2" />
                       </div>
                     )}
+                    <div>
+                      <Label>Monthly salary ($) <span className="text-slate-400 text-xs font-normal">(fixed cost)</span></Label>
+                      <Input type="number" min="0" value={personMonthlySalary} onChange={(e) => setPersonMonthlySalary(e.target.value)} placeholder="e.g. 6000" disabled={busy} className="mt-2" />
+                    </div>
                     <div className="flex items-end">
                       <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800" disabled={busy}>Add person</Button>
                     </div>
@@ -815,6 +877,32 @@ export default function Billing() {
                           {p.compType === "percent" ? `${p.percent}% of each fulfilled contract` : `${money(p.fixedAmount ?? 0)} per fulfilled contract`}
                           {p.userId ? " · linked account ✓" : ""}
                         </p>
+                        {isCfo && (
+                          <div className="mt-1.5 flex items-center gap-1.5">
+                            <span className="text-xs text-slate-400">Monthly salary:</span>
+                            {salaryEdits[p._id] !== undefined ? (
+                              <>
+                                <Input
+                                  type="number"
+                                  min="0"
+                                  className="h-7 w-24 text-xs"
+                                  value={salaryEdits[p._id]}
+                                  onChange={(e) => setSalaryEdits((cur) => ({ ...cur, [p._id]: e.target.value }))}
+                                  autoFocus
+                                />
+                                <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={busy} onClick={() => saveSalary(p)}>Save</Button>
+                                <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={() => setSalaryEdits((cur) => { const next = { ...cur }; delete next[p._id]; return next; })}>Cancel</Button>
+                              </>
+                            ) : (
+                              <>
+                                <span className="text-xs font-medium text-slate-700">{p.monthlySalary ? money(p.monthlySalary) : "not set"}</span>
+                                <Button size="sm" variant="ghost" className="h-6 px-2 text-xs text-slate-500" onClick={() => setSalaryEdits((cur) => ({ ...cur, [p._id]: String(p.monthlySalary ?? 0) }))}>
+                                  Edit
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        )}
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-semibold text-emerald-700">{money(p.totalPaid ?? 0)} paid</span>
@@ -894,6 +982,137 @@ export default function Billing() {
                       )}
                     </div>
                   ))
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Expenses (P&L) */}
+        {activeTab === "expenses" && (
+          <div className="space-y-6">
+            <Card className="border-emerald-200/80 bg-emerald-50/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-base"><TrendingUp className="size-4" /> Profit &amp; loss</CardTitle>
+                <CardDescription>
+                  Revenue = client payments received. Costs = commissions paid out + monthly salaries + other expenses.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-3 text-sm sm:grid-cols-2">
+                  <div className="rounded-lg border border-emerald-200 bg-white p-3">
+                    <p className="text-slate-500">Revenue (client payments)</p>
+                    <p className="text-2xl font-semibold text-emerald-700">{money(financials?.revenue ?? 0)}</p>
+                  </div>
+                  <div className="rounded-lg border border-red-200 bg-white p-3">
+                    <p className="text-slate-500">Total costs</p>
+                    <p className="text-2xl font-semibold text-red-700">{money(financials?.totalCosts ?? 0)}</p>
+                  </div>
+                  <div className="sm:col-span-2 rounded-lg border border-slate-300 bg-white p-3">
+                    <p className="text-slate-500">Profit <span className="text-xs">(margin {financials?.margin ?? 0}%)</span></p>
+                    <p className={`text-3xl font-bold ${(financials?.profit ?? 0) >= 0 ? "text-emerald-700" : "text-red-600"}`}>{money(financials?.profit ?? 0)}</p>
+                  </div>
+                  <div className="rounded-lg bg-white p-3 text-xs text-slate-500 sm:col-span-2">
+                    <p>Commissions paid out: <span className="font-semibold text-slate-700">{money(financials?.commissions ?? 0)}</span></p>
+                    <p>Monthly salaries (fixed): <span className="font-semibold text-slate-700">{money(financials?.monthlySalaries ?? 0)}/mo</span></p>
+                    <p>Recurring monthly expenses: <span className="font-semibold text-slate-700">{money(financials?.recurringOther ?? 0)}/mo</span></p>
+                    <p>One-off expenses: <span className="font-semibold text-slate-700">{money(financials?.oneOffExpenses ?? 0)}</span></p>
+                    <p className="mt-1">Total contract fees booked: <span className="font-semibold text-slate-700">{money(financials?.totalFees ?? 0)}</span> · outstanding: <span className="font-semibold text-slate-700">{money(financials?.outstanding ?? 0)}</span></p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {isCfo && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-base"><Plus className="size-4" /> Add an expense</CardTitle>
+                  <CardDescription>Recurring expenses count every month (rent, tools, salaries). One-off expenses are things you paid for once.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={submitExpense} className="grid gap-4 sm:grid-cols-5">
+                    <div className="sm:col-span-2">
+                      <Label>Description</Label>
+                      <Input value={expenseDesc} onChange={(e) => setExpenseDesc(e.target.value)} placeholder="e.g. AWS bill, rent, ads" disabled={busy} className="mt-2" />
+                    </div>
+                    <div>
+                      <Label>Category</Label>
+                      <select value={expenseCategory} onChange={(e) => setExpenseCategory(e.target.value as any)} className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm" disabled={busy}>
+                        <option value="tools">Tools / software</option>
+                        <option value="marketing">Marketing</option>
+                        <option value="office">Office / rent</option>
+                        <option value="travel">Travel</option>
+                        <option value="salaries">Salaries</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <Label>Amount ($)</Label>
+                      <Input type="number" min="0" value={expenseAmount} onChange={(e) => setExpenseAmount(e.target.value)} placeholder="e.g. 800" disabled={busy} className="mt-2" />
+                    </div>
+                    <div className="flex flex-col justify-end gap-2">
+                      <label className="flex items-center gap-2 text-sm text-slate-600">
+                        <input type="checkbox" checked={expenseRecurring} onChange={(e) => setExpenseRecurring(e.target.checked)} disabled={busy} className="size-4 accent-slate-900" />
+                        Every month
+                      </label>
+                      <Button type="submit" className="bg-slate-900 hover:bg-slate-800" disabled={busy}>Add expense</Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            )}
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">All expenses</CardTitle>
+                <CardDescription>Recurring (monthly) and one-off expenses. Set people's monthly salaries in the People tab.</CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                {(expenses ?? []).length === 0 ? (
+                  <p className="px-4 py-10 text-center text-sm text-slate-400">No expenses recorded yet.</p>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Date</TableHead>
+                        {isCfo && <TableHead className="w-12" />}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {(expenses ?? []).map((x: any) => (
+                        <TableRow key={x._id}>
+                          <TableCell className="font-medium">{x.description}</TableCell>
+                          <TableCell className="capitalize text-slate-500">{x.category}</TableCell>
+                          <TableCell className="font-semibold">{money(x.amount)}</TableCell>
+                          <TableCell>
+                            {x.recurring ? (
+                              <Badge className="bg-blue-50 text-blue-700 border border-blue-200">Monthly</Badge>
+                            ) : (
+                              <Badge className="bg-slate-50 text-slate-600 border border-slate-200">One-off</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="text-slate-500">
+                            {x.recurring ? "every month" : new Date(x.date ?? x._creationTime).toLocaleDateString()}
+                          </TableCell>
+                          {isCfo && (
+                            <TableCell>
+                              <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700" disabled={busy} onClick={async () => {
+                                if (!window.confirm(`Delete the expense "${x.description}"?`)) return;
+                                try { await deleteExpense({ expenseId: x._id, actorId: userId as any }); flash("Expense deleted."); }
+                                catch (err) { flash(err instanceof Error ? err.message : "Could not delete.", true); }
+                              }}>
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </TableCell>
+                          )}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
                 )}
               </CardContent>
             </Card>
