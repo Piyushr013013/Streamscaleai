@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate, Link } from "react-router";
+import { motion } from "framer-motion";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { Button } from "@/components/ui/button";
@@ -149,7 +150,12 @@ export default function Partner() {
 
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
         {/* Hero */}
-        <div className="text-center mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="text-center mb-12"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
             <Sparkles className="size-3.5" />
             Partner with Streamscale
@@ -161,7 +167,7 @@ export default function Partner() {
             We run real benchmarks, deploy custom agents, and find the people who make AI work in the real world.
             Pick what you need and we'll follow up to scope it.
           </p>
-        </div>
+        </motion.div>
 
         {/* Steps preview */}
         <div className="grid grid-cols-3 gap-4 mb-12 max-w-xl mx-auto">
@@ -177,6 +183,11 @@ export default function Partner() {
         </div>
 
         {/* Form card */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+        >
         <Card className="border-border/40 bg-card/50 shadow-xl shadow-slate-200/30">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">What do you need?</CardTitle>
@@ -323,6 +334,7 @@ export default function Partner() {
             </form>
           </CardContent>
         </Card>
+        </motion.div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
           Your request goes directly to the Streamscale team. We'll reply within 1-2 business days.

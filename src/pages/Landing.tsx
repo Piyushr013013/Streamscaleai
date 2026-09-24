@@ -1,22 +1,24 @@
-import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
+import { motion, useInView } from "framer-motion";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { RecruitmentSection } from "@/components/RecruitmentSection";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router";
-import { useState } from "react";
 import {
   ArrowRight,
   ChevronDown,
   ChevronRight,
+  FlaskConical,
+  Search,
+  ShieldCheck,
 } from "lucide-react";
 
 const stats = [
-  { value: "247", label: "Agents Benchmarked" },
-  { value: "38", label: "Companies Partnered" },
-  { value: "5", label: "Industries Covered" },
-  { value: "$410K", label: "Sandbox Placement Revenue" },
+  { value: 247, label: "Agents Benchmarked", suffix: "" },
+  { value: 38, label: "Companies Partnered", suffix: "" },
+  { value: 5, label: "Industries Covered", suffix: "" },
+  { value: 410, label: "Sandbox Placement Revenue", prefix: "$", suffix: "K" },
 ];
 
 const industries = [
@@ -96,6 +98,44 @@ const dataValues = [
   { category: "Ops & workflow logs", value: "$130K" },
 ];
 
+const steps = [
+  {
+    title: "We scope the role",
+    description:
+      "You tell us about the role or process you want tested. We follow up to scope the benchmark and understand what the agent would actually be doing day to day.",
+    detail:
+      "Most engagements start with one role: support, engineering, legal review, finance ops. We map the recurring tasks inside it, pick the ones that matter most, and agree on what a correct result looks like before anything runs.",
+  },
+  {
+    title: "We run real prompts",
+    description:
+      "We take the agent you're evaluating and run it against real prompts drawn from the actual work in that role. No hypothetical scenarios — just the actual tasks.",
+    detail:
+      "Prompts come from the work itself: real tickets, real contracts, real filings, real spreadsheets. The agent gets the same context a new hire would get — no hand-holding, no hidden hints.",
+  },
+  {
+    title: "We record where it holds up",
+    description:
+      "Every test produces specific results: what the agent got right, what it got wrong, and where it broke. We document the exact flaws we found.",
+    detail:
+      "Every output is scored against the human-reviewed answer. We track pass rates by task category, error type, and severity — so you know not just that it failed, but exactly how and why.",
+  },
+  {
+    title: "You get the report",
+    description:
+      "We hand back exactly what we found — not a deck of recommendations, but the actual performance data and the specific issues we identified.",
+    detail:
+      "The report shows pass rate per task category with the human baseline beside it, the specific failure cases with the agent's actual output, and what to fix first.",
+  },
+  {
+    title: "We build off the results",
+    description:
+      "If you want the flaws fixed, that becomes the basis for what we deploy. If you'd rather monetize your data, we can broker that too.",
+    detail:
+      "Version two is built against version one's failures. We re-run the same benchmark, so you can see exactly how much each fix moved the number — no vanity metrics.",
+  },
+];
+
 const faqs = [
   {
     question: "What exactly are you testing?",
@@ -105,7 +145,12 @@ const faqs = [
   {
     question: "What's the difference between this and consulting?",
     answer:
-      "We don't give advice and we don't consult. This is the test itself, and what we build off the back of it. If you want the flaws fixed, that becomes the basis for what we deploy.",
+      "Consultants advise. We test. You get a measurable pass rate, the exact tasks the agent failed, and the agent's actual outputs side-by-side with what a human produced. If you want the flaws fixed, that becomes the basis for what we deploy — but the report itself is evidence, not opinion.",
+  },
+  {
+    question: "Why would our own demos not be enough?",
+    answer:
+      "Demos are cherry-picked by design. A model that solves a curated sample beautifully can still fail the moment it meets your actual data. MIT's 2025 NANDA study found 95% of enterprise generative-AI pilots produced no measurable return — and the cause wasn't model quality, it was the gap between the demo and the workflow. The benchmark is how you close that gap before spending.",
   },
   {
     question: "What industries do you cover?",
@@ -122,7 +167,72 @@ const faqs = [
     answer:
       "You get a detailed report with specific flaws and strengths. If you want to move forward, we can build and deploy the agent into that workflow, or help you monetize your operational data with AI labs.",
   },
+  {
+    question: "How is this different from public benchmarks like SWE-bench?",
+    answer:
+      "Public benchmarks are generic — they measure what a model can do on someone else's work. We measure what a specific agent can do on your work: your tickets, your contracts, your datasets. That's the number that actually predicts whether it survives in your workflow.",
+  },
+  {
+    question: "Is our data safe with you?",
+    answer:
+      "We sign NDAs as a standard part of every engagement, and your prompts and outputs are never used to train anything outside your engagement. Data used for benchmarks stays scoped to the benchmark.",
+  },
 ];
+
+const contextStats = [
+  {
+    value: "95%",
+    source: "of enterprise generative-AI pilots produce zero measurable P&L return",
+    sourceDetail: "MIT NANDA, The GenAI Divide: State of AI in Business 2025 (150 interviews, 350 employee survey, 300 deployments analyzed)",
+  },
+  {
+    value: "1.96%",
+    source: "of real GitHub issues the best model could resolve when SWE-bench launched",
+    sourceDetail: "SWE-bench (Jimenez et al., 2023) — public benchmark scores have since improved, but on curated, generic tasks",
+  },
+  {
+    value: "67%",
+    source: "success rate when companies buy from specialist vendors vs. building internally",
+    sourceDetail: "MIT NANDA, The GenAI Divide: State of AI in Business 2025 — internal builds succeed one-third as often",
+  },
+];
+
+function AnimatedNumber({
+  value,
+  prefix = "",
+  suffix = "",
+}: {
+  value: number;
+  prefix?: string;
+  suffix?: string;
+}) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-40px" });
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const duration = 1200;
+    const start = performance.now();
+    let frame: number;
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setDisplay(Math.round(value * eased));
+      if (progress < 1) frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [inView, value]);
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {display}
+      {suffix}
+    </span>
+  );
+}
 
 function HeroSection() {
   return (
@@ -158,17 +268,28 @@ function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
           >
             Streamscale runs real prompts against real agents to find out
             whether they can actually take over a role — then hands back
             exactly what we found.
           </motion.p>
 
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.28 }}
+            className="text-sm md:text-base text-muted-foreground/80 max-w-2xl mx-auto mb-10 leading-relaxed"
+          >
+            MIT found 95% of enterprise AI pilots return nothing. The reason
+            is almost never the model — it's the gap between the demo and your
+            actual work. We close that gap before you spend.
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Button
@@ -187,7 +308,7 @@ function HeroSection() {
               size="lg"
               className="text-base px-8 py-4 border-border hover:bg-accent"
             >
-              <Link to="/login">Sign In</Link>
+              <Link to="/benchmarks">See the benchmarks</Link>
             </Button>
             <Button
               asChild
@@ -213,7 +334,11 @@ function HeroSection() {
               className="text-center md:text-left p-6 rounded-xl border border-border/30 bg-card/30"
             >
               <div className="text-3xl md:text-4xl font-semibold text-foreground mb-1">
-                {stat.value}
+                <AnimatedNumber
+                  value={stat.value}
+                  prefix={stat.prefix}
+                  suffix={stat.suffix}
+                />
               </div>
               <div className="text-sm text-muted-foreground">
                 {stat.label}
@@ -230,31 +355,59 @@ function HeroSection() {
   );
 }
 
-function StatsSection() {
+function ContextSection() {
   return (
-    <section className="py-16 bg-card/30 border-y border-border/30">
+    <section className="py-24 bg-background">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[
-            { value: "247", label: "Agents Benchmarked" },
-            { value: "38", label: "Companies Partnered" },
-            { value: "5", label: "Industries Covered" },
-            { value: "$410K", label: "Sandbox Placement Revenue" },
-          ].map((stat, index) => (
-            <div
-              key={index}
-              className="text-center p-6 rounded-xl border border-border/30 bg-card/30"
+        <div className="text-center max-w-3xl mx-auto mb-14">
+          <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
+            Why companies get burned
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            The pattern is consistent: the demo looks great, the pilot stalls,
+            and nobody can explain why. Independent research has been
+            quantifying it for years.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {contextStats.map((item, index) => (
+            <motion.div
+              key={item.value}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              className="rounded-2xl border border-border/30 bg-card/50 p-8"
             >
-              <div className="text-3xl font-semibold text-foreground mb-1">
-                {stat.value}
+              <div className="text-5xl font-semibold text-primary mb-4">
+                {item.value}
               </div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
-            </div>
+              <p className="text-base font-medium text-foreground leading-relaxed mb-3">
+                {item.source}
+              </p>
+              <p className="text-xs leading-relaxed text-muted-foreground">
+                {item.sourceDetail}
+              </p>
+            </motion.div>
           ))}
         </div>
-        <p className="text-center text-xs text-muted-foreground mt-8">
-          Illustrative figures for planning purposes
-        </p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="mt-10 max-w-3xl mx-auto rounded-2xl border border-primary/20 bg-primary/5 p-8 text-center"
+        >
+          <p className="text-lg font-medium text-foreground leading-relaxed">
+            A generic public benchmark can't tell you whether an agent survives
+            in your workflow. A vendor demo can't either. The only thing that
+            can is running the agent against{" "}
+            <span className="text-primary">your actual work</span> — and
+            scoring it honestly. That's what we do.
+          </p>
+        </motion.div>
       </div>
     </section>
   );
@@ -264,7 +417,7 @@ function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="py-24 bg-background"
+      className="py-24 bg-card/30 border-y border-border/30"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -286,57 +439,60 @@ function HowItWorksSection() {
               index={index}
               title={step.title}
               description={step.description}
+              detail={step.detail}
             />
           ))}
         </div>
 
-        <div className="mt-16 p-6 rounded-xl border border-border/30 bg-card/30 text-center">
-          <p className="text-muted-foreground text-sm">
-            This isn't consulting. It's the test itself, and what we build off
-            the back of it.
-          </p>
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          {[
+            {
+              icon: FlaskConical,
+              title: "Tests, not advice",
+              text: "The deliverable is a measured pass rate against a human baseline — with the agent's actual outputs attached.",
+            },
+            {
+              icon: Search,
+              title: "Failure-first",
+              text: "Success cases are table stakes. What you're paying for is knowing exactly where and why it breaks.",
+            },
+            {
+              icon: ShieldCheck,
+              title: "NDA-standard",
+              text: "Your prompts, outputs, and data stay scoped to your engagement. Nothing trains outside it.",
+            },
+          ].map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: index * 0.08 }}
+              className="rounded-xl border border-border/30 bg-card/50 p-6"
+            >
+              <div className="mb-3 flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <item.icon className="size-5" />
+              </div>
+              <h3 className="font-medium text-foreground mb-1.5">{item.title}</h3>
+              <p className="text-sm leading-relaxed text-muted-foreground">{item.text}</p>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-const steps = [
-  {
-    title: "We scope the role",
-    description:
-      "You tell us about the role or process you want tested. We follow up to scope the benchmark and understand what the agent would actually be doing day to day.",
-  },
-  {
-    title: "We run real prompts",
-    description:
-      "We take the agent you're evaluating and run it against real prompts drawn from the actual work in that role. No hypothetical scenarios — just the actual tasks.",
-  },
-  {
-    title: "We record where it holds up",
-    description:
-      "Every test produces specific results: what the agent got right, what it got wrong, and where it broke. We document the exact flaws we found.",
-  },
-  {
-    title: "You get the report",
-    description:
-      "We hand back exactly what we found — not a deck of recommendations, but the actual performance data and the specific issues we identified.",
-  },
-  {
-    title: "We build off the results",
-    description:
-      "If you want the flaws fixed, that becomes the basis for what we deploy. If you'd rather monetize your data, we can broker that too.",
-  },
-];
-
 function HowItWorksItem({
   index,
   title,
   description,
+  detail,
 }: {
   index: number;
   title: string;
   description: string;
+  detail: string;
 }) {
   const [isOpen, setIsOpen] = useState(index === 0);
 
@@ -370,9 +526,14 @@ function HowItWorksItem({
         transition={{ duration: 0.25, ease: "easeInOut" }}
         className="overflow-hidden"
       >
-        <p className="px-6 pb-6 pl-[76px] text-muted-foreground leading-relaxed">
-          {description}
-        </p>
+        <div className="px-6 pb-6 pl-[76px] space-y-3">
+          <p className="text-muted-foreground leading-relaxed">
+            {description}
+          </p>
+          <p className="text-sm text-foreground/70 leading-relaxed border-l-2 border-primary/30 pl-4">
+            {detail}
+          </p>
+        </div>
       </motion.div>
     </div>
   );
@@ -382,7 +543,7 @@ function IndustriesSection() {
   return (
     <section
       id="industries"
-      className="py-24 bg-card/30 border-y border-border/30"
+      className="py-24 bg-background"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
@@ -445,6 +606,34 @@ function IndustriesSection() {
               </div>
             </motion.div>
           ))}
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.5 }}
+            className="rounded-xl border border-primary/25 bg-primary/5 p-6 flex flex-col justify-center items-start"
+          >
+            <h3 className="text-lg font-medium text-foreground mb-2">
+              Don't see your industry?
+            </h3>
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
+              We scope new benchmarks around whatever role you're evaluating.
+              If the work produces artifacts a human can judge, we can test
+              against it.
+            </p>
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-1.5 border-primary/30 text-primary hover:bg-primary/10"
+            >
+              <Link to="/partner">
+                Scope yours
+                <ArrowRight className="size-3.5" />
+              </Link>
+            </Button>
+          </motion.div>
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-8">
@@ -460,7 +649,7 @@ function EnterpriseSection() {
   return (
     <section
       id="enterprise"
-      className="py-24 bg-background"
+      className="py-24 bg-card/30 border-y border-border/30"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
@@ -511,9 +700,12 @@ function EnterpriseSection() {
                       {dept.department}
                     </span>
                     <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
-                      <div
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: dept.automatable }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.2 + index * 0.1 }}
                         className="h-full bg-primary rounded-full"
-                        style={{ width: dept.automatable }}
                       />
                     </div>
                     <span className="text-sm text-foreground font-medium w-12 text-right">
@@ -566,9 +758,12 @@ function EnterpriseSection() {
                       {week.week}
                     </span>
                     <div className="flex-1 h-2 rounded-full bg-secondary overflow-hidden">
-                      <div
+                      <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: week.accuracyValue }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.2 + index * 0.1 }}
                         className="h-full bg-primary rounded-full"
-                        style={{ width: week.accuracyValue }}
                       />
                     </div>
                   </div>
@@ -635,12 +830,12 @@ function CTA() {
   return (
     <section
       id="partner"
-      className="py-24 bg-card/30 border-y border-border/30"
+      className="py-24 bg-background"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
-            Partner with us with Streamscale
+            Partner with Streamscale
           </h2>
           <p className="text-lg text-muted-foreground mb-8">
             Tell us about the role or process you want tested, and we'll follow
@@ -658,7 +853,7 @@ function CTA() {
             </Link>
           </Button>
 
-          <div className="grid grid-cols-3 gap-6 text-center">
+          <div className="grid grid-cols-3 gap-6 text-center mt-12">
             {[
               { value: "4 days", label: "Avg. time to scope a benchmark" },
               { value: "5", label: "Industries actively covered" },
@@ -686,12 +881,15 @@ function CTA() {
 
 function FaqSection() {
   return (
-    <section className="py-24 bg-background">
+    <section id="faq" className="py-24 bg-card/30 border-y border-border/30">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <h2 className="text-3xl md:text-4xl font-semibold text-foreground mb-4">
             Frequently asked questions
           </h2>
+          <p className="text-lg text-muted-foreground">
+            Straight answers on what we do, how we do it, and what you get.
+          </p>
         </div>
 
         <div className="space-y-1">
@@ -728,11 +926,19 @@ function FaqItem({
           }`}
         />
       </button>
-      {isOpen && (
+      <motion.div
+        initial={false}
+        animate={{
+          height: isOpen ? "auto" : 0,
+          opacity: isOpen ? 1 : 0,
+        }}
+        transition={{ duration: 0.22, ease: "easeInOut" }}
+        className="overflow-hidden"
+      >
         <p className="mt-4 text-sm text-muted-foreground leading-relaxed pl-8">
           {answer}
         </p>
-      )}
+      </motion.div>
     </div>
   );
 }
@@ -742,8 +948,8 @@ export default function Landing() {
     <div className="min-h-screen bg-background">
       <Navigation />
       <HeroSection />
+      <ContextSection />
       <RecruitmentSection />
-      <StatsSection />
       <HowItWorksSection />
       <IndustriesSection />
       <EnterpriseSection />

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -206,14 +207,22 @@ export default function Jobs() {
       <main className="py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {/* Page Header */}
-          <div className="mb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-12"
+          >
             <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2">
               Open Positions
             </h1>
             <p className="text-lg text-gray-500">
-              Join our team and help us build the future of AI testing
+              Join our team and help us build the future of AI testing — benchmarking agents, deploying them into real workflows, and placing the people who make AI work.
             </p>
-          </div>
+            <p className="mt-2 text-sm text-gray-400">
+              Every application is reviewed by a person. Attach a PDF or Word resume and we'll be in touch if there's a fit.
+            </p>
+          </motion.div>
 
           {/* Jobs List */}
           {!jobs || jobs.length === 0 ? (
@@ -229,8 +238,13 @@ export default function Jobs() {
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {jobs.map((job: any, index: number) => (
-                <Card
+                <motion.div
                   key={job._id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
+                >
+                <Card
                   className="border-gray-200 bg-white hover:border-gray-300 transition-all group"
                 >
                   <CardHeader className="pb-4">
@@ -267,6 +281,7 @@ export default function Jobs() {
                     </Button>
                   </CardContent>
                 </Card>
+                </motion.div>
               ))}
             </div>
           )}

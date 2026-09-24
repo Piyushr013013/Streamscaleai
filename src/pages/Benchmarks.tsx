@@ -121,15 +121,36 @@ const topAgents = [
   { name: "Scoutly Axis — Medicine", score: "69%", trend: "+11 pts vs last quarter" },
 ];
 
+const contextStats = [
+  {
+    value: "95%",
+    source: "of enterprise generative-AI pilots produce zero measurable P&L return",
+    sourceDetail: "MIT NANDA, The GenAI Divide: State of AI in Business 2025",
+  },
+  {
+    value: "67%",
+    source: "success rate when buying from specialist vendors vs. building internally",
+    sourceDetail: "MIT NANDA, The GenAI Divide: State of AI in Business 2025 — internal builds succeed one-third as often",
+  },
+  {
+    value: "1.96%",
+    source: "of real GitHub issues the best model could resolve when SWE-bench launched",
+    sourceDetail: "SWE-bench (Jimenez et al., ICLR 2024) — scores have improved since, but on curated, generic tasks",
+  },
+];
+
 function ScoreBar({ label, value }: { label: string; value: string }) {
   const pct = parseInt(value, 10);
   return (
     <div className="flex items-center gap-3">
       <span className="w-28 shrink-0 text-sm text-muted-foreground">{label}</span>
       <div className="h-2 flex-1 overflow-hidden rounded-full bg-secondary">
-        <div
+        <motion.div
+          initial={{ width: 0 }}
+          whileInView={{ width: `${pct}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
           className={`h-full rounded-full ${label === "Human baseline" ? "bg-foreground/60" : "bg-primary"}`}
-          style={{ width: `${pct}%` }}
         />
       </div>
       <span
@@ -180,6 +201,18 @@ export default function Benchmarks() {
               where agents hold up, where they break, and how far they still
               have to go to reach a human baseline.
             </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.22 }}
+              className="mt-3 text-sm leading-relaxed text-muted-foreground/80"
+            >
+              Context for why this matters: MIT's 2025 NANDA study found 95% of
+              enterprise generative-AI pilots deliver no measurable return —
+              and when SWE-bench launched, the best model resolved under 2% of
+              real GitHub issues. Benchmarks are how you find out which kind of
+              agent you're looking at before the money is spent.
+            </motion.p>
           </div>
 
           <motion.div
@@ -200,6 +233,32 @@ export default function Benchmarks() {
               </div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      {/* Real-world context band */}
+      <section className="border-y border-border/30 bg-primary/[0.04] py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {contextStats.map((item, index) => (
+              <motion.div
+                key={item.value}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.08 }}
+                className="rounded-xl border border-border/30 bg-card/50 p-6"
+              >
+                <div className="text-3xl font-semibold text-primary">{item.value}</div>
+                <p className="mt-2 text-sm font-medium leading-relaxed text-foreground">
+                  {item.source}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {item.sourceDetail}
+                </p>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -312,7 +371,7 @@ export default function Benchmarks() {
         </div>
       </section>
 
-      {/* Scoutly Axis leaderboard */}
+      {/* Leaderboard */}
       <section className="py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
