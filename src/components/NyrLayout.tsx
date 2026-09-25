@@ -17,21 +17,23 @@ export function NyrNav() {
           Streamscale
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-[#9fa5c8] md:flex">
-          {navAnchors.map((a) =>
-            a.href.startsWith("/#") ? (
-              <Link key={a.label} to={a.href} className="transition-colors hover:text-[#faf8f1]">
-                {a.label}
-              </Link>
-            ) : (
-              <Link key={a.label} to={a.href} className="transition-colors hover:text-[#faf8f1]">
-                {a.label}
-              </Link>
-            )
-          )}
+          {navAnchors.map((a) => (
+            <Link key={a.label} to={a.href} className="transition-colors hover:text-[#faf8f1]">
+              {a.label}
+            </Link>
+          ))}
         </nav>
-        <Link to="/partner" className="nyr-ghost-btn !py-1.5 !text-[0.8rem]">
-          Start hiring <ArrowUpRight className="size-3.5" />
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/login"
+            className="text-sm text-[#9fa5c8] transition-colors hover:text-[#faf8f1]"
+          >
+            Sign in
+          </Link>
+          <Link to="/partner" className="nyr-ghost-btn !py-1.5 !text-[0.8rem]">
+            Start hiring <ArrowUpRight className="size-3.5" />
+          </Link>
+        </div>
       </div>
     </header>
   );
@@ -75,6 +77,8 @@ export function NyrFooter() {
             <div className="flex flex-col gap-2 text-sm text-[#faf8f1]/65">
               <Link to="/privacy" className="hover:text-[#faf8f1]">Privacy</Link>
               <Link to="/terms" className="hover:text-[#faf8f1]">Terms</Link>
+              <Link to="/login" className="hover:text-[#faf8f1]">Sign in</Link>
+              <Link to="/admin" className="hover:text-[#faf8f1]">Admin</Link>
             </div>
           </div>
         </div>
