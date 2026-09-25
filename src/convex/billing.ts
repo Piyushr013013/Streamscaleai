@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
+import { hashPassword, verifyPassword } from "./auth";
 
 /**
  * Accounting / billing system.
@@ -35,11 +36,6 @@ async function requireCfo(ctx: any, actorId: any) {
     );
   }
   return actor;
-}
-
-async function hashPassword(password: string): Promise<string> {
-  const { hashPassword: hash } = await import("./auth");
-  return hash(password);
 }
 
 /** Ensure the CFO account exists with the initial credentials. */
@@ -670,7 +666,6 @@ export const changeCfoCredentials = mutation({
   },
   handler: async (ctx, args) => {
     const actor = await requireCfo(ctx, args.actorId);
-    const { verifyPassword, hashPassword: hash } = await import("./auth");
 
     const ok = await verifyPassword(args.currentPassword, actor.passwordHash);
     if (!ok) {
@@ -698,7 +693,7 @@ export const changeCfoCredentials = mutation({
       if (args.newPassword.length < 6) {
         throw new Error("The new password must be at least 6 characters.");
       }
-      patch.passwordHash = await hash(args.newPassword);
+      patch.passwordHash = await hashPassword(args.newPassword);
     }
 
     if (Object.keys(patch).length === 0) {
@@ -763,11 +758,10 @@ export const createViewerAccount = mutation({
           "That email already has an account. Use 'Connect to an existing account' instead."
         );
       }
-      const { hashPassword: hash } = await import("./auth");
       personUserId = await ctx.db.insert("users", {
         email,
         name: args.name.trim(),
-        passwordHash: await hash(args.password),
+        passwordHash: await hashPassword(args.password),
         role: "user",
         emailVerified: true,
       });
