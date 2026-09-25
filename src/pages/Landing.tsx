@@ -272,8 +272,8 @@ function HeroSection() {
           >
             Real recruiters for real roles. We hunt down top candidates, score
             every one on our 100-point scale — resume, experience, technical
-            skills — and only send you the 90+. And if AI can do part of the
-            work, we'll tell you that too.
+            skills — and only send you the 90+. We also build and test
+            enterprise AI systems, so we know exactly what great looks like.
           </motion.p>
 
           <motion.p
@@ -309,7 +309,7 @@ function HeroSection() {
               size="lg"
               className="text-base px-8 py-4 border-border hover:bg-accent"
             >
-              <Link to="/benchmarks">Or automate it with AI</Link>
+              <Link to="/benchmarks">Our AI systems work</Link>
             </Button>
             <Button
               asChild
