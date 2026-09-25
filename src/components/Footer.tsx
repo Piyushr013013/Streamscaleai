@@ -41,8 +41,8 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              We recruit, build, and test your AI workforce. Real prompts against
-              real agents, then we hand back exactly what we found.
+              We recruit, build, and test AI worker twins for your roles. Only agents scoring above 90 on our scale
+              reach your team — real agents, real scenarios, real results.
             </p>
 
             {/* Social Links */}
