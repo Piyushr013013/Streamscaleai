@@ -161,25 +161,25 @@ export default function Billing() {
 
   if (access === undefined) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50">
-        <Loader2 className="size-6 animate-spin text-slate-400" />
+      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#f0f0ea]">
+        <Loader2 className="size-6 animate-spin text-[#6a7099]" />
       </main>
     );
   }
 
   if (isPerson && myEarnings) {
     return (
-      <main className="min-h-screen bg-slate-50 text-slate-900">
-        <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-0 z-40">
+      <main className="nyr nyr-admin min-h-screen bg-[#f0f0ea] text-[#171827]">
+        <header className="sticky top-0 z-40 border-b border-white/5 bg-[#171827]/95 text-[#faf8f1] backdrop-blur">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
             <div className="flex items-center gap-3">
-              <div className="flex size-9 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white">S</div>
+              <div className="flex size-9 items-center justify-center rounded-xl bg-[#9fa5c8] text-sm font-bold text-[#171827]">S</div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Streamscale</p>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9fa5c8]">Streamscale</p>
                 <h1 className="text-base font-semibold leading-tight">Your earnings</h1>
               </div>
             </div>
-            <Button variant="outline" size="sm" onClick={signOut}>Sign out</Button>
+            <Button variant="outline" size="sm" className="rounded-full border-[#d9dced]/20 bg-transparent text-[#faf8f1]/80 hover:bg-[#d9dced]/10 hover:text-[#faf8f1]" onClick={signOut}>Sign out</Button>
           </div>
         </header>
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 space-y-6">
@@ -247,15 +247,15 @@ export default function Billing() {
 
   if (!isCfo && !isMaster) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f7f8fa] p-6">
-        <Card className="max-w-md">
+      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#171827] p-6 text-[#faf8f1]">
+        <Card className="max-w-md border-[#d9dced]/15 bg-[#1d1e33]/90 text-[#faf8f1]">
           <CardContent className="pt-8 text-center">
-            <Shield className="mx-auto size-10 text-slate-400" />
+            <Shield className="mx-auto size-10 text-[#9fa5c8]" />
             <h1 className="mt-4 text-xl font-semibold">Billing access required</h1>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-[#faf8f1]/55">
               This area is only available to the CFO and administrators. If you should have access, ask the CFO to connect your account.
             </p>
-            <Button className="mt-6" onClick={() => navigate("/login")}>Sign in</Button>
+            <Button className="mt-6 rounded-full bg-[#9fa5c8] font-bold text-[#171827] hover:bg-[#b8bdd6]" onClick={() => navigate("/login")}>Sign in</Button>
           </CardContent>
         </Card>
       </main>
@@ -467,21 +467,21 @@ export default function Billing() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-0 z-40">
+    <main className="nyr nyr-admin min-h-screen bg-[#f0f0ea] text-[#171827]">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#171827]/95 text-[#faf8f1] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white">S</div>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#9fa5c8] text-sm font-bold text-[#171827]">S</div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Streamscale</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9fa5c8]">Streamscale</p>
               <h1 className="text-base font-semibold leading-tight">
                 Accounting {isCfo ? "" : "· read-only"}
               </h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" onClick={() => navigate("/dashboard")}>Back to dashboard</Button>
-            <Button variant="outline" size="sm" onClick={signOut}>Sign out</Button>
+            <Button variant="outline" size="sm" className="rounded-full border-[#d9dced]/20 bg-transparent text-[#faf8f1]/80 hover:bg-[#d9dced]/10 hover:text-[#faf8f1]" onClick={() => navigate("/dashboard")}>Back to dashboard</Button>
+            <Button variant="outline" size="sm" className="rounded-full border-[#d9dced]/20 bg-transparent text-[#faf8f1]/80 hover:bg-[#d9dced]/10 hover:text-[#faf8f1]" onClick={signOut}>Sign out</Button>
           </div>
         </div>
       </header>

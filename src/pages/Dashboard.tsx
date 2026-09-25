@@ -1,10 +1,9 @@
 import { useAuth } from "@/hooks/use-auth";
-import { LogOut, Settings, Shield } from "lucide-react";
+import { LogOut, Settings, Shield, Wallet } from "lucide-react";
 import { useNavigate } from "react-router";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { NyrNav, NyrFooter } from "@/components/NyrLayout";
 import {
-  FileText, Mail, Trash2, Wallet
+  FileText, Mail, Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -68,45 +67,71 @@ export default function Dashboard() {
   const applicationList = partnerRequests?.applications ?? [];
 
   return (
-    <div className="min-h-screen bg-[#f7f8fa]">
-      <Navigation />
-      <main className="pt-8 pb-16">
-        <div className="mx-auto max-w-5xl px-4 py-8">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p className="text-sm font-medium text-slate-500">Dashboard</p>
-              <h1 className="text-2xl font-semibold tracking-tight text-slate-900 mt-1">
-                {user && "name" in user
-                  ? `Welcome, ${user.name}`
-                  : "Welcome"}
-              </h1>
-            </div>
-            <div className="flex items-center gap-2">
+    <div className="nyr nyr-admin min-h-screen bg-[#f0f0ea] text-[#171827]">
+      <NyrNav />
+      <main className="pb-16">
+        {/* Page hero (dark, matches admin + benchmarks heroes) */}
+        <section className="relative overflow-hidden bg-[#171827] text-[#faf8f1]">
+          <div className="nyr-grid-noise absolute inset-0" />
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(159,165,200,.16), transparent 60%)",
+            }}
+          />
+          <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <p className="nyr-eyebrow mb-4">
+              <span className="nyr-status-dot" />
+              Dashboard
+            </p>
+            <h1 className="nyr-display !text-[clamp(2.2rem,5vw,3.6rem)]">
+              {user && "name" in user && user.name ? (
+                <>Welcome, <em>{user.name}</em></>
+              ) : (
+                <>Your <em>workspace.</em></>
+              )}
+            </h1>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
               {showBillingLink && (
-                <Button variant="outline" className="gap-2" onClick={() => navigate("/billing")}>
+                <Button
+                  className="h-9 gap-2 rounded-full border border-[#d9dced]/20 bg-transparent px-4 text-sm font-bold text-[#faf8f1]/80 shadow-none hover:bg-[#d9dced]/10 hover:text-[#faf8f1]"
+                  onClick={() => navigate("/billing")}
+                >
                   <Wallet className="size-4" />
                   {billingAccess?.access === "person" ? "My earnings" : "Accounting"}
                 </Button>
               )}
               {isMasterAdmin && (
-                <Button variant="outline" className="gap-2" onClick={() => navigate("/admin")}>
+                <Button
+                  className="h-9 gap-2 rounded-full border border-[#d9dced]/20 bg-transparent px-4 text-sm font-bold text-[#faf8f1]/80 shadow-none hover:bg-[#d9dced]/10 hover:text-[#faf8f1]"
+                  onClick={() => navigate("/admin")}
+                >
                   <Shield className="size-4" />
                   Admin workspace
                 </Button>
               )}
-              <Button variant="outline" className="gap-2" onClick={() => navigate("/profile")}>
+              <Button
+                className="h-9 gap-2 rounded-full border border-[#d9dced]/20 bg-transparent px-4 text-sm font-bold text-[#faf8f1]/80 shadow-none hover:bg-[#d9dced]/10 hover:text-[#faf8f1]"
+                onClick={() => navigate("/profile")}
+              >
                 <Settings className="size-4" />
                 Profile
               </Button>
-              <Button variant="outline" className="gap-2" onClick={handleSignOut}>
+              <Button
+                className="h-9 gap-2 rounded-full bg-[#9fa5c8] px-4 text-sm font-bold text-[#171827] shadow-[0_8px_22px_rgba(159,165,200,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#b8bdd6]"
+                onClick={handleSignOut}
+              >
                 <LogOut className="size-4" />
                 Sign out
               </Button>
             </div>
           </div>
+        </section>
 
+        <div className="mx-auto max-w-6xl px-4 pt-10 sm:px-6">
           {!isMasterAdmin && !canViewPartnerRequests && !canViewApplications ? (
-            <Card className="border-slate-200 bg-white">
+            <Card>
               <CardHeader>
                 <CardTitle>Your workspace</CardTitle>
                 <CardDescription>
@@ -114,7 +139,7 @@ export default function Dashboard() {
                   tools are available to administrators.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="text-sm text-slate-600">
+              <CardContent className="text-sm text-muted-foreground">
                 <p>
                   Need access to partnership requests, resumes, or account management? Ask a
                   Streamscale administrator to grant your account admin permissions.
@@ -122,11 +147,11 @@ export default function Dashboard() {
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-5">
               {/* Partnership requests */}
-              <Card className="border-slate-200 bg-white">
+              <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-base">
                     <Mail className="size-4" />
                     Partnership requests
                   </CardTitle>
@@ -134,7 +159,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="p-0">
                   {requestList.length === 0 ? (
-                    <p className="px-4 py-6 text-sm text-slate-500">No partnership requests yet.</p>
+                    <p className="px-4 py-6 text-sm text-muted-foreground">No partnership requests yet.</p>
                   ) : (
                     <Table>
                       <TableHeader>
@@ -150,7 +175,7 @@ export default function Dashboard() {
                         {requestList.map((request) => (
                           <TableRow key={request._id}>
                             <TableCell className="font-medium">{request.name}</TableCell>
-                            <TableCell className="text-slate-500">{request.email}</TableCell>
+                            <TableCell className="text-muted-foreground">{request.email}</TableCell>
                             <TableCell>
                               <div className="flex flex-wrap gap-1">
                                 {request.services?.length
@@ -159,7 +184,7 @@ export default function Dashboard() {
                                     ))
                                   : request.service
                                     ? <Badge variant="outline">{request.service}</Badge>
-                                    : <span className="text-xs text-slate-400">—</span>}
+                                    : <span className="text-xs text-muted-foreground">—</span>}
                               </div>
                             </TableCell>
                             <TableCell>
@@ -167,8 +192,8 @@ export default function Dashboard() {
                                 variant="outline"
                                 className={
                                   request.status === "contacted"
-                                    ? "border-emerald-600 text-emerald-700"
-                                    : "border-slate-300 text-slate-600"
+                                    ? "border-[#4b548b] text-[#30375f]"
+                                    : "border-[rgba(75,84,139,0.3)] text-[#6a7099]"
                                 }
                               >
                                 {request.status}
@@ -180,7 +205,7 @@ export default function Dashboard() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-emerald-600 hover:text-emerald-700"
+                                    className="font-bold text-[#4b548b] hover:text-[#30375f]"
                                     onClick={() =>
                                       markContacted({ requestId: request._id, editorId: userId as Id<"users"> })
                                     }
@@ -192,7 +217,7 @@ export default function Dashboard() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-red-600 hover:text-red-700"
+                                    className="text-red-700 hover:text-red-900"
                                     onClick={() =>
                                       deletePartnerRequest({ requestId: request._id, editorId: userId as Id<"users"> })
                                     }
@@ -211,9 +236,9 @@ export default function Dashboard() {
               </Card>
 
               {/* Applications */}
-              <Card className="border-slate-200 bg-white">
+              <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-base">
                     <FileText className="size-4" />
                     Applications received
                   </CardTitle>
@@ -221,7 +246,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="p-0">
                   {applicationList.length === 0 ? (
-                    <p className="px-4 py-6 text-sm text-slate-500">No applications yet.</p>
+                    <p className="px-4 py-6 text-sm text-muted-foreground">No applications yet.</p>
                   ) : (
                     <Table>
                       <TableHeader>
@@ -236,11 +261,11 @@ export default function Dashboard() {
                         {applicationList.map((application) => (
                           <TableRow key={application._id}>
                             <TableCell className="font-medium">{application.applicantName}</TableCell>
-                            <TableCell className="text-slate-500">{application.applicantEmail}</TableCell>
+                            <TableCell className="text-muted-foreground">{application.applicantEmail}</TableCell>
                             <TableCell>
                               <Badge variant="outline">{application.status}</Badge>
                             </TableCell>
-                            <TableCell className="text-slate-600">
+                            <TableCell className="text-muted-foreground">
                               {application.message ?? "—"}
                             </TableCell>
                           </TableRow>
@@ -252,9 +277,9 @@ export default function Dashboard() {
               </Card>
 
               {/* Resumes */}
-              <Card className="border-slate-200 bg-white">
+              <Card>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-base">
                     <FileText className="size-4" />
                     Resumes received
                   </CardTitle>
@@ -262,7 +287,7 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent className="p-0">
                   {!resumes || resumes.length === 0 ? (
-                    <p className="px-4 py-6 text-sm text-slate-500">No resumes received yet.</p>
+                    <p className="px-4 py-6 text-sm text-muted-foreground">No resumes received yet.</p>
                   ) : (
                     <Table>
                       <TableHeader>
@@ -280,18 +305,18 @@ export default function Dashboard() {
                             <TableCell className="font-medium">
                               {resume.applicantName ?? "—"}
                             </TableCell>
-                            <TableCell className="text-slate-500">
+                            <TableCell className="text-muted-foreground">
                               {resume.applicantEmail ?? "—"}
                             </TableCell>
-                            <TableCell className="text-slate-500">{resume.originalName}</TableCell>
-                            <TableCell className="text-slate-500">
+                            <TableCell className="text-muted-foreground">{resume.originalName}</TableCell>
+                            <TableCell className="text-muted-foreground">
                               {(resume.sizeBytes / 1024).toFixed(1)} KB
                             </TableCell>
                             <TableCell className="text-right">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-600 hover:text-red-700"
+                                className="text-red-700 hover:text-red-900"
                                 onClick={() =>
                                   deleteResume({ resumeId: resume._id, editorId: userId as Id<"users"> })
                                 }
@@ -310,7 +335,7 @@ export default function Dashboard() {
           )}
         </div>
       </main>
-      <Footer />
+      <NyrFooter />
     </div>
   );
 }
