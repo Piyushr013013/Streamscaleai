@@ -103,7 +103,7 @@ export default function NotFound() {
           className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-3" />
-          Streamscale — We test AI before your company bets on it
+          Streamscale — We recruit, build, and test your AI workforce
         </Link>
       </div>
     </motion.div>

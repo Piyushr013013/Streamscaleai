@@ -41,7 +41,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              We test AI before your company bets on it. Real prompts against
+              We recruit, build, and test your AI workforce. Real prompts against
               real agents, then we hand back exactly what we found.
             </p>
 

@@ -260,8 +260,8 @@ function HeroSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground mb-6"
           >
-            We test AI before your company{" "}
-            <span className="text-primary">bets on it</span>
+            We recruit, build, and test your{" "}
+            <span className="text-primary">AI workforce</span>
           </motion.h1>
 
           <motion.p
@@ -270,9 +270,9 @@ function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
           >
-            Streamscale runs real prompts against real agents to find out
-            whether they can actually take over a role — then hands back
-            exactly what we found.
+            Streamscale finds the right AI agents for your roles, builds and
+            stress-tests them against real work scenarios, and delivers AI
+            employees that perform — not demos.
           </motion.p>
 
           <motion.p
@@ -283,7 +283,7 @@ function HeroSection() {
           >
             MIT found 95% of enterprise AI pilots return nothing. The reason
             is almost never the model — it's the gap between the demo and your
-            actual work. We close that gap before you spend.
+            actual work. We close that gap before you hire.
           </motion.p>
 
           <motion.div
@@ -298,7 +298,7 @@ function HeroSection() {
               className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-base px-8 py-4"
             >
               <Link to="/partner">
-                Partner with us
+                Build your AI team
                 <ArrowRight className="size-4" />
               </Link>
             </Button>
