@@ -402,7 +402,7 @@ export default function Landing() {
                   ))}
                 </ul>
                 <div className="mt-7">
-                  <Link to={a.cta.to} className="nyr-primary-btn !bg-[#171827] !text-[#faf8f1] hover:!opacity-90">
+                  <Link to={a.cta.to} className="nyr-primary-btn nyr-ink">
                     {a.cta.label} <ArrowRight className="size-4" />
                   </Link>
                 </div>

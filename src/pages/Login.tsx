@@ -150,7 +150,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-11 w-full gap-2 bg-[#9fa5c8] text-[#171827] hover:bg-[#b8bdd6]"
+                className="h-12 w-full gap-2 rounded-full bg-[#9fa5c8] text-base font-bold text-[#171827] shadow-[0_10px_30px_rgba(159,165,200,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#b8bdd6]"
               >
                 {isSubmitting ? (
                   <>

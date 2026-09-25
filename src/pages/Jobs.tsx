@@ -267,7 +267,7 @@ export default function Jobs() {
                     )}
                     <Button
                       onClick={() => handleApply(job)}
-                      className="w-full bg-[#171827] text-[#faf8f1] hover:bg-[#30375f]"
+                      className="h-11 w-full gap-2 rounded-full bg-[#171827] text-[0.9rem] font-bold text-[#faf8f1] shadow-[0_10px_30px_rgba(23,24,39,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#30375f]"
                     >
                       Apply now <ArrowRight className="size-4" />
                     </Button>
@@ -422,16 +422,16 @@ export default function Jobs() {
                       type="button"
                       variant="outline"
                       onClick={() => { setShowApplyForm(null); setApplied(false); }}
-                      className="flex-1"
+                      className="h-11 flex-1 rounded-full border-slate-300"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       disabled={applying}
-                      className="flex-1 bg-slate-900 hover:bg-slate-800"
+                      className="h-11 flex-1 rounded-full bg-[#171827] font-bold text-[#faf8f1] hover:bg-[#30375f]"
                     >
-                      {applying ? "Submitting application..." : "Submit application"}
+                      {applying ? "Submitting..." : "Submit application"}
                     </Button>
                   </div>
                 </form>

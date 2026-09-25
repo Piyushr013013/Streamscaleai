@@ -306,7 +306,7 @@ export default function Partner() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full gap-2 bg-[#171827] hover:bg-[#30375f] text-[#faf8f1] h-12 text-base"
+                className="h-12 w-full gap-2 rounded-full bg-[#171827] text-base font-bold text-[#faf8f1] shadow-[0_10px_30px_rgba(23,24,39,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#30375f]"
               >
                 {submitting ? "Sending request…" : "Send request"}
                 {!submitting && <ArrowRight className="size-4" />}

@@ -30,7 +30,7 @@ export function NyrNav() {
           >
             Sign in
           </Link>
-          <Link to="/partner" className="nyr-ghost-btn !py-1.5 !text-[0.8rem]">
+          <Link to="/partner" className="nyr-ghost-btn nyr-sm">
             Start hiring <ArrowUpRight className="size-3.5" />
           </Link>
         </div>
