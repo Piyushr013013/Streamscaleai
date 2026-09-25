@@ -107,7 +107,7 @@ export default function Billing() {
 
   // Person form
   const [personName, setPersonName] = useState("");
-  const [personType, setPersonType] = useState<"percent" | "fixed">("percent");
+  const [personType, setPersonType] = useState<"percent" | "fixed" | "both">("percent");
   const [personPercent, setPersonPercent] = useState("");
   const [personFixed, setPersonFixed] = useState("");
   const [personMonthlySalary, setPersonMonthlySalary] = useState("");
@@ -133,7 +133,7 @@ export default function Billing() {
   const [viewerEmail, setViewerEmail] = useState("");
   const [viewerPassword, setViewerPassword] = useState("");
   const [viewerLinkUserId, setViewerLinkUserId] = useState("");
-  const [viewerType, setViewerType] = useState<"percent" | "fixed">("percent");
+  const [viewerType, setViewerType] = useState<"percent" | "fixed" | "both">("percent");
   const [viewerPercent, setViewerPercent] = useState("");
   const [viewerFixed, setViewerFixed] = useState("");
 
@@ -293,8 +293,14 @@ export default function Billing() {
       await createPerson({
         name: personName,
         compType: personType,
-        percent: personType === "percent" ? parseFloat(personPercent) || 0 : undefined,
-        fixedAmount: personType === "fixed" ? parseFloat(personFixed) || 0 : undefined,
+        percent:
+          personType === "percent" || personType === "both"
+            ? parseFloat(personPercent) || 0
+            : undefined,
+        fixedAmount:
+          personType === "fixed" || personType === "both"
+            ? parseFloat(personFixed) || 0
+            : undefined,
         monthlySalary: parseFloat(personMonthlySalary) || undefined,
         actorId: userId as any,
       });
@@ -391,8 +397,14 @@ export default function Billing() {
         password: viewerPassword || undefined,
         linkExistingUserId: viewerMode === "link" ? (viewerLinkUserId as any) : undefined,
         compType: viewerType,
-        percent: viewerType === "percent" ? parseFloat(viewerPercent) || 0 : undefined,
-        fixedAmount: viewerType === "fixed" ? parseFloat(viewerFixed) || 0 : undefined,
+        percent:
+          viewerType === "percent" || viewerType === "both"
+            ? parseFloat(viewerPercent) || 0
+            : undefined,
+        fixedAmount:
+          viewerType === "fixed" || viewerType === "both"
+            ? parseFloat(viewerFixed) || 0
+            : undefined,
         actorId: userId as any,
       });
       flash(viewerMode === "new" ? "Account created. Share the credentials with them." : "Account connected. They can now see their earnings.");
@@ -703,7 +715,7 @@ export default function Billing() {
                                 <span className="text-slate-700">
                                   {s.name}
                                   <span className="ml-2 text-xs text-slate-400">
-                                    {s.compType === "percent" ? "percent share" : "fixed"}
+                                    {s.compType === "percent" ? "percent share" : s.compType === "both" ? "percent + fixed" : "fixed"}
                                   </span>
                                 </span>
                                 <span className="font-medium">
@@ -794,7 +806,11 @@ export default function Billing() {
                         <TableRow key={p._id}>
                           <TableCell className="font-medium">{p.name}</TableCell>
                           <TableCell className="text-slate-500">
-                            {p.compType === "percent" ? `${p.percent}% of fee` : `${money(p.fixedAmount ?? 0)} fixed`}
+                            {p.compType === "percent"
+                              ? `${p.percent}% of fee`
+                              : p.compType === "both"
+                              ? `${p.percent}% + ${money(p.fixedAmount ?? 0)}`
+                              : `${money(p.fixedAmount ?? 0)} fixed`}
                           </TableCell>
                           <TableCell className="text-slate-500">
                             {money(
@@ -835,14 +851,16 @@ export default function Billing() {
                       <select value={personType} onChange={(e) => setPersonType(e.target.value as any)} className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm" disabled={busy}>
                         <option value="percent">Percent of fee</option>
                         <option value="fixed">Fixed per contract</option>
+                        <option value="both">Both (percent + fixed)</option>
                       </select>
                     </div>
-                    {personType === "percent" ? (
+                    {personType !== "fixed" && (
                       <div>
                         <Label>Percent (%)</Label>
                         <Input type="number" min="0" max="100" step="0.5" value={personPercent} onChange={(e) => setPersonPercent(e.target.value)} placeholder="e.g. 10" disabled={busy} className="mt-2" />
                       </div>
-                    ) : (
+                    )}
+                    {personType !== "percent" && (
                       <div>
                         <Label>Fixed amount ($)</Label>
                         <Input type="number" min="0" value={personFixed} onChange={(e) => setPersonFixed(e.target.value)} placeholder="e.g. 5000" disabled={busy} className="mt-2" />
@@ -874,7 +892,11 @@ export default function Billing() {
                       <div>
                         <p className="font-medium">{p.name}</p>
                         <p className="text-sm text-slate-500">
-                          {p.compType === "percent" ? `${p.percent}% of each fulfilled contract` : `${money(p.fixedAmount ?? 0)} per fulfilled contract`}
+                          {p.compType === "percent"
+                            ? `${p.percent}% of each fulfilled contract`
+                            : p.compType === "both"
+                            ? `${p.percent}% + ${money(p.fixedAmount ?? 0)} per fulfilled contract`
+                            : `${money(p.fixedAmount ?? 0)} per fulfilled contract`}
                           {p.userId ? " · linked account ✓" : ""}
                         </p>
                         {isCfo && (
@@ -1206,14 +1228,16 @@ export default function Billing() {
                         <select value={viewerType} onChange={(e) => setViewerType(e.target.value as any)} className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm" disabled={busy}>
                           <option value="percent">Percent of fee</option>
                           <option value="fixed">Fixed per contract</option>
+                          <option value="both">Both (percent + fixed)</option>
                         </select>
                       </div>
-                      {viewerType === "percent" ? (
+                      {viewerType !== "fixed" && (
                         <div>
                           <Label>Percent (%)</Label>
                           <Input type="number" min="0" max="100" step="0.5" value={viewerPercent} onChange={(e) => setViewerPercent(e.target.value)} placeholder="e.g. 10" disabled={busy} className="mt-2" />
                         </div>
-                      ) : (
+                      )}
+                      {viewerType !== "percent" && (
                         <div>
                           <Label>Fixed amount ($)</Label>
                           <Input type="number" min="0" value={viewerFixed} onChange={(e) => setViewerFixed(e.target.value)} placeholder="e.g. 5000" disabled={busy} className="mt-2" />
@@ -1288,14 +1312,16 @@ export default function Billing() {
                       <select value={viewerType} onChange={(e) => setViewerType(e.target.value as any)} className="mt-2 h-10 w-full rounded-md border border-slate-200 bg-white px-3 text-sm" disabled={busy}>
                         <option value="percent">Percent of fee</option>
                         <option value="fixed">Fixed per contract</option>
+                        <option value="both">Both (percent + fixed)</option>
                       </select>
                     </div>
-                    {viewerType === "percent" ? (
+                    {viewerType !== "fixed" && (
                       <div>
                         <Label>Percent (%)</Label>
                         <Input type="number" min="0" max="100" step="0.5" value={viewerPercent} onChange={(e) => setViewerPercent(e.target.value)} placeholder="e.g. 10" disabled={busy} className="mt-2" />
                       </div>
-                    ) : (
+                    )}
+                    {viewerType !== "percent" && (
                       <div>
                         <Label>Fixed amount ($)</Label>
                         <Input type="number" min="0" value={viewerFixed} onChange={(e) => setViewerFixed(e.target.value)} placeholder="e.g. 5000" disabled={busy} className="mt-2" />

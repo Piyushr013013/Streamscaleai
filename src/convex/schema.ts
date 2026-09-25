@@ -127,8 +127,9 @@ export default defineSchema({
   // May be linked to a login account (userId) so they can see their earnings.
   billingPeople: defineTable({
     name: v.string(),
-    // "percent" = share of contract fee; "fixed" = fixed payout per contract
-    compType: v.union(v.literal("percent"), v.literal("fixed")),
+    // "percent" = share of contract fee; "fixed" = fixed payout per contract;
+    // "both" = percent + fixed per contract combined
+    compType: v.union(v.literal("percent"), v.literal("fixed"), v.literal("both")),
     // Optional monthly salary treated as a fixed monthly cost in the P&L.
     monthlySalary: v.optional(v.number()),
     percent: v.optional(v.number()), // e.g. 12.5 (percent of fee)

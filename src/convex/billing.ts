@@ -119,7 +119,7 @@ export const listPeople = query({
 export const createPerson = mutation({
   args: {
     name: v.string(),
-    compType: v.union(v.literal("percent"), v.literal("fixed")),
+    compType: v.union(v.literal("percent"), v.literal("fixed"), v.literal("both")),
     percent: v.optional(v.number()),
     fixedAmount: v.optional(v.number()),
     monthlySalary: v.optional(v.number()),
@@ -129,10 +129,16 @@ export const createPerson = mutation({
   },
   handler: async (ctx, args) => {
     await requireCfo(ctx, args.actorId);
-    if (args.compType === "percent" && (args.percent === undefined || args.percent <= 0 || args.percent > 100)) {
+    if (
+      (args.compType === "percent" || args.compType === "both") &&
+      (args.percent === undefined || args.percent <= 0 || args.percent > 100)
+    ) {
       throw new Error("Enter a percentage between 0 and 100 for percent-based pay.");
     }
-    if (args.compType === "fixed" && (args.fixedAmount === undefined || args.fixedAmount < 0)) {
+    if (
+      (args.compType === "fixed" || args.compType === "both") &&
+      (args.fixedAmount === undefined || args.fixedAmount < 0)
+    ) {
       throw new Error("Enter a fixed dollar amount of 0 or more.");
     }
     if (!args.name.trim()) throw new Error("Enter the person's name.");
@@ -140,8 +146,14 @@ export const createPerson = mutation({
     return await ctx.db.insert("billingPeople", {
       name: args.name.trim(),
       compType: args.compType,
-      percent: args.compType === "percent" ? args.percent : undefined,
-      fixedAmount: args.compType === "fixed" ? args.fixedAmount : undefined,
+      percent:
+        args.compType === "percent" || args.compType === "both"
+          ? args.percent
+          : undefined,
+      fixedAmount:
+        args.compType === "fixed" || args.compType === "both"
+          ? args.fixedAmount
+          : undefined,
       monthlySalary: args.monthlySalary ?? undefined,
       note: args.note?.trim() || undefined,
       userId: args.userId || undefined,
@@ -413,6 +425,8 @@ export const listContracts = query({
         const share =
           p.compType === "percent"
             ? Math.round(fee * ((p.percent ?? 0) / 100))
+            : p.compType === "both"
+            ? Math.round(fee * ((p.percent ?? 0) / 100)) + (p.fixedAmount ?? 0)
             : p.fixedAmount ?? 0;
         return {
           personId: p._id,
@@ -579,6 +593,8 @@ export const recordPayment = mutation({
       share:
         p.compType === "percent"
           ? Math.round(fee * ((p.percent ?? 0) / 100))
+          : p.compType === "both"
+          ? Math.round(fee * ((p.percent ?? 0) / 100)) + (p.fixedAmount ?? 0)
           : p.fixedAmount ?? 0,
     }));
     const totalShares = shares.reduce((sum, s) => sum + s.share, 0);
@@ -729,7 +745,7 @@ export const createViewerAccount = mutation({
     name: v.string(),
     // When set, attach billing to this existing account instead of creating one.
     linkExistingUserId: v.optional(v.id("users")),
-    compType: v.union(v.literal("percent"), v.literal("fixed")),
+    compType: v.union(v.literal("percent"), v.literal("fixed"), v.literal("both")),
     percent: v.optional(v.number()),
     fixedAmount: v.optional(v.number()),
     actorId: v.id("users"),
