@@ -173,13 +173,13 @@ export default function AdminDashboard() {
 
   if (!hasAnyAdminAccess) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[#f7f8fa] p-6">
-        <Card className="max-w-md">
+      <main className="nyr flex min-h-screen items-center justify-center bg-[#171827] p-6 text-[#faf8f1]">
+        <Card className="max-w-md border-[#d9dced]/15 bg-[#1d1e33]/90 text-[#faf8f1]">
           <CardContent className="pt-8 text-center">
-            <Shield className="mx-auto size-10 text-slate-400" />
+            <Shield className="mx-auto size-10 text-[#9fa5c8]" />
             <h1 className="mt-4 text-xl font-semibold">Admin access required</h1>
-            <p className="mt-2 text-sm text-slate-500">Sign in with an administrator account to continue.</p>
-            <Button className="mt-6" onClick={() => navigate("/login")}>
+            <p className="mt-2 text-sm text-[#faf8f1]/55">Sign in with an administrator account to continue.</p>
+            <Button className="mt-6 bg-[#9fa5c8] text-[#171827] hover:bg-[#b8bdd6]" onClick={() => navigate("/login")}>
               Sign in
             </Button>
           </CardContent>
@@ -619,27 +619,27 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur sticky top-0 z-40">
+    <main className="nyr min-h-screen bg-[#f0f0ea] text-[#171827]">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#171827]/95 text-[#faf8f1] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-slate-900 text-sm font-bold text-white">S</div>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#9fa5c8] text-sm font-bold text-[#171827]">S</div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Streamscale</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9fa5c8]">Streamscale</p>
               <h1 className="text-base font-semibold leading-tight">Admin workspace</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/billing" className="hidden text-sm text-slate-500 transition hover:text-slate-900 sm:inline">
+            <Link to="/billing" className="hidden text-sm text-[#9fa5c8] transition hover:text-[#faf8f1] sm:inline">
               Accounting
             </Link>
-            <Link to="/" className="hidden text-sm text-slate-500 transition hover:text-slate-900 sm:inline">
+            <Link to="/" className="hidden text-sm text-[#9fa5c8] transition hover:text-[#faf8f1] sm:inline">
               View site
             </Link>
-            <span className="hidden max-w-[220px] truncate rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs text-slate-500 md:inline">
+            <span className="hidden max-w-[220px] truncate rounded-full border border-[#d9dced]/15 bg-[#d9dced]/10 px-3 py-1 text-xs text-[#faf8f1]/70 md:inline">
               {user && "email" in user ? user.email : ""}
             </span>
-            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#d9dced]/20 bg-transparent text-[#faf8f1]/80 hover:bg-[#d9dced]/10 hover:text-[#faf8f1]">
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1"/>
                 <path d="M16 12H8"/>
@@ -652,7 +652,7 @@ export default function AdminDashboard() {
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-slate-200/80 bg-white p-1.5 shadow-sm">
+        <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-[rgba(75,84,139,0.28)] bg-white/70 p-1.5 shadow-sm">
           {tabs.map(([value, label, icon, count]) => (
             <button
               key={value}
@@ -660,8 +660,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab(value)}
               className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
                 activeTab === value
-                  ? "bg-slate-900 text-white shadow-sm"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  ? "bg-[#171827] text-[#faf8f1] shadow-sm"
+                  : "text-[#383a57] hover:bg-[rgba(75,84,139,0.08)] hover:text-[#171827]"
               }`}
             >
               {icon}
@@ -669,7 +669,7 @@ export default function AdminDashboard() {
               {count !== null && count > 0 && (
                 <span
                   className={`ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-                    activeTab === value ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                    activeTab === value ? "bg-[#9fa5c8]/30 text-[#faf8f1]" : "bg-[rgba(75,84,139,0.12)] text-[#4b548b]"
                   }`}
                 >
                   {count}

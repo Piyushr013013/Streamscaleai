@@ -1,6 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router";
-import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, ShieldCheck, Loader2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Eye, EyeOff, Lock, Mail, Loader2 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "convex/react";
 import { useAuth } from "@/hooks/use-auth";
@@ -65,40 +65,54 @@ export default function Login() {
   };
 
   return (
-    <main className="min-h-screen bg-[#f7f8fa] px-4 py-12 text-slate-900 sm:py-20">
-      <div className="mx-auto w-full max-w-md">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-sm">
-            <ShieldCheck className="size-6" />
-          </div>
-          <p className="text-sm font-semibold tracking-[0.18em] text-slate-500 uppercase">Streamscale</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Sign in to your workspace</h1>
-          <p className="mt-2 text-sm text-slate-500">Accounts are created and managed by an administrator.</p>
+    <div className="nyr relative flex min-h-screen flex-col bg-[#171827] text-[#faf8f1]">
+      <div className="nyr-grid-noise absolute inset-0" />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse 55% 45% at 50% 0%, rgba(159,165,200,.18), transparent 60%)",
+        }}
+      />
+      <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-16">
+        <div className="mb-10 text-center">
+          <p className="nyr-eyebrow justify-center">
+            <span className="nyr-status-dot" />
+            Streamscale
+          </p>
+          <h1 className="nyr-display mt-6 !text-[clamp(2.4rem,7vw,3.6rem)]">
+            Sign in to <em>your workspace.</em>
+          </h1>
+          <p className="nyr-signal mt-4">
+            Accounts are created and managed by an administrator.
+          </p>
         </div>
 
-        <Card className="border-slate-200 bg-white shadow-xl shadow-slate-200/40">
+        <Card className="border-[#d9dced]/15 bg-[#1d1e33]/90 shadow-[0_30px_90px_rgba(0,0,0,0.4)] backdrop-blur">
           <CardHeader>
-            <CardTitle>Welcome back</CardTitle>
-            <CardDescription>Use the email and password assigned to you by Streamscale.</CardDescription>
+            <CardTitle className="text-[#faf8f1]">Welcome back</CardTitle>
+            <CardDescription className="text-[#faf8f1]/55">
+              Use the email and password assigned to you by Streamscale.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <div className="rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-300">
                   {error}
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email address</Label>
+                <Label htmlFor="email" className="text-[#faf8f1]/80">Email address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#9fa5c8]" />
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="h-11 pl-10"
+                    className="h-11 border-[#d9dced]/15 bg-[#171827]/70 pl-10 text-[#faf8f1] placeholder:text-[#faf8f1]/35"
                     placeholder="you@company.com"
                     autoComplete="off"
                     name="streamscale-login-email"
@@ -108,15 +122,15 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password" className="text-[#faf8f1]/80">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#9fa5c8]" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-11 px-10"
+                    className="h-10 border-[#d9dced]/15 bg-[#171827]/70 px-10 text-[#faf8f1] placeholder:text-[#faf8f1]/35"
                     placeholder="Your password"
                     autoComplete="new-password"
                     name="streamscale-login-password"
@@ -126,7 +140,7 @@ export default function Login() {
                     type="button"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9fa5c8] hover:text-[#faf8f1]"
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
@@ -136,7 +150,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-11 w-full gap-2 bg-slate-900 text-white hover:bg-slate-800"
+                className="h-11 w-full gap-2 bg-[#9fa5c8] text-[#171827] hover:bg-[#b8bdd6]"
               >
                 {isSubmitting ? (
                   <>
@@ -157,12 +171,12 @@ export default function Login() {
         <button
           type="button"
           onClick={() => navigate("/")}
-          className="mt-6 flex items-center gap-2 text-sm text-slate-500 hover:text-slate-900"
+          className="nyr-text-link mt-8 self-center"
         >
           <ArrowLeft className="size-4" />
           Back to home
         </button>
       </div>
-    </main>
+    </div>
   );
 }
