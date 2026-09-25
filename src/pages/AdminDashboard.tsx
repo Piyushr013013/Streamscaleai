@@ -173,7 +173,7 @@ export default function AdminDashboard() {
 
   if (!hasAnyAdminAccess) {
     return (
-      <main className="nyr flex min-h-screen items-center justify-center bg-[#171827] p-6 text-[#faf8f1]">
+      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#171827] p-6 text-[#faf8f1]">
         <Card className="max-w-md border-[#d9dced]/15 bg-[#1d1e33]/90 text-[#faf8f1]">
           <CardContent className="pt-8 text-center">
             <Shield className="mx-auto size-10 text-[#9fa5c8]" />
@@ -619,7 +619,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <main className="nyr min-h-screen bg-[#f0f0ea] text-[#171827]">
+    <main className="nyr nyr-admin min-h-screen bg-[#f0f0ea] text-[#171827]">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#171827]/95 text-[#faf8f1] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
