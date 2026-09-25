@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Upload, FileText, Phone, Mail, ExternalLink, Loader2 } from "lucide-react";
+import { Upload, FileText, ExternalLink, Loader2, ArrowRight } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { Link } from "react-router";
+import { NyrNav, NyrFooter } from "@/components/NyrLayout";
 
 export default function Jobs() {
   const navigate = useNavigate();
@@ -180,63 +181,54 @@ export default function Jobs() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <Link
-              to="/"
-              className="flex items-center gap-2 text-gray-900 hover:text-gray-600"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span className="font-medium">Back to Home</span>
-            </Link>
-            <div className="flex items-center gap-2">              <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="64" height="64" rx="14" fill="#09090B" />
-                <path d="M14 46L32 20L50 46H14Z" fill="#FFFFFF" />
-                <path d="M32 20L32 52" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
-                <path d="M24 30H40" stroke="#09090B" strokeWidth="3" strokeLinecap="round" />
-              </svg>
-              <span className="text-base font-medium text-gray-900">Streamscale</span>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="nyr min-h-screen bg-[#171827] text-[#faf8f1]">
+      <NyrNav />
 
-      <main className="py-12">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Page Header */}
+      {/* Hero band */}
+      <section className="relative overflow-hidden bg-[#171827]">
+        <div className="nyr-grid-noise absolute inset-0" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(159,165,200,.16), transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
-            className="mb-12"
           >
-            <h1 className="text-3xl md:text-4xl font-semibold text-gray-900 mb-2">
-              Open Positions
-            </h1>
-            <p className="text-lg text-gray-500">
-              Join our team and help us build the future of AI testing — benchmarking agents, deploying them into real workflows, and placing the people who make AI work.
+            <p className="nyr-eyebrow mb-4">
+              <span className="nyr-status-dot" />
+              Careers
             </p>
-            <p className="mt-2 text-sm text-gray-400">
-              Every application is reviewed by a person. Attach a PDF or Word resume and we'll be in touch if there's a fit.
+            <h1 className="nyr-display">
+              Join the <em>bench.</em>
+            </h1>
+            <p className="nyr-lede mt-5 max-w-[56ch]">
+              Help us benchmark agents, deploy them into real workflows, and
+              place the people who make AI work. Every application is reviewed
+              by a person — attach a PDF or Word resume and we'll be in touch if
+              there's a fit.
             </p>
           </motion.div>
+        </div>
+      </section>
 
-          {/* Jobs List */}
+      {/* Jobs list (light) */}
+      <section className="nyr-light bg-[#f0f0ea] text-[#171827]">
+        <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           {!jobs || jobs.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <ExternalLink className="w-8 h-8 text-gray-400" />
-              </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No open positions</h3>
-              <p className="text-gray-500">
-                Check back later for new opportunities
+            <div className="border-y border-[rgba(75,84,139,0.28)] py-16 text-center">
+              <h3 className="text-2xl font-semibold tracking-tight">No open positions</h3>
+              <p className="mt-2 text-[0.95rem] text-[#383a57]">
+                Check back later for new opportunities.
               </p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {jobs.map((job: any, index: number) => (
                 <motion.div
                   key={job._id}
@@ -245,39 +237,39 @@ export default function Jobs() {
                   transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
                 >
                 <Card
-                  className="border-gray-200 bg-white hover:border-gray-300 transition-all group"
+                  className="border border-[rgba(75,84,139,0.28)] bg-white/70 shadow-[0_20px_60px_rgba(23,24,39,0.06)] transition-all hover:border-[#4b548b]/50 group"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between mb-2">
-                      <Badge className={getRoleBadgeClass(job.role)}>
+                      <Badge className="border border-[#4b548b]/30 bg-[#4b548b]/10 text-[#30375f] hover:bg-[#4b548b]/15">
                         {job.role}
                       </Badge>
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-[#383a57]/60">
                         {new Date(job._creationTime).toLocaleDateString()}
                       </span>
                     </div>
-                    <CardTitle className="text-xl text-gray-900 group-hover:text-primary transition-colors">
+                    <CardTitle className="text-xl text-[#171827] transition-colors group-hover:text-[#4b548b]">
                       {job.title}
                     </CardTitle>
-                    <CardDescription className="text-gray-500 mt-1">
+                    <CardDescription className="mt-1 text-[#383a57]">
                       {job.companyName} · {job.jobType} · {job.salary}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+                    <p className="mb-4 line-clamp-2 text-sm text-[#383a57]/80">
                       {job.requirements}
                     </p>
-                    {job.benefits && <p className="text-xs text-emerald-700 mb-2">Benefits: {job.benefits}</p>}
+                    {job.benefits && <p className="mb-2 text-xs text-[#4b548b]">Benefits: {job.benefits}</p>}
                     {job.extraInfo && (
-                      <p className="text-xs text-gray-400 mb-4">
+                      <p className="mb-4 text-xs text-[#383a57]/60">
                         {job.extraInfo}
                       </p>
                     )}
                     <Button
                       onClick={() => handleApply(job)}
-                      className="w-full"
+                      className="w-full bg-[#171827] text-[#faf8f1] hover:bg-[#30375f]"
                     >
-                      Apply Now
+                      Apply now <ArrowRight className="size-4" />
                     </Button>
                   </CardContent>
                 </Card>
@@ -286,12 +278,16 @@ export default function Jobs() {
             </div>
           )}
         </div>
-      </main>          {/* Apply Modal */}
+      </section>
+
+      <NyrFooter />
+
+      {/* Apply Modal */}
       {showApplyForm && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#171827]/60 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <CardHeader className="border-slate-200 pb-4">
-              <CardTitle className="text-lg">Apply for {applyingTo?.title}</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg text-[#171827]">Apply for {applyingTo?.title}</CardTitle>
               <CardDescription>
                 Share your details and a PDF or Word (.docx) resume so the team can review your fit.
               </CardDescription>

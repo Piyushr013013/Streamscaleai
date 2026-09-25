@@ -1,111 +1,88 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router";
-import { ArrowLeft, Compass, Home, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { NyrNav, NyrFooter } from "@/components/NyrLayout";
 
 const suggestions = [
+  { label: "How it works", href: "/#protocol", description: "Find. Score. Send." },
   { label: "Benchmarks", href: "/benchmarks", description: "Pass rates by industry" },
-  { label: "Services", href: "/services/ai-work-diagnostics", description: "What we do" },
-  { label: "Jobs", href: "/jobs", description: "Open positions" },
-  { label: "Partner with us", href: "/partner", description: "Start a conversation" },
+  { label: "Careers", href: "/jobs", description: "Open positions" },
+  { label: "Start hiring", href: "/partner", description: "Meet only the 90+" },
 ];
 
 export default function NotFound() {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen bg-background flex flex-col"
-    >
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-24">
-        <div className="max-w-xl w-full text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="mx-auto mb-6 flex size-16 items-center justify-center rounded-2xl bg-primary/10"
-          >
-            <Compass className="size-8 text-primary" />
-          </motion.div>
+    <div className="nyr min-h-screen bg-[#171827] text-[#faf8f1]">
+      <NyrNav />
 
+      <section className="nyr-dark-section relative overflow-hidden">
+        <div className="nyr-grid-noise absolute inset-0" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 50% at 50% 0%, rgba(159,165,200,.15), transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-3xl px-4 py-28 text-center sm:px-6">
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="nyr-eyebrow justify-center"
+          >
+            <span className="nyr-status-dot" />
+            Error 404
+          </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-            className="text-6xl font-semibold tracking-tight text-foreground"
+            transition={{ duration: 0.4, delay: 0.08 }}
+            className="nyr-display mt-6"
           >
-            404
+            This page <em>doesn't exist.</em>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="mt-3 text-xl font-medium text-foreground"
+            transition={{ duration: 0.4, delay: 0.16 }}
+            className="nyr-lede mx-auto mt-5 max-w-[46ch]"
           >
-            This page doesn't exist.
+            The link may be outdated or mistyped. Here's where you might have
+            been heading instead.
           </motion.p>
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.25 }}
-            className="mt-2 text-muted-foreground leading-relaxed"
-          >
-            The link may be outdated or mistyped. Here are some places you
-            might have been heading instead.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-3 text-left"
-          >
-            {suggestions.map((item) => (
-              <Link
-                key={item.href}
-                to={item.href}
-                className="group rounded-xl border border-border/40 bg-card/50 p-4 transition-colors hover:border-primary/40 hover:bg-accent"
-              >
-                <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
-                  {item.label}
-                </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{item.description}</p>
-              </Link>
-            ))}
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.35 }}
-            className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3"
-          >
-            <Button asChild className="gap-2 bg-slate-900 hover:bg-slate-800">
-              <Link to="/">
-                <Home className="size-4" />
-                Back to home
-              </Link>
-            </Button>
-            <Button asChild variant="outline" className="gap-2">
-              <Link to="/benchmarks">
-                <Search className="size-4" />
-                Explore benchmarks
-              </Link>
-            </Button>
-          </motion.div>
         </div>
-      </div>
+      </section>
 
-      <div className="border-t border-border/30 py-4 text-center">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft className="size-3" />
-          Streamscale — We find the best people for the job
-        </Link>
-      </div>
-    </motion.div>
+      <section className="nyr-light bg-[#f0f0ea] text-[#171827]">
+        <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
+          <div className="border-t border-[rgba(75,84,139,0.28)]">
+            {suggestions.map((item, i) => (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.2 + i * 0.06 }}
+                className="border-b border-[rgba(75,84,139,0.28)]"
+              >
+                <Link
+                  to={item.href}
+                  className="group flex items-baseline justify-between gap-4 py-6"
+                >
+                  <div>
+                    <span className="nyr-step-number mr-4">{`0${i + 1}`}</span>
+                    <span className="text-2xl font-semibold tracking-tight transition-colors group-hover:text-[#4b548b]">
+                      {item.label}
+                    </span>
+                  </div>
+                  <span className="nyr-signal">{item.description} →</span>
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <NyrFooter />
+    </div>
   );
 }

@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { ArrowRight, ArrowLeft, Send, CheckCircle, Sparkles, Check } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CheckCircle, Check } from "lucide-react";
+import { NyrNav, NyrFooter } from "@/components/NyrLayout";
 
 const services = [
   {
@@ -31,11 +32,11 @@ const services = [
 export default function Partner() {
   const navigate = useNavigate();
   const partnerMutation = useMutation(api.bookings.createPartnerRequest);
-  const [steps] = useState([
-    { icon: Sparkles, title: "Tell us what you need", desc: "Pick a service and share your requirements." },
-    { icon: Sparkles, title: "We review and scope", desc: "Our team follows up within 1-2 business days." },
-    { icon: Sparkles, title: "We deliver", desc: "You get a benchmark, deployed agent, or placed candidate." },
-  ]);
+  const steps = [
+    { title: "Tell us what you need", desc: "Pick a service and share your requirements." },
+    { title: "We review and scope", desc: "Our team follows up within 1–2 business days." },
+    { title: "We deliver", desc: "You get a benchmark, deployed agent, or placed candidate." },
+  ];
   const [selectedServices, setSelectedServices] = useState<string[]>(["ai"]);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -81,103 +82,82 @@ export default function Partner() {
 
   if (submitted) {
     return (
-      <main className="min-h-screen bg-background">
-        <header className="border-b border-border/30 bg-background/95 backdrop-blur-xl">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-            <Button variant="ghost" onClick={() => navigate("/")} className="gap-1">
-              <ArrowLeft className="size-4" />
-              Back to home
-            </Button>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center justify-center">
-                <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
-                  <rect width="64" height="64" rx="14" fill="#1E293B" />
-                  <path d="M14 46L32 20L50 46H14Z" fill="#FFFFFF" />
-                  <path d="M32 20L32 52" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
-                  <path d="M24 30H40" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" />
-                </svg>
-              </div>
-              <span className="text-base font-medium">Streamscale</span>
+      <div className="nyr min-h-screen bg-[#171827] text-[#faf8f1]">
+        <NyrNav />
+        <section className="nyr-dark-section relative overflow-hidden">
+          <div className="nyr-grid-noise absolute inset-0" />
+          <div className="relative mx-auto max-w-2xl px-4 py-28 text-center sm:px-6">
+            <div className="nyr-halo mx-auto mb-8 size-20" />
+            <CheckCircle className="mx-auto mb-6 size-14 text-[#9fa5c8]" />
+            <h1 className="nyr-display !text-[clamp(2.4rem,6vw,4rem)]">
+              Request <em>received.</em>
+            </h1>
+            <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">
+              We got it. We'll follow up at{" "}
+              <span className="font-semibold text-[#faf8f1]">{email}</span>{" "}
+              within 1–2 business days to scope what you need.
+            </p>
+            <div className="mt-9 flex flex-col items-center justify-center gap-5 sm:flex-row">
+              <Link to="/" className="nyr-primary-btn">
+                Back to home <ArrowRight className="size-4" />
+              </Link>
+              <Link to="/jobs" className="nyr-text-link">
+                View open jobs <ArrowUpRight className="size-4" />
+              </Link>
             </div>
-            <Button variant="ghost" asChild><Link to="/login">Sign in</Link></Button>
           </div>
-        </header>
-        <div className="mx-auto max-w-2xl px-4 py-20 sm:py-28 text-center">
-          <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-primary/10">
-            <CheckCircle className="size-8 text-primary" />
-          </div>
-          <h1 className="text-3xl font-semibold mb-3">Thanks for reaching out</h1>
-          <p className="text-muted-foreground mb-8">
-            We received your request and will follow up at <span className="font-medium text-foreground">{email}</span>
-            to scope what you need.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Button asChild variant="outline" className="border-border">
-              <Link to="/">Back to home</Link>
-            </Button>
-            <Button asChild variant="ghost">
-              <Link to="/jobs">View open jobs</Link>
-            </Button>
-          </div>
-        </div>
-      </main>
+        </section>
+        <NyrFooter />
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/30 bg-background/95 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate("/")} className="gap-1">
-            <ArrowLeft className="size-4" />
-            Back to home
-          </Button>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center justify-center">
-              <svg width="24" height="24" viewBox="0 0 64 64" fill="none">
-                <rect width="64" height="64" rx="14" fill="#1E293B" />
-                <path d="M14 46L32 20L50 46H14Z" fill="#FFFFFF" />
-                <path d="M32 20L32 52" stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
-                <path d="M24 30H40" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" />
-              </svg>
-            </div>
-            <span className="text-base font-medium">Streamscale</span>
-          </div>
-          <Button variant="ghost" asChild><Link to="/login">Sign in</Link></Button>
+    <div className="nyr min-h-screen bg-[#171827] text-[#faf8f1]">
+      <NyrNav />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[#171827]">
+        <div className="nyr-grid-noise absolute inset-0" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(159,165,200,.16), transparent 60%)",
+          }}
+        />
+        <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <p className="nyr-eyebrow mb-4">
+              <span className="nyr-status-dot" />
+              Partner with Streamscale
+            </p>
+            <h1 className="nyr-display">
+              Tell us what to build, <em>test, or hire for.</em>
+            </h1>
+            <p className="nyr-lede mx-auto mt-5 max-w-[52ch]">
+              We run real benchmarks, deploy custom agents, and find the people
+              who make AI work in the real world. Pick what you need and we'll
+              follow up to scope it.
+            </p>
+          </motion.div>
         </div>
-      </header>
+      </section>
 
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="text-center mb-12"
-        >
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
-            <Sparkles className="size-3.5" />
-            Partner with Streamscale
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-foreground mb-4">
-            Tell us what you want to build, test, or hire for.
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
-            We run real benchmarks, deploy custom agents, and find the people who make AI work in the real world.
-            Pick what you need and we'll follow up to scope it.
-          </p>
-        </motion.div>
-
+      {/* Form (light) */}
+      <section className="nyr-light bg-[#f0f0ea] text-[#171827]">
+      <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {/* Steps preview */}
-        <div className="grid grid-cols-3 gap-4 mb-12 max-w-xl mx-auto">
+        <div className="mb-10 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(75,84,139,0.28)] bg-[rgba(75,84,139,0.28)]">
           {steps.map((step, i) => (
-            <div key={i} className="text-center">
-              <div className="flex items-center justify-center mx-auto mb-2">
-                <step.icon className="size-4 text-primary" />
-              </div>
-              <p className="text-sm font-medium text-foreground">{step.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{step.desc}</p>
+            <div key={i} className="bg-[#f0f0ea] p-5 text-center">
+              <span className="nyr-step-number">0{i + 1}</span>
+              <p className="mt-1 text-sm font-semibold">{step.title}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-[#383a57]">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -326,7 +306,7 @@ export default function Partner() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-base"
+                className="w-full gap-2 bg-[#171827] hover:bg-[#30375f] text-[#faf8f1] h-12 text-base"
               >
                 {submitting ? "Sending request…" : "Send request"}
                 {!submitting && <ArrowRight className="size-4" />}
@@ -336,10 +316,13 @@ export default function Partner() {
         </Card>
         </motion.div>
 
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          Your request goes directly to the Streamscale team. We'll reply within 1-2 business days.
+        <p className="mt-6 text-center text-xs text-[#383a57]/70">
+          Your request goes directly to the Streamscale team. We'll reply within 1–2 business days.
         </p>
       </div>
-    </main>
+      </section>
+
+      <NyrFooter />
+    </div>
   );
 }
