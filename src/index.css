@@ -145,3 +145,173 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--muted);
 }
+
+/* ---- Nyralux-style landing theme (scoped classes) ---- */
+.nyr {
+  --nyr-ink: #171827;
+  --nyr-ink-soft: #383a57;
+  --nyr-periwinkle: #4b548b;
+  --nyr-periwinkle-dark: #30375f;
+  --nyr-lavender: #9fa5c8;
+  --nyr-lavender-soft: #d9dced;
+  --nyr-ivory: #f0f0ea;
+  --nyr-ivory-warm: #faf8f1;
+  --nyr-line: rgba(75, 84, 139, 0.18);
+  --nyr-line-strong: rgba(75, 84, 139, 0.28);
+}
+.nyr-dark-section {
+  background: var(--nyr-ink);
+  color: var(--nyr-ivory-warm);
+}
+.nyr-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.54rem;
+  color: var(--nyr-lavender-soft);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.nyr .nyr-eyebrow {
+  color: var(--nyr-periwinkle);
+}
+.nyr-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--nyr-lavender);
+  box-shadow: 0 0 0 4px rgba(159, 165, 200, 0.12);
+}
+.nyr h1.nyr-display {
+  font-size: clamp(3rem, 8vw, 6.2rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+}
+.nyr h1.nyr-display em {
+  color: var(--nyr-lavender);
+  font-style: normal;
+}
+.nyr-light h2.nyr-display {
+  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+}
+.nyr-light h2.nyr-display em {
+  color: var(--nyr-periwinkle);
+  font-style: normal;
+}
+.nyr-lede {
+  color: rgba(250, 248, 241, 0.78);
+  font-size: clamp(1rem, 1.4vw, 1.16rem);
+  line-height: 1.65;
+}
+.nyr-light .nyr-lede,
+.nyr .nyr-lede-light {
+  color: var(--nyr-ink-soft);
+}
+.nyr-grid-noise {
+  background-image: linear-gradient(rgba(159, 165, 200, 0.07) 1px, transparent 0),
+    linear-gradient(90deg, rgba(159, 165, 200, 0.07) 1px, transparent 0);
+  background-size: 56px 56px;
+}
+.nyr-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 46px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  background: var(--nyr-lavender);
+  color: var(--nyr-ink);
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+.nyr-primary-btn:hover {
+  background: #b6bcd9;
+  transform: translateY(-1px);
+}
+.nyr-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 46px;
+  padding: 0.8rem 1.5rem;
+  border-radius: 10px;
+  border: 1px solid rgba(217, 220, 237, 0.28);
+  color: var(--nyr-ivory-warm);
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+.nyr-ghost-btn:hover {
+  background: rgba(217, 220, 237, 0.1);
+}
+.nyr-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.nyr-dark-section .nyr-text-link {
+  color: var(--nyr-lavender-soft);
+}
+.nyr-dark-section .nyr-text-link:hover {
+  color: #fff;
+}
+.nyr .nyr-text-link {
+  color: var(--nyr-periwinkle-dark);
+}
+.nyr .nyr-text-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.nyr-signal {
+  color: rgba(250, 248, 241, 0.56);
+  font-size: 0.78rem;
+}
+.nyr-card {
+  border: 1px solid rgba(217, 220, 237, 0.16);
+  border-radius: 14px;
+  background: rgba(217, 220, 237, 0.05);
+  transition: all 0.2s ease;
+}
+.nyr-card:hover {
+  background: rgba(217, 220, 237, 0.09);
+  border-color: rgba(217, 220, 237, 0.3);
+}
+.nyr-light .nyr-card {
+  border: 1px solid var(--nyr-line);
+  background: rgba(250, 248, 241, 0.7);
+}
+.nyr-light .nyr-card:hover {
+  background: #fff;
+  border-color: var(--nyr-line-strong);
+}
+.nyr-step-number {
+  color: var(--nyr-lavender);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.nyr-light .nyr-step-number {
+  color: var(--nyr-periwinkle);
+}
+.nyr-halo {
+  width: min(30vw, 460px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(159, 165, 200, 0.3);
+  border-radius: 50%;
+  box-shadow: 0 0 0 56px rgba(159, 165, 200, 0.04), 0 0 90px rgba(159, 165, 200, 0.16);
+}
+.nyr-quote {
+  border-left: 2px solid var(--nyr-periwinkle);
+  padding-left: 1.4rem;
+}
+.nyr-light .nyr-quote {
+  border-left-color: var(--nyr-periwinkle);
+}
