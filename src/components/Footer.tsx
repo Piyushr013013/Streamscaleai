@@ -41,7 +41,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              We find the best workers — human or AI — score every candidate on our 100-point scale, and only send the 90+.
+              We find the best people for the job, score every candidate on our 100-point scale, and only send the 90+. If AI can do the work, we'll tell you.
             </p>
 
             {/* Social Links */}

@@ -260,8 +260,8 @@ function HeroSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground mb-6"
           >
-            We find the best workers —{" "}
-            <span className="text-primary">human or AI</span>
+            We find the best people{" "}
+            <span className="text-primary">for the job</span>
           </motion.h1>
 
           <motion.p
@@ -270,9 +270,10 @@ function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
           >
-            Recruitment for the AI era: we source top candidates for your
-            roles, score every one on a comprehensive 100-point scale — resume,
-            experience, technical skills — and only send you the 90+.
+            Real recruiters for real roles. We hunt down top candidates, score
+            every one on our 100-point scale — resume, experience, technical
+            skills — and only send you the 90+. And if AI can do part of the
+            work, we'll tell you that too.
           </motion.p>
 
           <motion.p
@@ -308,7 +309,7 @@ function HeroSection() {
               size="lg"
               className="text-base px-8 py-4 border-border hover:bg-accent"
             >
-              <Link to="/benchmarks">See the benchmarks</Link>
+              <Link to="/benchmarks">Or automate it with AI</Link>
             </Button>
             <Button
               asChild

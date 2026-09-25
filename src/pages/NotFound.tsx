@@ -103,7 +103,7 @@ export default function NotFound() {
           className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="size-3" />
-          Streamscale — We find the best workers, human or AI
+          Streamscale — We find the best people for the job
         </Link>
       </div>
     </motion.div>
