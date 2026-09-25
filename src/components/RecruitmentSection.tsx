@@ -17,8 +17,8 @@ export function RecruitmentSection() {
         <div className="grid items-center gap-14 lg:grid-cols-[1fr_1.1fr]">
           <motion.div initial={{ opacity: 0, x: -28 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
             <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-sky-700">Talent & recruitment</p>
-            <h2 className="max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">We recruit the AI worker, prove it can do the job, then send it to you.</h2>
-            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">For every role, we post the job on our site and hunt down candidates ourselves. Each AI worker is built, tested against real work scenarios, and scored on our scale — only those scoring above 90 are ever sent to your team.</p>
+            <h2 className="max-w-xl text-3xl font-semibold tracking-tight sm:text-4xl">We find the best. Test the rest out. Send you the 90+.</h2>
+            <p className="mt-5 max-w-xl text-lg leading-8 text-slate-600">We post the job and hunt down candidates ourselves. Every one is tested against real work and scored — only agents above 90 make it to you.</p>
             <div className="mt-8 grid gap-4 sm:grid-cols-2">
               <div className="rounded-2xl border border-sky-100 bg-white p-5"><p className="text-2xl font-semibold text-slate-900">90+ score threshold</p><p className="mt-2 text-sm leading-6 text-slate-500">Every candidate is scored on real work scenarios. Only those above 90 on our scale reach you.</p></div>
               <div className="rounded-2xl border border-sky-100 bg-white p-5"><p className="text-2xl font-semibold text-slate-900">Contingency based</p><p className="mt-2 text-sm leading-6 text-slate-500">Startups pay when someone we place actually starts—not just because we made an introduction.</p></div>

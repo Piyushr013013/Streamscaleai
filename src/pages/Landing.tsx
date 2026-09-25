@@ -260,9 +260,8 @@ function HeroSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-4xl md:text-5xl lg:text-6xl font-semibold tracking-tight text-foreground mb-6"
           >
-            We recruit, build, and test{" "}
-            <span className="text-primary">AI worker twins</span>
-            {" "}for your roles
+            We find the best AI workers{" "}
+            <span className="text-primary">for the job</span>
           </motion.h1>
 
           <motion.p
@@ -271,10 +270,8 @@ function HeroSection() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
           >
-            Streamscale recruits AI worker twins for your specific roles — we
-            post the jobs and hunt down candidates, then build and stress-test
-            each one against real work scenarios. Every candidate gets a score;
-            only those above 90 on our scale ever reach your team.
+            We hunt down the best AI candidates for your roles, test them
+            against real work, and only send the ones that score 90+.
           </motion.p>
 
           <motion.p

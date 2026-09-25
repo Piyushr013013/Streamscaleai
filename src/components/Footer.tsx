@@ -41,8 +41,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground leading-relaxed mb-6 max-w-xs">
-              We recruit, build, and test AI worker twins for your roles. Only agents scoring above 90 on our scale
-              reach your team — real agents, real scenarios, real results.
+              We find the best AI workers for the job, test them against real work, and only send the 90+ scorers.
             </p>
 
             {/* Social Links */}
