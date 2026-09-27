@@ -82,19 +82,19 @@ export default function Partner() {
 
   if (submitted) {
     return (
-      <div className="nyr min-h-screen bg-[#0e1730] text-[#ffffff]">
+      <div className="nyr min-h-screen bg-white text-[#0e1730]">
         <NyrNav />
         <section className="nyr-dark-section relative overflow-hidden">
           <div className="nyr-grid-noise absolute inset-0" />
           <div className="relative mx-auto max-w-2xl px-4 py-28 text-center sm:px-6">
             <div className="nyr-halo mx-auto mb-8 size-20" />
-            <CheckCircle className="mx-auto mb-6 size-14 text-[#7aa5f0]" />
+            <CheckCircle className="mx-auto mb-6 size-14 text-[#5b7fc7]" />
             <h1 className="nyr-display !text-[clamp(2.4rem,6vw,4rem)]">
               Request <em>received.</em>
             </h1>
             <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">
               We got it. We'll follow up at{" "}
-              <span className="font-semibold text-[#ffffff]">{email}</span>{" "}
+              <span className="font-semibold text-[#0e1730]">{email}</span>{" "}
               within 1–2 business days to scope what you need.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-5 sm:flex-row">
@@ -113,11 +113,11 @@ export default function Partner() {
   }
 
   return (
-    <div className="nyr min-h-screen bg-[#0e1730] text-[#ffffff]">
+    <div className="nyr min-h-screen bg-white text-[#0e1730]">
       <NyrNav />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0e1730]">
+      <section className="relative overflow-hidden bg-white">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
@@ -306,7 +306,7 @@ export default function Partner() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="h-12 w-full gap-2 rounded-full bg-[#0e1730] text-base font-bold text-[#ffffff] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
+                className="h-12 w-full gap-2 rounded-full bg-white text-base font-bold text-[#0e1730] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
               >
                 {submitting ? "Sending request…" : "Send request"}
                 {!submitting && <ArrowRight className="size-4" />}

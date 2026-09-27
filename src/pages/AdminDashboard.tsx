@@ -173,13 +173,13 @@ export default function AdminDashboard() {
 
   if (!hasAnyAdminAccess) {
     return (
-      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#0e1730] p-6 text-[#ffffff]">
-        <Card className="max-w-md border-[#dce6f7]/15 bg-[#131d3a]/90 text-[#ffffff]">
+      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-white p-6 text-[#0e1730]">
+        <Card className="max-w-md border-[#dce6f7] bg-white text-[#0e1730]">
           <CardContent className="pt-8 text-center">
-            <Shield className="mx-auto size-10 text-[#7aa5f0]" />
+            <Shield className="mx-auto size-10 text-[#5b7fc7]" />
             <h1 className="mt-4 text-xl font-semibold">Admin access required</h1>
-            <p className="mt-2 text-sm text-[#ffffff]/55">Sign in with an administrator account to continue.</p>
-            <Button className="mt-6 bg-[#7aa5f0] text-[#0e1730] hover:bg-[#a9c1f5]" onClick={() => navigate("/login")}>
+            <p className="mt-2 text-sm text-[#7d88a3]">Sign in with an administrator account to continue.</p>
+            <Button className="mt-6 bg-[#7aa5f0] text-white hover:bg-[#6b9af0]" onClick={() => navigate("/login")}>
               Sign in
             </Button>
           </CardContent>
@@ -620,26 +620,26 @@ export default function AdminDashboard() {
 
   return (
     <main className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0e1730]">
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0e1730]/95 text-[#ffffff] backdrop-blur">
+      <header className="sticky top-0 z-40 border-b border-[#dce6f7] bg-white/95 text-[#0e1730] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-[#7aa5f0] text-sm font-bold text-[#0e1730]">S</div>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#7aa5f0] text-sm font-bold text-white">S</div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#7aa5f0]">Streamscale</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#5b7fc7]">Streamscale</p>
               <h1 className="text-base font-semibold leading-tight">Admin workspace</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/billing" className="hidden text-sm text-[#7aa5f0] transition hover:text-[#ffffff] sm:inline">
+            <Link to="/billing" className="hidden text-sm text-[#5b7fc7] transition hover:text-[#0e1730] sm:inline">
               Accounting
             </Link>
-            <Link to="/" className="hidden text-sm text-[#7aa5f0] transition hover:text-[#ffffff] sm:inline">
+            <Link to="/" className="hidden text-sm text-[#5b7fc7] transition hover:text-[#0e1730] sm:inline">
               View site
             </Link>
-            <span className="hidden max-w-[220px] truncate rounded-full border border-[#dce6f7]/15 bg-[#dce6f7]/10 px-3 py-1 text-xs text-[#ffffff]/70 md:inline">
+            <span className="hidden max-w-[220px] truncate rounded-full border border-[#dce6f7] bg-[#dce6f7]/10 px-3 py-1 text-xs text-[#44506b] md:inline">
               {user && "email" in user ? user.email : ""}
             </span>
-            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#dce6f7]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#dce6f7]/10 hover:text-[#ffffff]">
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#dce6f7] bg-transparent text-[#44506b] hover:bg-[#dce6f7]/10 hover:text-[#0e1730]">
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1"/>
                 <path d="M16 12H8"/>
@@ -660,7 +660,7 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab(value)}
               className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
                 activeTab === value
-                  ? "bg-[#0e1730] text-[#ffffff] shadow-sm"
+                  ? "bg-white text-[#0e1730] shadow-sm"
                   : "text-[#44506b] hover:bg-[rgba(29,78,216,0.08)] hover:text-[#0e1730]"
               }`}
             >
@@ -669,7 +669,7 @@ export default function AdminDashboard() {
               {count !== null && count > 0 && (
                 <span
                   className={`ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-                    activeTab === value ? "bg-[#7aa5f0]/30 text-[#ffffff]" : "bg-[rgba(29,78,216,0.12)] text-[#5b7fc7]"
+                    activeTab === value ? "bg-[#dce6f7] text-[#0e1730]" : "bg-[rgba(29,78,216,0.12)] text-[#5b7fc7]"
                   }`}
                 >
                   {count}

@@ -149,7 +149,7 @@ function ScoreBar({ label, value }: { label: string; value: string }) {
           whileInView={{ width: `${pct}%` }}
           viewport={{ once: true }}
           transition={{ duration: 0.7, ease: "easeOut" }}
-          className={`h-full rounded-full ${label === "Human baseline" ? "bg-[#0e1730]/70" : "bg-[#5b7fc7]"}`}
+          className={`h-full rounded-full ${label === "Human baseline" ? "bg-white" : "bg-[#5b7fc7]"}`}
         />
       </div>
       <span
@@ -165,11 +165,11 @@ function ScoreBar({ label, value }: { label: string; value: string }) {
 
 export default function Benchmarks() {
   return (
-    <div className="nyr min-h-screen bg-[#0e1730] text-[#ffffff]">
+    <div className="nyr min-h-screen bg-white text-[#0e1730]">
       <NyrNav />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0e1730]">
+      <section className="relative overflow-hidden bg-white">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
@@ -225,11 +225,11 @@ export default function Benchmarks() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#dce6f7]/15 bg-[#dce6f7]/15 md:grid-cols-4"
+            className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#dce6f7] bg-[#dce6f7]/15 md:grid-cols-4"
           >
             {benchmarkStats.map((stat) => (
-              <div key={stat.label} className="bg-[#0e1730]/95 px-6 py-8">
-                <div className="nyr-display !text-[clamp(2rem,4vw,3rem)] text-[#7aa5f0]">
+              <div key={stat.label} className="bg-white/95 px-6 py-8">
+                <div className="nyr-display !text-[clamp(2rem,4vw,3rem)] text-[#5b7fc7]">
                   {stat.value}
                 </div>
                 <div className="nyr-signal mt-2">{stat.label}</div>
@@ -340,7 +340,7 @@ export default function Benchmarks() {
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <div className="mb-12 max-w-3xl">
             <p className="nyr-eyebrow mb-4">Methodology</p>
-            <h2 className="nyr-display !text-[clamp(2.2rem,5vw,3.6rem)] text-[#ffffff]">
+            <h2 className="nyr-display !text-[clamp(2.2rem,5vw,3.6rem)] text-[#0e1730]">
               How a benchmark <em>actually runs.</em>
             </h2>
             <p className="nyr-lede mt-5 max-w-[56ch]">
@@ -362,13 +362,13 @@ export default function Benchmarks() {
                 className="nyr-card p-6"
               >
                 <span className="nyr-step-number">0{index + 1}</span>
-                <div className="mt-3 mb-4 flex size-10 items-center justify-center rounded-lg border border-[#dce6f7]/15 bg-[#dce6f7]/5 text-[#7aa5f0]">
+                <div className="mt-3 mb-4 flex size-10 items-center justify-center rounded-lg border border-[#dce6f7] bg-[#dce6f7]/5 text-[#5b7fc7]">
                   <step.icon className="size-5" />
                 </div>
-                <h3 className="font-semibold text-[#ffffff]">
+                <h3 className="font-semibold text-[#0e1730]">
                   {step.title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#ffffff]/65">
+                <p className="mt-2 text-sm leading-relaxed text-[#44506b]">
                   {step.description}
                 </p>
               </motion.div>
@@ -448,7 +448,7 @@ export default function Benchmarks() {
           }}
         />
         <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6">
-          <h2 className="nyr-display !text-[clamp(2.4rem,6vw,4rem)] text-[#ffffff]">
+          <h2 className="nyr-display !text-[clamp(2.4rem,6vw,4rem)] text-[#0e1730]">
             Want your agent <em>tested?</em>
           </h2>
           <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">

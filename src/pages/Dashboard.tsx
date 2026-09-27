@@ -71,7 +71,7 @@ export default function Dashboard() {
       <NyrNav />
       <main className="pb-16">
         {/* Page hero (dark, matches admin + benchmarks heroes) */}
-        <section className="relative overflow-hidden bg-[#0e1730] text-[#ffffff]">
+        <section className="relative overflow-hidden bg-white text-[#0e1730]">
           <div className="nyr-grid-noise absolute inset-0" />
           <div
             className="absolute inset-0"
@@ -95,7 +95,7 @@ export default function Dashboard() {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               {showBillingLink && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#dce6f7]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dce6f7]/10 hover:text-[#ffffff]"
+                  className="h-9 gap-2 rounded-full border border-[#dce6f7] bg-transparent px-4 text-sm font-bold text-[#44506b] shadow-none hover:bg-[#dce6f7]/10 hover:text-[#0e1730]"
                   onClick={() => navigate("/billing")}
                 >
                   <Wallet className="size-4" />
@@ -104,7 +104,7 @@ export default function Dashboard() {
               )}
               {isMasterAdmin && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#dce6f7]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dce6f7]/10 hover:text-[#ffffff]"
+                  className="h-9 gap-2 rounded-full border border-[#dce6f7] bg-transparent px-4 text-sm font-bold text-[#44506b] shadow-none hover:bg-[#dce6f7]/10 hover:text-[#0e1730]"
                   onClick={() => navigate("/admin")}
                 >
                   <Shield className="size-4" />
@@ -112,14 +112,14 @@ export default function Dashboard() {
                 </Button>
               )}
               <Button
-                className="h-9 gap-2 rounded-full border border-[#dce6f7]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dce6f7]/10 hover:text-[#ffffff]"
+                className="h-9 gap-2 rounded-full border border-[#dce6f7] bg-transparent px-4 text-sm font-bold text-[#44506b] shadow-none hover:bg-[#dce6f7]/10 hover:text-[#0e1730]"
                 onClick={() => navigate("/profile")}
               >
                 <Settings className="size-4" />
                 Profile
               </Button>
               <Button
-                className="h-9 gap-2 rounded-full bg-[#7aa5f0] px-4 text-sm font-bold text-[#0e1730] shadow-[0_8px_22px_rgba(46,107,239,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#a9c1f5]"
+                className="h-9 gap-2 rounded-full bg-[#7aa5f0] px-4 text-sm font-bold text-white shadow-[0_8px_22px_rgba(122,165,240,0.35)] transition-all hover:-translate-y-0.5 hover:bg-[#6b9af0]"
                 onClick={handleSignOut}
               >
                 <LogOut className="size-4" />

@@ -141,7 +141,7 @@ export default function Landing() {
       <NyrNav />
 
       {/* ============ HERO (dark) ============ */}
-      <section className="relative overflow-hidden bg-[#0e1730] text-[#ffffff]">
+      <section className="relative overflow-hidden bg-white text-[#0e1730]">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
@@ -207,15 +207,15 @@ export default function Landing() {
             className="relative hidden min-h-[480px] place-items-center lg:grid"
           >
             <div className="nyr-halo" />
-            <div className="relative w-full max-w-xs rounded-2xl border border-[#dce6f7]/20 bg-[#0e1730]/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
-              <div className="flex items-center justify-between text-[0.63rem] text-[#ffffff]/60">
+            <div className="relative w-full max-w-xs rounded-2xl border border-[#dce6f7] bg-white/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center justify-between text-[0.63rem] text-[#7d88a3]">
                 <span>9:41</span>
                 <span>● ● ●</span>
               </div>
-              <p className="mt-6 text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[#7aa5f0]">
+              <p className="mt-6 text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[#5b7fc7]">
                 Candidate scorecard
               </p>
-              <h3 className="mt-2 text-xl font-semibold leading-snug text-[#ffffff]">
+              <h3 className="mt-2 text-xl font-semibold leading-snug text-[#0e1730]">
                 Senior AI Engineer
               </h3>
               <div className="mt-4 space-y-2.5">
@@ -225,9 +225,9 @@ export default function Landing() {
                   ["Technical", 96],
                 ].map(([label, score]) => (
                   <div key={label as string}>
-                    <div className="mb-1 flex justify-between text-[0.68rem] text-[#ffffff]/70">
+                    <div className="mb-1 flex justify-between text-[0.68rem] text-[#44506b]">
                       <span>{label}</span>
-                      <span className="font-semibold text-[#7aa5f0]">
+                      <span className="font-semibold text-[#5b7fc7]">
                         {score}
                       </span>
                     </div>
@@ -243,11 +243,11 @@ export default function Landing() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#dce6f7]/10 px-3 py-2.5 text-[0.72rem] text-[#ffffff]/80">
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#dce6f7]/10 px-3 py-2.5 text-[0.72rem] text-[#44506b]">
                 <span>Overall</span>
-                <span className="font-bold text-[#7aa5f0]">94 · sent</span>
+                <span className="font-bold text-[#5b7fc7]">94 · sent</span>
               </div>
-              <p className="mt-3 text-[0.62rem] text-[#ffffff]/45">
+              <p className="mt-3 text-[0.62rem] text-[#7d88a3]">
                 Candidates below 90 never reach your inbox.
               </p>
             </div>
@@ -256,7 +256,7 @@ export default function Landing() {
       </section>
 
       {/* ============ STATS STRIP (dark) ============ */}
-      <section className="border-t border-[#dce6f7]/10 bg-[#0e1730] text-[#ffffff]">
+      <section className="border-t border-[#dce6f7] bg-white text-[#0e1730]">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:px-6 md:grid-cols-4">
           {[
             { v: "90+", l: "The only score we send" },
@@ -270,7 +270,7 @@ export default function Landing() {
               transition={{ duration: 0.5, delay: i * 0.06, ease: "easeOut" }}
               className="px-2 py-10 text-center md:py-14"
             >
-              <p className="nyr-display !text-[clamp(2.2rem,5vw,3.4rem)] text-[#7aa5f0]">
+              <p className="nyr-display !text-[clamp(2.2rem,5vw,3.4rem)] text-[#5b7fc7]">
                 {s.v}
               </p>
               <p className="nyr-signal mt-2">{s.l}</p>
@@ -325,7 +325,7 @@ export default function Landing() {
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div {...reveal} className="max-w-2xl">
             <p className="nyr-eyebrow mb-4">The rubric</p>
-            <h2 className="nyr-display text-[#ffffff]">
+            <h2 className="nyr-display text-[#0e1730]">
               100 points. <em>Zero guessing.</em>
             </h2>
             <p className="nyr-lede mt-5">
@@ -344,17 +344,17 @@ export default function Landing() {
                 className="nyr-card p-7"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#dce6f7]/15 bg-[#dce6f7]/5">
-                    <r.icon className="size-5 text-[#7aa5f0]" />
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#dce6f7] bg-[#dce6f7]/5">
+                    <r.icon className="size-5 text-[#5b7fc7]" />
                   </div>
-                  <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#7aa5f0]">
+                  <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#5b7fc7]">
                     {r.weight}
                   </span>
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-[#ffffff]">
+                <h3 className="mt-5 text-xl font-semibold text-[#0e1730]">
                   {r.name}
                 </h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#ffffff]/65">
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#44506b]">
                   {r.body}
                 </p>
               </motion.div>
@@ -362,7 +362,7 @@ export default function Landing() {
           </div>
 
           <motion.div {...reveal} className="nyr-quote mt-16">
-            <p className="text-xl font-medium leading-relaxed text-[#ffffff] sm:text-2xl">
+            <p className="text-xl font-medium leading-relaxed text-[#0e1730] sm:text-2xl">
               The best recruiting firms don't send you more candidates. They
               send you fewer — and every one is right.
             </p>
@@ -389,8 +389,8 @@ export default function Landing() {
                 transition={{ duration: 0.55, delay: i * 0.1, ease: "easeOut" }}
                 className="flex flex-col rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white p-8 shadow-[0_20px_60px_rgba(10,31,68,0.06)]"
               >
-                <div className="flex size-12 items-center justify-center rounded-xl bg-[#0e1730]">
-                  <a.icon className="size-5 text-[#7aa5f0]" />
+                <div className="flex size-12 items-center justify-center rounded-xl bg-white">
+                  <a.icon className="size-5 text-[#5b7fc7]" />
                 </div>
                 <h3 className="mt-5 text-2xl font-semibold tracking-tight">
                   {a.title}
@@ -433,11 +433,11 @@ export default function Landing() {
           >
             <div>
               <p className="nyr-eyebrow mb-4">Beyond recruiting</p>
-              <h2 className="nyr-display text-[#ffffff]">
+              <h2 className="nyr-display text-[#0e1730]">
                 We build and test <em>enterprise AI.</em>
               </h2>
             </div>
-            <p className="text-[0.95rem] leading-relaxed text-[#ffffff]/65">
+            <p className="text-[0.95rem] leading-relaxed text-[#44506b]">
               It's not a side project — it's the reason our 90+ means
               something. We evaluate people the same way we evaluate machines.
             </p>
@@ -451,11 +451,11 @@ export default function Landing() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
                 className="nyr-card p-7"
               >
-                <p.icon className="size-6 text-[#7aa5f0]" />
-                <h3 className="mt-4 text-lg font-semibold text-[#ffffff]">
+                <p.icon className="size-6 text-[#5b7fc7]" />
+                <h3 className="mt-4 text-lg font-semibold text-[#0e1730]">
                   {p.title}
                 </h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#ffffff]/65">
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#44506b]">
                   {p.body}
                 </p>
               </motion.div>
@@ -518,7 +518,7 @@ export default function Landing() {
         <div className="relative mx-auto max-w-4xl px-4 py-28 text-center sm:px-6">
           <motion.h2
             {...reveal}
-            className="nyr-display mx-auto max-w-[12ch] text-[#ffffff]"
+            className="nyr-display mx-auto max-w-[12ch] text-[#0e1730]"
           >
             A better way <em>to hire.</em>
           </motion.h2>

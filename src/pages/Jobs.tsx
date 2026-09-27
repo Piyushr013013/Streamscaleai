@@ -181,11 +181,11 @@ export default function Jobs() {
   };
 
   return (
-    <div className="nyr min-h-screen bg-[#0e1730] text-[#ffffff]">
+    <div className="nyr min-h-screen bg-white text-[#0e1730]">
       <NyrNav />
 
       {/* Hero band */}
-      <section className="relative overflow-hidden bg-[#0e1730]">
+      <section className="relative overflow-hidden bg-white">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
@@ -275,7 +275,7 @@ export default function Jobs() {
                     )}
                     <Button
                       onClick={() => handleApply(job)}
-                      className="h-11 w-full gap-2 rounded-full bg-[#0e1730] text-[0.9rem] font-bold text-[#ffffff] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
+                      className="h-11 w-full gap-2 rounded-full bg-white text-[0.9rem] font-bold text-[#0e1730] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
                     >
                       Apply now <ArrowRight className="size-4" />
                     </Button>
@@ -292,7 +292,7 @@ export default function Jobs() {
 
       {/* Apply Modal */}
       {showApplyForm && (
-        <div className="fixed inset-0 z-50 bg-[#0e1730]/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <CardHeader className="pb-4">
               <CardTitle className="text-lg text-[#0e1730]">Apply for {applyingTo?.title}</CardTitle>
@@ -437,7 +437,7 @@ export default function Jobs() {
                     <Button
                       type="submit"
                       disabled={applying}
-                      className="h-11 flex-1 rounded-full bg-[#0e1730] font-bold text-[#ffffff] hover:bg-[#3c5a99]"
+                      className="h-11 flex-1 rounded-full bg-white font-bold text-[#0e1730] hover:bg-[#3c5a99]"
                     >
                       {applying ? "Submitting..." : "Submit application"}
                     </Button>

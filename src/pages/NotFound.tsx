@@ -11,7 +11,7 @@ const suggestions = [
 
 export default function NotFound() {
   return (
-    <div className="nyr min-h-screen bg-[#0e1730] text-[#ffffff]">
+    <div className="nyr min-h-screen bg-white text-[#0e1730]">
       <NyrNav />
 
       <section className="nyr-dark-section relative overflow-hidden">
