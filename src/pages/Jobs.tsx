@@ -181,19 +181,12 @@ export default function Jobs() {
   };
 
   return (
-    <div className="nyr min-h-screen bg-white text-[#0e1730]">
+    <div className="nyr min-h-screen bg-white text-foreground">
       <NyrNav />
 
       {/* Hero band */}
-      <section className="relative overflow-hidden bg-white">
-        <div className="nyr-grid-noise absolute inset-0" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(46,107,239,.16), transparent 60%)",
-          }}
-        />
+      <section className="nyr-hero">
+        <div className="nyr-grid" />
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
@@ -204,7 +197,7 @@ export default function Jobs() {
               <span className="nyr-status-dot" />
               Job board
             </p>
-            <h1 className="nyr-display">
+            <h1 className="nyr-display-md">
               Great roles at <em>great startups.</em>
             </h1>
             <p className="nyr-lede mt-5 max-w-[56ch]">
@@ -214,10 +207,10 @@ export default function Jobs() {
               straight to the hiring team.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
-              <Link to="/partner" className="nyr-primary-btn nyr-sm">
+              <Link to="/partner" className="nyr-btn nyr-btn-primary nyr-btn-sm">
                 Post a job for your startup <ArrowRight className="size-4" />
               </Link>
-              <a href="#openings" className="nyr-text-link nyr-sm">
+              <a href="#openings" className="nyr-link !text-white/80 hover:!text-white">
                 Browse openings <span aria-hidden>↓</span>
               </a>
             </div>
@@ -226,12 +219,12 @@ export default function Jobs() {
       </section>
 
       {/* Jobs list (light) */}
-      <section id="openings" className="nyr-light bg-[#ffffff] text-[#0e1730]">
+      <section id="openings" className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           {!jobs || jobs.length === 0 ? (
-            <div className="border-y border-[rgba(29,78,216,0.28)] py-16 text-center">
+            <div className="border-y border-[rgba(37,99,235,0.2)] py-16 text-center">
               <h3 className="text-2xl font-semibold tracking-tight">No open positions</h3>
-              <p className="mt-2 text-[0.95rem] text-[#44506b]">
+              <p className="mt-2 text-[0.95rem] text-muted-foreground">
                 Check back later for new opportunities.
               </p>
             </div>
@@ -245,37 +238,37 @@ export default function Jobs() {
                   transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
                 >
                 <Card
-                  className="border border-[rgba(29,78,216,0.28)] bg-white shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-all hover:border-[#5b7fc7]/50 group"
+                  className="border border-border bg-white shadow-[0_12px_40px_rgba(11,26,61,0.06)] transition-all hover:border-[var(--nyr-blue)]/50 group"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between mb-2">
-                      <Badge className="border border-[#5b7fc7]/30 bg-[#5b7fc7]/10 text-[#3c5a99] hover:bg-[#5b7fc7]/15">
+                      <Badge className="border border-[var(--nyr-blue)]/30 bg-[var(--nyr-blue)]/10 text-[var(--nyr-blue)] hover:bg-[var(--nyr-blue)]/15">
                         {job.role}
                       </Badge>
-                      <span className="text-sm text-[#44506b]/60">
+                      <span className="text-sm text-muted-foreground/60">
                         {new Date(job._creationTime).toLocaleDateString()}
                       </span>
                     </div>
-                    <CardTitle className="text-xl text-[#0e1730] transition-colors group-hover:text-[#5b7fc7]">
+                    <CardTitle className="text-xl text-foreground transition-colors group-hover:text-[var(--nyr-blue)]">
                       {job.title}
                     </CardTitle>
-                    <CardDescription className="mt-1 text-[#44506b]">
+                    <CardDescription className="mt-1 text-muted-foreground">
                       {job.companyName} · {job.jobType} · {job.salary}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="mb-4 line-clamp-2 text-sm text-[#44506b]/80">
+                    <p className="mb-4 line-clamp-2 text-sm text-muted-foreground/80">
                       {job.requirements}
                     </p>
-                    {job.benefits && <p className="mb-2 text-xs text-[#5b7fc7]">Benefits: {job.benefits}</p>}
+                    {job.benefits && <p className="mb-2 text-xs text-[var(--nyr-blue)]">Benefits: {job.benefits}</p>}
                     {job.extraInfo && (
-                      <p className="mb-4 text-xs text-[#44506b]/60">
+                      <p className="mb-4 text-xs text-muted-foreground/60">
                         {job.extraInfo}
                       </p>
                     )}
                     <Button
                       onClick={() => handleApply(job)}
-                      className="h-11 w-full gap-2 rounded-full bg-white text-[0.9rem] font-bold text-[#0e1730] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
+                      className="nyr-btn nyr-btn-primary nyr-btn-sm w-full"
                     >
                       Apply now <ArrowRight className="size-4" />
                     </Button>
@@ -295,7 +288,7 @@ export default function Jobs() {
         <div className="fixed inset-0 z-50 bg-white/60 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg text-[#0e1730]">Apply for {applyingTo?.title}</CardTitle>
+              <CardTitle className="text-lg text-foreground">Apply for {applyingTo?.title}</CardTitle>
               <CardDescription>
                 Share your details and a PDF or Word (.docx) resume so the team can review your fit.
               </CardDescription>
@@ -430,14 +423,14 @@ export default function Jobs() {
                       type="button"
                       variant="outline"
                       onClick={() => { setShowApplyForm(null); setApplied(false); }}
-                      className="h-11 flex-1 rounded-full border-slate-300"
+                      className="nyr-btn nyr-btn-light nyr-btn-sm flex-1"
                     >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       disabled={applying}
-                      className="h-11 flex-1 rounded-full bg-white font-bold text-[#0e1730] hover:bg-[#3c5a99]"
+                      className="nyr-btn nyr-btn-primary nyr-btn-sm flex-1"
                     >
                       {applying ? "Submitting..." : "Submit application"}
                     </Button>

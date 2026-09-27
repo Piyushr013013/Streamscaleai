@@ -11,18 +11,11 @@ const suggestions = [
 
 export default function NotFound() {
   return (
-    <div className="nyr min-h-screen bg-white text-[#0e1730]">
+    <div className="nyr min-h-screen bg-white text-foreground">
       <NyrNav />
 
-      <section className="nyr-dark-section relative overflow-hidden">
-        <div className="nyr-grid-noise absolute inset-0" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 50% at 50% 0%, rgba(46,107,239,.15), transparent 60%)",
-          }}
-        />
+      <section className="nyr-hero">
+        <div className="nyr-grid" />
         <div className="relative mx-auto max-w-3xl px-4 py-28 text-center sm:px-6">
           <motion.p
             initial={{ opacity: 0, y: 12 }}
@@ -37,7 +30,7 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.08 }}
-            className="nyr-display mt-6"
+            className="nyr-display-md mt-6"
           >
             This page <em>doesn't exist.</em>
           </motion.h1>
@@ -53,24 +46,24 @@ export default function NotFound() {
         </div>
       </section>
 
-      <section className="nyr-light bg-[#ffffff] text-[#0e1730]">
+      <section className="bg-white">
         <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-          <div className="border-t border-[rgba(29,78,216,0.28)]">
+          <div className="border-t border-[rgba(37,99,235,0.2)]">
             {suggestions.map((item, i) => (
               <motion.div
                 key={item.href}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.35, delay: 0.2 + i * 0.06 }}
-                className="border-b border-[rgba(29,78,216,0.28)]"
+                className="border-b border-[rgba(37,99,235,0.2)]"
               >
                 <Link
                   to={item.href}
                   className="group flex items-baseline justify-between gap-4 py-6"
                 >
                   <div>
-                    <span className="nyr-step-number mr-4">{`0${i + 1}`}</span>
-                    <span className="text-2xl font-semibold tracking-tight transition-colors group-hover:text-[#5b7fc7]">
+                    <span className="nyr-step mr-4">{`0${i + 1}`}</span>
+                    <span className="text-2xl font-semibold tracking-tight transition-colors group-hover:text-[var(--nyr-blue)]">
                       {item.label}
                     </span>
                   </div>

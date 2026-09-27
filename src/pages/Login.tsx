@@ -65,22 +65,15 @@ export default function Login() {
   };
 
   return (
-    <div className="nyr relative flex min-h-screen flex-col bg-white text-[#0e1730]">
-      <div className="nyr-grid-noise absolute inset-0" />
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 55% 45% at 50% 0%, rgba(46,107,239,.18), transparent 60%)",
-        }}
-      />
+    <div className="nyr nyr-hero flex min-h-screen flex-col">
+      <div className="nyr-grid" />
       <div className="relative mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-4 py-16">
         <div className="mb-10 text-center">
           <p className="nyr-eyebrow justify-center">
             <span className="nyr-status-dot" />
             Streamscale
           </p>
-          <h1 className="nyr-display mt-6 !text-[clamp(2.4rem,7vw,3.6rem)]">
+          <h1 className="nyr-display mt-8">
             Sign in to <em>your workspace.</em>
           </h1>
           <p className="nyr-signal mt-4">
@@ -88,10 +81,10 @@ export default function Login() {
           </p>
         </div>
 
-        <Card className="border-[#dce6f7] bg-white shadow-[0_30px_90px_rgba(0,0,0,0.4)] backdrop-blur">
+        <Card className="border-white/10 bg-white/5 backdrop-blur">
           <CardHeader>
-            <CardTitle className="text-[#0e1730]">Welcome back</CardTitle>
-            <CardDescription className="text-[#7d88a3]">
+            <CardTitle className="text-white">Welcome back</CardTitle>
+            <CardDescription className="text-white/60">
               Use the email and password assigned to you by Streamscale.
             </CardDescription>
           </CardHeader>
@@ -104,15 +97,15 @@ export default function Login() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-[#44506b]">Email address</Label>
+                <Label htmlFor="email" className="text-white/70">Email address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#5b7fc7]" />
+                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[var(--nyr-blue)]" />
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="h-11 border-[#dce6f7] bg-white pl-10 text-[#0e1730] placeholder:text-[#7d88a3]"
+                    className="h-11 border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35"
                     placeholder="you@company.com"
                     autoComplete="off"
                     name="streamscale-login-email"
@@ -122,15 +115,15 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-[#44506b]">Password</Label>
+                <Label htmlFor="password" className="text-white/70">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#5b7fc7]" />
+                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[var(--nyr-blue)]" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-10 border-[#dce6f7] bg-white px-10 text-[#0e1730] placeholder:text-[#7d88a3]"
+                    className="h-11 border-white/15 bg-white/5 px-10 text-white placeholder:text-white/35"
                     placeholder="Your password"
                     autoComplete="new-password"
                     name="streamscale-login-password"
@@ -140,7 +133,7 @@ export default function Login() {
                     type="button"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#5b7fc7] hover:text-[#0e1730]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93b4f5] hover:text-white"
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
@@ -150,7 +143,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-12 w-full gap-2 rounded-full bg-[#7aa5f0] text-base font-bold text-white shadow-[0_10px_30px_rgba(122,165,240,0.35)] transition-all hover:-translate-y-0.5 hover:bg-[#6b9af0]"
+                className="nyr-btn nyr-btn-primary !min-h-12 w-full text-base"
               >
                 {isSubmitting ? (
                   <>
@@ -171,7 +164,7 @@ export default function Login() {
         <button
           type="button"
           onClick={() => navigate("/")}
-          className="nyr-text-link mt-8 self-center"
+          className="nyr-link mt-8 self-center !text-white/80 hover:!text-white"
         >
           <ArrowLeft className="size-4" />
           Back to home

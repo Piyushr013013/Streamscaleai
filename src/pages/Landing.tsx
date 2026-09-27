@@ -3,15 +3,14 @@ import { motion } from "framer-motion";
 import {
   ArrowRight,
   ArrowUpRight,
-  Check,
-  FileText,
-  Briefcase,
-  Code2,
-  Sparkles,
-  ShieldCheck,
   Bot,
-  Users,
+  Briefcase,
   Building2,
+  Check,
+  Code2,
+  FileText,
+  ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { NyrNav, NyrFooter } from "@/components/NyrLayout";
 
@@ -21,6 +20,29 @@ const reveal = {
   viewport: { once: true, margin: "-60px" },
   transition: { duration: 0.55, ease: "easeOut" as const },
 };
+
+const steps = [
+  {
+    n: "01",
+    title: "Find",
+    body: "We post the role and hunt down candidates ourselves — human recruiters doing real sourcing, not keyword filters. Every pipeline is built by hand for the specific role.",
+  },
+  {
+    n: "02",
+    title: "Score",
+    body: "Every single candidate gets scored on our 100-point scale: resume, work experience, and technical skills. No exceptions, no gut feelings.",
+  },
+  {
+    n: "03",
+    title: "Send",
+    body: "Only candidates scoring 90+ reach your team. Everyone else never makes it past us — your inbox stays clean, your time stays yours.",
+  },
+  {
+    n: "04",
+    title: "Support",
+    body: "We stay in the loop through interviews and offer. If AI can automate part of the work instead of hiring for it, we'll build that too.",
+  },
+];
 
 const rubric = [
   {
@@ -43,29 +65,6 @@ const rubric = [
   },
 ];
 
-const steps = [
-  {
-    n: "01",
-    title: "Find",
-    body: "We post the role and hunt down candidates ourselves — human recruiters doing real sourcing, not keyword filters. Every pipeline is built by hand for the specific role.",
-  },
-  {
-    n: "02",
-    title: "Score",
-    body: "Every single candidate gets scored on our comprehensive 100-point scale: resume, work experience, and technical skills. No exceptions, no gut feelings.",
-  },
-  {
-    n: "03",
-    title: "Send",
-    body: "Only candidates scoring 90+ reach your team. Everyone else never makes it past us — your inbox stays clean, your time stays yours.",
-  },
-  {
-    n: "04",
-    title: "Support",
-    body: "We stay in the loop through interviews and offer. If AI can automate part of the work instead of hiring for it, we'll build that too.",
-  },
-];
-
 const audiences = [
   {
     icon: Building2,
@@ -80,7 +79,7 @@ const audiences = [
     cta: { label: "Start hiring", to: "/partner" },
   },
   {
-    icon: Users,
+    icon: Sparkles,
     title: "Founders who've been burned",
     body: "You've tried job boards, agencies, and AI tools. What showed up was noise. We built our scoring system so we could promise a bar instead of a volume discount.",
     points: [
@@ -134,25 +133,23 @@ const faqs = [
   },
 ];
 
+const scores = [
+  { label: "Resume", value: 94 },
+  { label: "Experience", value: 92 },
+  { label: "Technical", value: 96 },
+];
+
 export default function Landing() {
   return (
-    <div className="nyr min-h-screen bg-background">
-      {/* ============ NAV ============ */}
+    <div className="nyr">
       <NyrNav />
 
-      {/* ============ HERO (dark) ============ */}
-      <section className="relative overflow-hidden bg-white text-[#0e1730]">
-        <div className="nyr-grid-noise absolute inset-0" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 60% 45% at 78% 12%, rgba(46,107,239,.22), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto grid min-h-[calc(100svh-68px)] max-w-6xl items-center gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1.05fr_.75fr] lg:py-16">
+      {/* ============ HERO ============ */}
+      <section className="nyr-hero">
+        <div className="nyr-grid" />
+        <div className="relative mx-auto grid min-h-[calc(100svh-68px)] max-w-6xl items-center gap-14 px-4 py-24 sm:px-6 lg:grid-cols-[1.05fr_.75fr]">
           <div>
-            <motion.div {...reveal} className="nyr-eyebrow mb-6">
+            <motion.div {...reveal} className="nyr-eyebrow mb-7">
               <span className="nyr-status-dot" />
               Recruitment for the AI era
             </motion.div>
@@ -160,7 +157,7 @@ export default function Landing() {
             <motion.h1
               {...reveal}
               transition={{ duration: 0.55, delay: 0.08, ease: "easeOut" }}
-              className="nyr-display mb-6"
+              className="nyr-display mb-7"
             >
               We find the best people <em>for the job.</em>
             </motion.h1>
@@ -168,7 +165,7 @@ export default function Landing() {
             <motion.p
               {...reveal}
               transition={{ duration: 0.55, delay: 0.14, ease: "easeOut" }}
-              className="nyr-lede max-w-[52ch]"
+              className="nyr-lede mb-9 max-w-[46ch]"
             >
               Streamscale hunts down top candidates, scores every one on a
               100-point scale — resume, experience, technical skills — and only
@@ -179,12 +176,12 @@ export default function Landing() {
             <motion.div
               {...reveal}
               transition={{ duration: 0.55, delay: 0.2, ease: "easeOut" }}
-              className="mt-8 flex flex-wrap items-center gap-6"
+              className="flex flex-wrap items-center gap-6"
             >
-              <Link to="/partner" className="nyr-primary-btn">
+              <Link to="/partner" className="nyr-btn nyr-btn-primary">
                 Find your next hire <ArrowRight className="size-4" />
               </Link>
-              <a href="#scoring" className="nyr-text-link">
+              <a href="#scoring" className="nyr-link text-white/80 hover:text-white">
                 See how we score <span aria-hidden>↓</span>
               </a>
             </motion.div>
@@ -192,62 +189,56 @@ export default function Landing() {
             <motion.div
               {...reveal}
               transition={{ duration: 0.55, delay: 0.26, ease: "easeOut" }}
-              className="nyr-signal mt-12 flex flex-wrap gap-x-8 gap-y-2"
+              className="nyr-signal mt-14 flex flex-wrap gap-x-8 gap-y-2"
             >
               <span>Humans placed by humans.</span>
               <span>Only 90+ scorers reach your team.</span>
             </motion.div>
           </div>
 
-          {/* Stage visual */}
+          {/* Candidate scorecard */}
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.15, ease: "easeOut" }}
-            className="relative hidden min-h-[480px] place-items-center lg:grid"
+            className="relative hidden place-items-center lg:grid"
           >
             <div className="nyr-halo" />
-            <div className="relative w-full max-w-xs rounded-2xl border border-[#dce6f7] bg-white/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
-              <div className="flex items-center justify-between text-[0.63rem] text-[#7d88a3]">
+            <div className="nyr-card relative w-full max-w-[290px] rounded-[20px] p-6 backdrop-blur-sm">
+              <div className="nyr-score-row">
                 <span>9:41</span>
-                <span>● ● ●</span>
+                <span>•••</span>
               </div>
-              <p className="mt-6 text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[#5b7fc7]">
-                Candidate scorecard
-              </p>
-              <h3 className="mt-2 text-xl font-semibold leading-snug text-[#0e1730]">
-                Senior AI Engineer
-              </h3>
-              <div className="mt-4 space-y-2.5">
-                {[
-                  ["Resume", 94],
-                  ["Experience", 92],
-                  ["Technical", 96],
-                ].map(([label, score]) => (
-                  <div key={label as string}>
-                    <div className="mb-1 flex justify-between text-[0.68rem] text-[#44506b]">
-                      <span>{label}</span>
-                      <span className="font-semibold text-[#5b7fc7]">
-                        {score}
-                      </span>
+
+              <p className="nyr-eyebrow mt-7 !text-[0.62rem]">Candidate scorecard</p>
+              <h3 className="mt-2 text-xl font-semibold text-white">Senior AI Engineer</h3>
+
+              <div className="mt-6 space-y-4">
+                {scores.map((score, i) => (
+                  <div key={score.label}>
+                    <div className="nyr-score-row mb-1.5">
+                      <span>{score.label}</span>
+                      <span className="font-semibold text-[#93b4f5]">{score.value}</span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-[#dce6f7]/10">
+                    <div className="nyr-score-track">
                       <motion.div
                         initial={{ width: 0 }}
-                        whileInView={{ width: `${score}%` }}
+                        whileInView={{ width: `${score.value}%` }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.9, delay: 0.4 }}
-                        className="h-full rounded-full bg-[#7aa5f0]"
+                        transition={{ duration: 0.9, delay: 0.4 + i * 0.1 }}
+                        className="nyr-score-fill"
                       />
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#dce6f7]/10 px-3 py-2.5 text-[0.72rem] text-[#44506b]">
+
+              <div className="mt-6 flex items-center justify-between rounded-xl bg-white/10 px-4 py-3 text-[0.78rem] text-white/80">
                 <span>Overall</span>
-                <span className="font-bold text-[#5b7fc7]">94 · sent</span>
+                <span className="font-semibold text-[#93b4f5]">94 · sent</span>
               </div>
-              <p className="mt-3 text-[0.62rem] text-[#7d88a3]">
+
+              <p className="nyr-signal mt-4 !text-[0.68rem]">
                 Candidates below 90 never reach your inbox.
               </p>
             </div>
@@ -255,77 +246,71 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ============ STATS STRIP (dark) ============ */}
-      <section className="border-t border-[#dce6f7] bg-white text-[#0e1730]">
+      {/* ============ STATS ============ */}
+      <section className="border-y border-border bg-white">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:px-6 md:grid-cols-4">
           {[
             { v: "90+", l: "The only score we send" },
             { v: "100", l: "Points. Every candidate" },
             { v: "3–5", l: "Candidates per shortlist" },
             { v: "AI", l: "Built & tested in-house" },
-          ].map((s, i) => (
+          ].map((stat, i) => (
             <motion.div
-              key={s.l}
+              key={stat.l}
               {...reveal}
               transition={{ duration: 0.5, delay: i * 0.06, ease: "easeOut" }}
-              className="px-2 py-10 text-center md:py-14"
+              className="px-2 py-12 text-center"
             >
-              <p className="nyr-display !text-[clamp(2.2rem,5vw,3.4rem)] text-[#5b7fc7]">
-                {s.v}
-              </p>
-              <p className="nyr-signal mt-2">{s.l}</p>
+              <p className="nyr-display-md text-[var(--nyr-blue)]">{stat.v}</p>
+              <p className="nyr-signal mt-2">{stat.l}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ============ HOW IT WORKS (light) ============ */}
-      <section id="protocol" className="nyr-light bg-[#ffffff] text-[#0e1730]">
-        <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+      {/* ============ PROCESS ============ */}
+      <section id="protocol" className="nyr-section bg-white">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <motion.div
             {...reveal}
-            className="grid items-end gap-6 md:grid-cols-[1.1fr_.6fr]"
+            className="grid items-end gap-8 md:grid-cols-[1.1fr_.6fr]"
           >
             <div>
               <p className="nyr-eyebrow mb-4">The process</p>
-              <h2 className="nyr-display">
+              <h2 className="nyr-display-md">
                 Find. Score. <em>Send.</em>
               </h2>
             </div>
-            <p className="text-[0.95rem] leading-relaxed text-[#44506b]">
+            <p className="nyr-lede">
               Four steps. No noise. You meet only the candidates worth your
               time — and we stay until the offer is signed.
             </p>
           </motion.div>
 
-          <div className="mt-14 border-t border-[rgba(29,78,216,0.28)]">
+          <div className="nyr-divide mt-14">
             {steps.map((step, i) => (
               <motion.div
                 key={step.n}
                 {...reveal}
                 transition={{ duration: 0.5, delay: i * 0.06, ease: "easeOut" }}
-                className="grid gap-3 border-b border-[rgba(29,78,216,0.28)] py-8 md:grid-cols-[80px_220px_1fr] md:items-baseline md:gap-8"
+                className="grid gap-3 py-8 md:grid-cols-[70px_220px_1fr] md:items-baseline md:gap-8"
               >
-                <span className="nyr-step-number">{step.n}</span>
-                <h3 className="text-2xl font-semibold tracking-tight">
-                  {step.title}
-                </h3>
-                <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-[#44506b]">
-                  {step.body}
-                </p>
+                <span className="nyr-step">{step.n}</span>
+                <h3 className="text-2xl font-semibold tracking-tight">{step.title}</h3>
+                <p className="nyr-lede max-w-[58ch] text-[0.95rem]">{step.body}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ============ SCORING BREAKDOWN (dark) ============ */}
-      <section id="scoring" className="nyr-dark-section relative overflow-hidden">
-        <div className="nyr-grid-noise absolute inset-0" />
-        <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
+      {/* ============ RUBRIC ============ */}
+      <section id="scoring" className="nyr-section nyr-hero">
+        <div className="nyr-grid" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <motion.div {...reveal} className="max-w-2xl">
             <p className="nyr-eyebrow mb-4">The rubric</p>
-            <h2 className="nyr-display text-[#0e1730]">
+            <h2 className="nyr-display-md">
               100 points. <em>Zero guessing.</em>
             </h2>
             <p className="nyr-lede mt-5">
@@ -336,33 +321,27 @@ export default function Landing() {
           </motion.div>
 
           <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {rubric.map((r, i) => (
+            {rubric.map((item, i) => (
               <motion.div
-                key={r.name}
+                key={item.name}
                 {...reveal}
                 transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
                 className="nyr-card p-7"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#dce6f7] bg-[#dce6f7]/5">
-                    <r.icon className="size-5 text-[#5b7fc7]" />
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/5">
+                    <item.icon className="size-5 text-[#93b4f5]" />
                   </div>
-                  <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#5b7fc7]">
-                    {r.weight}
-                  </span>
+                  <span className="nyr-step !text-[#93b4f5]">{item.weight}</span>
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-[#0e1730]">
-                  {r.name}
-                </h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#44506b]">
-                  {r.body}
-                </p>
+                <h3 className="mt-5 text-xl font-semibold text-white">{item.name}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-white/65">{item.body}</p>
               </motion.div>
             ))}
           </div>
 
-          <motion.div {...reveal} className="nyr-quote mt-16">
-            <p className="text-xl font-medium leading-relaxed text-[#0e1730] sm:text-2xl">
+          <motion.div {...reveal} className="nyr-quote mt-20 max-w-3xl">
+            <p className="text-xl font-medium leading-relaxed text-white sm:text-2xl">
               The best recruiting firms don't send you more candidates. They
               send you fewer — and every one is right.
             </p>
@@ -371,44 +350,45 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ============ WHO IT'S FOR (light) ============ */}
-      <section id="who" className="nyr-light bg-[#ffffff] text-[#0e1730]">
-        <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
+      {/* ============ WHO WE WORK WITH ============ */}
+      <section id="who" className="nyr-section bg-white">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <motion.div {...reveal} className="mx-auto max-w-2xl text-center">
             <p className="nyr-eyebrow mb-4">Who it's for</p>
-            <h2 className="nyr-display">
+            <h2 className="nyr-display-md">
               Who we <em>work with.</em>
             </h2>
           </motion.div>
 
           <div className="mt-14 grid gap-5 lg:grid-cols-2">
-            {audiences.map((a, i) => (
+            {audiences.map((audience, i) => (
               <motion.div
-                key={a.title}
+                key={audience.title}
                 {...reveal}
                 transition={{ duration: 0.55, delay: i * 0.1, ease: "easeOut" }}
-                className="flex flex-col rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white p-8 shadow-[0_20px_60px_rgba(10,31,68,0.06)]"
+                className="nyr-card flex flex-col p-8"
               >
-                <div className="flex size-12 items-center justify-center rounded-xl bg-white">
-                  <a.icon className="size-5 text-[#5b7fc7]" />
+                <div className="flex size-12 items-center justify-center rounded-xl bg-[var(--nyr-ink)]">
+                  <audience.icon className="size-5 text-[#93b4f5]" />
                 </div>
                 <h3 className="mt-5 text-2xl font-semibold tracking-tight">
-                  {a.title}
+                  {audience.title}
                 </h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-[#44506b]">
-                  {a.body}
-                </p>
-                <ul className="mt-5 flex-1 space-y-3">
-                  {a.points.map((p) => (
-                    <li key={p} className="flex items-start gap-3 text-[0.92rem] leading-relaxed text-[#44506b]">
-                      <Check className="mt-0.5 size-4 shrink-0 text-[#5b7fc7]" />
-                      {p}
+                <p className="nyr-lede mt-3 text-[0.95rem]">{audience.body}</p>
+                <ul className="mt-6 flex-1 space-y-3">
+                  {audience.points.map((point) => (
+                    <li
+                      key={point}
+                      className="flex items-start gap-3 text-[0.92rem] leading-relaxed text-muted-foreground"
+                    >
+                      <Check className="mt-0.5 size-4 shrink-0 text-[var(--nyr-blue)]" />
+                      {point}
                     </li>
                   ))}
                 </ul>
-                <div className="mt-7">
-                  <Link to={a.cta.to} className="nyr-primary-btn nyr-ink">
-                    {a.cta.label} <ArrowRight className="size-4" />
+                <div className="mt-8">
+                  <Link to={audience.cta.to} className="nyr-btn nyr-btn-light">
+                    {audience.cta.label} <ArrowRight className="size-4" />
                   </Link>
                 </div>
               </motion.div>
@@ -417,132 +397,107 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ============ AI SYSTEMS (dark) ============ */}
-      <section className="nyr-dark-section relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 50% at 50% 0%, rgba(46,107,239,.14), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
+      {/* ============ AI SYSTEMS ============ */}
+      <section className="nyr-section nyr-hero">
+        <div className="nyr-grid" />
+        <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
           <motion.div
             {...reveal}
-            className="grid items-end gap-6 md:grid-cols-[1.1fr_.7fr]"
+            className="grid items-end gap-8 md:grid-cols-[1.1fr_.7fr]"
           >
             <div>
               <p className="nyr-eyebrow mb-4">Beyond recruiting</p>
-              <h2 className="nyr-display text-[#0e1730]">
+              <h2 className="nyr-display-md">
                 We build and test <em>enterprise AI.</em>
               </h2>
             </div>
-            <p className="text-[0.95rem] leading-relaxed text-[#44506b]">
-              It's not a side project — it's the reason our 90+ means
-              something. We evaluate people the same way we evaluate machines.
+            <p className="nyr-lede">
+              It's not a side project — it's the reason our 90+ means something.
+              We evaluate people the same way we evaluate machines.
             </p>
           </motion.div>
 
           <div className="mt-14 grid gap-5 md:grid-cols-3">
-            {aiPoints.map((p, i) => (
+            {aiPoints.map((point, i) => (
               <motion.div
-                key={p.title}
+                key={point.title}
                 {...reveal}
                 transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
                 className="nyr-card p-7"
               >
-                <p.icon className="size-6 text-[#5b7fc7]" />
-                <h3 className="mt-4 text-lg font-semibold text-[#0e1730]">
-                  {p.title}
-                </h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#44506b]">
-                  {p.body}
-                </p>
+                <point.icon className="size-6 text-[#93b4f5]" />
+                <h3 className="mt-4 text-lg font-semibold text-white">{point.title}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-white/65">{point.body}</p>
               </motion.div>
             ))}
           </div>
 
           <motion.div {...reveal} className="mt-12 flex flex-wrap items-center gap-6">
-            <Link to="/benchmarks" className="nyr-primary-btn">
+            <Link to="/benchmarks" className="nyr-btn nyr-btn-primary">
               See the benchmarks <ArrowUpRight className="size-4" />
             </Link>
-            <a href="#protocol" className="nyr-text-link">
+            <a href="#protocol" className="nyr-link text-white/80 hover:text-white">
               Back to the process <span aria-hidden>↑</span>
             </a>
           </motion.div>
         </div>
       </section>
 
-      {/* ============ FAQ (light) ============ */}
-      <section className="nyr-light bg-[#ffffff] text-[#0e1730]">
-        <div className="mx-auto max-w-4xl px-4 py-24 sm:px-6">
+      {/* ============ FAQ ============ */}
+      <section className="nyr-section bg-white">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6">
           <motion.div {...reveal}>
             <p className="nyr-eyebrow mb-4">Questions</p>
-            <h2 className="nyr-display">
+            <h2 className="nyr-display-md">
               Fair <em>ones.</em>
             </h2>
           </motion.div>
 
-          <div className="mt-12 border-t border-[rgba(29,78,216,0.28)]">
-            {faqs.map((f, i) => (
+          <div className="nyr-divide mt-12">
+            {faqs.map((faq, i) => (
               <motion.details
-                key={f.q}
+                key={faq.q}
                 {...reveal}
                 transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
-                className="group border-b border-[rgba(29,78,216,0.28)] py-6"
+                className="group py-6"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold tracking-tight [&::-webkit-details-marker]:hidden">
-                  {f.q}
-                  <span className="nyr-step-number shrink-0 transition-transform group-open:rotate-45">
+                  {faq.q}
+                  <span className="nyr-step shrink-0 transition-transform group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="mt-3 max-w-[62ch] text-[0.95rem] leading-relaxed text-[#44506b]">
-                  {f.a}
-                </p>
+                <p className="nyr-lede mt-3 max-w-[62ch] text-[0.95rem]">{faq.a}</p>
               </motion.details>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ============ FINAL CTA (dark) ============ */}
-      <section className="nyr-dark-section relative overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 50% 60% at 50% 110%, rgba(46,107,239,.18), transparent 60%)",
-          }}
-        />
-        <div className="relative mx-auto max-w-4xl px-4 py-28 text-center sm:px-6">
-          <motion.h2
-            {...reveal}
-            className="nyr-display mx-auto max-w-[12ch] text-[#0e1730]"
-          >
+      {/* ============ CTA ============ */}
+      <section className="nyr-hero">
+        <div className="nyr-grid" />
+        <div className="relative mx-auto max-w-4xl px-4 py-32 text-center sm:px-6">
+          <motion.h2 {...reveal} className="nyr-display mx-auto max-w-[12ch]">
             A better way <em>to hire.</em>
           </motion.h2>
-          <motion.p
-            {...reveal}
-            className="nyr-lede mx-auto mt-5 max-w-[44ch]"
-          >
+          <motion.p {...reveal} className="nyr-lede mx-auto mt-6 max-w-[42ch]">
             Tell us the role. Meet only the 90+.
           </motion.p>
           <motion.div
             {...reveal}
-            className="mt-9 flex flex-wrap items-center justify-center gap-6"
+            className="mt-10 flex flex-wrap items-center justify-center gap-6"
           >
-            <Link to="/partner" className="nyr-primary-btn">
+            <Link to="/partner" className="nyr-btn nyr-btn-primary">
               Start hiring <ArrowRight className="size-4" />
             </Link>
-            <Link to="/jobs" className="nyr-text-link">
+            <Link to="/jobs" className="nyr-link text-white/80 hover:text-white">
               View open jobs <ArrowUpRight className="size-4" />
             </Link>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
       <NyrFooter />
     </div>
   );

@@ -67,25 +67,18 @@ export default function Dashboard() {
   const applicationList = partnerRequests?.applications ?? [];
 
   return (
-    <div className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0e1730]">
+    <div className="nyr nyr-admin min-h-screen bg-white text-foreground">
       <NyrNav />
       <main className="pb-16">
         {/* Page hero (dark, matches admin + benchmarks heroes) */}
-        <section className="relative overflow-hidden bg-white text-[#0e1730]">
-          <div className="nyr-grid-noise absolute inset-0" />
-          <div
-            className="absolute inset-0"
-            style={{
-              background:
-                "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(46,107,239,.16), transparent 60%)",
-            }}
-          />
+        <section className="nyr-hero">
+          <div className="nyr-grid" />
           <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <p className="nyr-eyebrow mb-4">
               <span className="nyr-status-dot" />
               Dashboard
             </p>
-            <h1 className="nyr-display !text-[clamp(2.2rem,5vw,3.6rem)]">
+            <h1 className="nyr-display-md">
               {user && "name" in user && user.name ? (
                 <>Welcome, <em>{user.name}</em></>
               ) : (
@@ -95,7 +88,7 @@ export default function Dashboard() {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               {showBillingLink && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#dce6f7] bg-transparent px-4 text-sm font-bold text-[#44506b] shadow-none hover:bg-[#dce6f7]/10 hover:text-[#0e1730]"
+                  className="nyr-btn nyr-btn-ghost nyr-btn-sm shadow-none"
                   onClick={() => navigate("/billing")}
                 >
                   <Wallet className="size-4" />
@@ -104,7 +97,7 @@ export default function Dashboard() {
               )}
               {isMasterAdmin && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#dce6f7] bg-transparent px-4 text-sm font-bold text-[#44506b] shadow-none hover:bg-[#dce6f7]/10 hover:text-[#0e1730]"
+                  className="nyr-btn nyr-btn-ghost nyr-btn-sm shadow-none"
                   onClick={() => navigate("/admin")}
                 >
                   <Shield className="size-4" />
@@ -112,14 +105,14 @@ export default function Dashboard() {
                 </Button>
               )}
               <Button
-                className="h-9 gap-2 rounded-full border border-[#dce6f7] bg-transparent px-4 text-sm font-bold text-[#44506b] shadow-none hover:bg-[#dce6f7]/10 hover:text-[#0e1730]"
+                className="nyr-btn nyr-btn-ghost nyr-btn-sm shadow-none"
                 onClick={() => navigate("/profile")}
               >
                 <Settings className="size-4" />
                 Profile
               </Button>
               <Button
-                className="h-9 gap-2 rounded-full bg-[#7aa5f0] px-4 text-sm font-bold text-white shadow-[0_8px_22px_rgba(122,165,240,0.35)] transition-all hover:-translate-y-0.5 hover:bg-[#6b9af0]"
+                className="nyr-btn nyr-btn-primary nyr-btn-sm"
                 onClick={handleSignOut}
               >
                 <LogOut className="size-4" />
@@ -192,8 +185,8 @@ export default function Dashboard() {
                                 variant="outline"
                                 className={
                                   request.status === "contacted"
-                                    ? "border-[#5b7fc7] text-[#3c5a99]"
-                                    : "border-[rgba(29,78,216,0.3)] text-[#7d88a3]"
+                                    ? "border-[var(--nyr-blue)] text-[var(--nyr-blue)]"
+                                    : "border-[rgba(29,78,216,0.3)] text-muted-foreground"
                                 }
                               >
                                 {request.status}
@@ -205,7 +198,7 @@ export default function Dashboard() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="font-bold text-[#5b7fc7] hover:text-[#3c5a99]"
+                                    className="font-bold text-[var(--nyr-blue)] hover:text-[var(--nyr-blue)]"
                                     onClick={() =>
                                       markContacted({ requestId: request._id, editorId: userId as Id<"users"> })
                                     }

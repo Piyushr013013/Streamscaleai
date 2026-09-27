@@ -1,331 +1,347 @@
-/* ============ ADMIN RESKIN ============
-   Scoped to .nyr-admin: remaps shadcn tokens + the raw slate utilities the
-   admin interior uses onto the nyralux palette, without touching content.
-   Palette: ink #0e1730 / lavender #7aa5f0 / ivory #ffffff / periwinkle #5b7fc7 */
-.nyr-admin {
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   Design tokens
+   ============================================================ */
+:root {
   --background: #ffffff;
   --foreground: #0e1730;
   --card: #ffffff;
   --card-foreground: #0e1730;
-  --primary: #0e1730;
+  --popover: #ffffff;
+  --popover-foreground: #0e1730;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
-  --secondary: rgba(75, 84, 139, 0.08);
-  --secondary-foreground: #3c5a99;
-  --muted: rgba(75, 84, 139, 0.08);
-  --muted-foreground: #7d88a3;
-  --accent: rgba(75, 84, 139, 0.08);
+  --secondary: #eef3fb;
+  --secondary-foreground: #0e1730;
+  --muted: #eef3fb;
+  --muted-foreground: #5b6b85;
+  --accent: #eef3fb;
   --accent-foreground: #0e1730;
-  --border: rgba(75, 84, 139, 0.22);
-  --input: rgba(75, 84, 139, 0.22);
-  --ring: #7aa5f0;
-}
-.nyr-admin .bg-white {
-  background-color: rgba(255, 255, 255, 0.72);
-}
-.nyr-admin .bg-slate-50 {
-  background-color: rgba(75, 84, 139, 0.05);
-}
-.nyr-admin .bg-slate-100,
-.nyr-admin .bg-slate-200 {
-  background-color: rgba(75, 84, 139, 0.1);
-}
-.nyr-admin .bg-slate-900 {
-  background-color: #0e1730;
-}
-.nyr-admin .bg-slate-800,
-.nyr-admin .hover\:bg-slate-800:hover {
-  background-color: #3c5a99;
-}
-.nyr-admin .text-slate-900,
-.nyr-admin .text-slate-800 {
-  color: #0e1730;
-}
-.nyr-admin .text-slate-700,
-.nyr-admin .text-slate-600 {
-  color: #5b7fc7;
-}
-.nyr-admin .text-slate-500,
-.nyr-admin .text-slate-400 {
-  color: #7d88a3;
-}
-.nyr-admin .border-slate-200,
-.nyr-admin .border-slate-100 {
-  border-color: rgba(75, 84, 139, 0.18);
-}
-.nyr-admin .bg-red-50 {
-  background-color: rgba(190, 80, 90, 0.1);
-}
-.nyr-admin .bg-emerald-50 {
-  background-color: rgba(75, 84, 139, 0.06);
-}
-.nyr-admin .bg-emerald-100 {
-  background-color: rgba(75, 84, 139, 0.1);
-}
-.nyr-admin .text-emerald-800,
-.nyr-admin .text-emerald-700,
-.nyr-admin .text-emerald-600 {
-  color: #3c5a99;
-}
-.nyr-admin .border-emerald-200 {
-  border-color: rgba(75, 84, 139, 0.28);
-}
-.nyr-admin .text-blue-600,
-.nyr-admin .text-blue-700,
-.nyr-admin .bg-blue-100 {
-  color: #5b7fc7;
-  background-color: rgba(75, 84, 139, 0.1);
-}
-.nyr-admin .text-amber-600,
-.nyr-admin .bg-amber-100 {
-  color: #3c5a99;
-  background-color: rgba(75, 84, 139, 0.08);
-}
-/* Buttons: pill shape, consistent with the public site */
-.nyr-admin [data-slot="button"] {
-  border-radius: 999px;
-  font-weight: 700;
-}
-.nyr-admin [data-slot="button"].bg-primary {
-  box-shadow: 0 8px 22px rgba(23, 24, 39, 0.16);
-  transition: all 0.18s ease;
-}
-.nyr-admin [data-slot="button"].bg-primary:hover {
-  transform: translateY(-1px);
-  background-color: #3c5a99;
-}
-/* Cards: soft border + gentle shadow like public cards */
-.nyr-admin [data-slot="card"] {
-  border-radius: 16px;
-  border-color: rgba(75, 84, 139, 0.2);
-  background-color: rgba(255, 255, 255, 0.72);
-  box-shadow: 0 12px 36px rgba(23, 24, 39, 0.05);
-}
-/* Inputs: lavender ring on focus */
-.nyr-admin [data-slot="input"],
-.nyr-admin [data-slot="textarea"] {
-  border-radius: 10px;
-  border-color: rgba(75, 84, 139, 0.25);
-}
-.nyr-admin [data-slot="input"]:focus-visible,
-.nyr-admin [data-slot="textarea"]:focus-visible {
-  outline: 2px solid rgba(122, 165, 240, 0.55);
-  outline-offset: 1px;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+  --radius: 0.75rem;
+
+  /* Site-specific tokens */
+  --nyr-ink: #0b1a3d;
+  --nyr-ink-deep: #081430;
+  --nyr-blue: #2563eb;
+  --nyr-blue-soft: #93b4f5;
+  --nyr-body: #c3cee6;
 }
 
-/* ============ NYRALUX THEME SYSTEM ============ */
+.dark {
+  --background: #0b1a3d;
+  --foreground: #ffffff;
+  --card: #101f45;
+  --card-foreground: #ffffff;
+  --popover: #101f45;
+  --popover-foreground: #ffffff;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #16264f;
+  --secondary-foreground: #ffffff;
+  --muted: #16264f;
+  --muted-foreground: #93b4f5;
+  --accent: #16264f;
+  --accent-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: #22346a;
+  --input: #22346a;
+  --ring: #2563eb;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family:
+      "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+      Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* ============================================================
+   Site components
+   ============================================================ */
 .nyr {
-  --nyr-ink: #0e1730;
-  --nyr-lavender: #7aa5f0;
-  --nyr-lavender-soft: #a9c1f5;
-  --nyr-ivory: #ffffff;
-  --nyr-ivory-warm: #ffffff;
-  --nyr-periwinkle: #5b7fc7;
-  --nyr-periwinkle-dark: #3c5a99;
-  --nyr-ink-soft: #44506b;
-  --nyr-line: rgba(75, 84, 139, 0.18);
-  --nyr-line-strong: rgba(75, 84, 139, 0.28);
+  color: var(--foreground);
 }
-.nyr-dark-section {
-  background: #ffffff;
-  color: #0e1730;
+
+/* --- Hero / dark band ------------------------------------- */
+.nyr-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 45% at 78% 10%, rgba(37, 99, 235, 0.28), transparent 60%),
+    linear-gradient(180deg, var(--nyr-ink) 0%, var(--nyr-ink-deep) 100%);
+  color: #ffffff;
 }
-.nyr-light {
-  background: #ffffff;
-  color: #0e1730;
+.nyr-hero .nyr-lede,
+.nyr-hero .nyr-signal {
+  color: var(--nyr-body);
 }
+.nyr-hero .nyr-eyebrow {
+  color: var(--nyr-blue-soft);
+}
+
+/* --- Typography ------------------------------------------- */
 .nyr-eyebrow {
   display: inline-flex;
   align-items: center;
-  gap: 0.54rem;
-  color: var(--nyr-periwinkle-dark);
+  gap: 0.55rem;
+  color: var(--nyr-blue);
   font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.13em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-}
-.nyr-dark-section .nyr-eyebrow,
-.nyr .nyr-eyebrow {
-  color: #7aa5f0;
 }
 .nyr-status-dot {
   width: 0.5rem;
   height: 0.5rem;
-  border-radius: 50%;
-  background: var(--nyr-lavender);
-  box-shadow: 0 0 0 4px rgba(122, 165, 240, 0.12);
+  border-radius: 999px;
+  background: var(--nyr-blue);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
 }
-.nyr h1.nyr-display {
-  font-size: clamp(3rem, 8vw, 6.2rem);
+.nyr-display {
+  font-size: clamp(2.6rem, 7vw, 5.8rem);
   line-height: 0.94;
   letter-spacing: -0.045em;
   font-weight: 600;
 }
-.nyr h1.nyr-display em {
-  color: #7aa5f0;
+.nyr-display em {
   font-style: normal;
+  color: var(--nyr-blue);
 }
-.nyr-light h1.nyr-display,
-.nyr h2.nyr-display {
-  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
-  line-height: 0.92;
-  letter-spacing: -0.05em;
+.nyr-display-md {
+  font-size: clamp(1.9rem, 4.2vw, 3.2rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
   font-weight: 600;
-}
-.nyr-light h2.nyr-display {
-  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
-  line-height: 0.92;
-  letter-spacing: -0.05em;
-  font-weight: 600;
-}
-.nyr-light h1.nyr-display em,
-.nyr-light h2.nyr-display em,
-.nyr h2.nyr-display em {
-  color: #5b7fc7;
-  font-style: normal;
 }
 .nyr-lede {
-  color: #44506b;
-  font-size: clamp(1rem, 1.4vw, 1.16rem);
+  color: var(--muted-foreground);
+  font-size: clamp(1rem, 1.25vw, 1.12rem);
   line-height: 1.65;
 }
-.nyr-light .nyr-lede,
-.nyr .nyr-lede-light {
-  color: #44506b;
-}
-.nyr-grid-noise {
-  background-image: linear-gradient(rgba(122, 165, 240, 0.07) 1px, transparent 0),
-    linear-gradient(90deg, rgba(122, 165, 240, 0.07) 1px, transparent 0);
-  background-size: 56px 56px;
-}
-.nyr-primary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 48px;
-  padding: 0 1.6rem;
-  border-radius: 999px;
-  background: #7aa5f0;
-  color: #ffffff;
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-  box-shadow: 0 10px 30px rgba(122, 165, 240, 0.25);
-  transition: all 0.18s ease;
-}
-.nyr-primary-btn:hover {
-  background: #6b9af0;
-  transform: translateY(-2px);
-  box-shadow: 0 14px 36px rgba(122, 165, 240, 0.35);
-}
-.nyr-primary-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 6px 18px rgba(122, 165, 240, 0.25);
-}
-.nyr-ghost-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 48px;
-  padding: 0 1.6rem;
-  border-radius: 999px;
-  border: 1px solid rgba(122, 165, 240, 0.5);
-  color: #0e1730;
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-  transition: all 0.18s ease;
-}
-.nyr-ghost-btn:hover {
-  background: rgba(122, 165, 240, 0.08);
-  border-color: rgba(122, 165, 240, 0.9);
-}
-.nyr-text-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 48px;
-  font-size: 0.92rem;
-  font-weight: 700;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-  transition: all 0.18s ease;
-}
-.nyr-dark-section .nyr-text-link,
-.nyr .nyr-text-link {
-  color: #5b7fc7;
-}
-.nyr .nyr-text-link:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
-.nyr-primary-btn.nyr-sm,
-.nyr-ghost-btn.nyr-sm,
-.nyr-text-link.nyr-sm {
-  min-height: 36px;
-  font-size: 0.8rem;
-  gap: 0.4rem;
-}
-.nyr-primary-btn.nyr-sm,
-.nyr-ghost-btn.nyr-sm {
-  padding: 0 1.15rem;
-}
-.nyr-primary-btn.nyr-ink {
-  background: #0e1730;
-  color: #ffffff;
-  box-shadow: 0 10px 30px rgba(14, 23, 48, 0.22);
-}
-.nyr-primary-btn.nyr-ink:hover {
-  background: #1c2b52;
-  box-shadow: 0 14px 36px rgba(14, 23, 48, 0.3);
-}
 .nyr-signal {
-  color: #7d88a3;
-  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  letter-spacing: 0.01em;
 }
-.nyr-light .nyr-signal {
-  color: #5b7fc7;
-  opacity: 0.9;
-}
-.nyr-card {
-  border: 1px solid #dce6f7;
-  border-radius: 14px;
-  background: #ffffff;
-  transition: all 0.2s ease;
-}
-.nyr-card:hover {
-  border-color: rgba(122, 165, 240, 0.55);
-  box-shadow: 0 12px 36px rgba(122, 165, 240, 0.12);
-}
-.nyr-light .nyr-card {
-  border: 1px solid #dce6f7;
-  background: #ffffff;
-}
-.nyr-light .nyr-card:hover {
-  border-color: rgba(122, 165, 240, 0.55);
-  box-shadow: 0 12px 36px rgba(122, 165, 240, 0.12);
-}
-.nyr-step-number {
-  color: #7aa5f0;
+.nyr-step {
+  color: var(--nyr-blue);
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.14em;
 }
-.nyr-light .nyr-step-number {
-  color: #5b7fc7;
+
+/* --- Buttons ----------------------------------------------- */
+.nyr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 46px;
+  padding: 0 1.5rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.nyr-btn-primary {
+  background: var(--nyr-blue);
+  color: #ffffff;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+}
+.nyr-btn-primary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.4);
+}
+.nyr-btn-ghost {
+  border: 1px solid rgba(147, 180, 245, 0.45);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.04);
+}
+.nyr-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(147, 180, 245, 0.8);
+}
+.nyr-btn-light {
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  color: var(--nyr-blue);
+  background: #ffffff;
+}
+.nyr-btn-light:hover {
+  background: #f4f7ff;
+  border-color: var(--nyr-blue);
+}
+.nyr-btn-sm {
+  min-height: 38px;
+  padding: 0 1.1rem;
+  font-size: 0.82rem;
+}
+.nyr-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--nyr-blue);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.18s ease;
+}
+.nyr-link:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* --- Surfaces ---------------------------------------------- */
+.nyr-section {
+  padding: 5.5rem 0;
+}
+.nyr-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #ffffff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.nyr-card:hover {
+  border-color: rgba(37, 99, 235, 0.4);
+  box-shadow: 0 14px 40px rgba(11, 26, 61, 0.07);
+}
+.nyr-hero .nyr-card {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+}
+.nyr-hero .nyr-card:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+.nyr-divide > * + * {
+  border-top: 1px solid var(--border);
+}
+
+/* --- Hero decorations ------------------------------------- */
+.nyr-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 56px 56px;
 }
 .nyr-halo {
-  width: min(30vw, 460px);
+  position: absolute;
+  width: min(34vw, 480px);
   aspect-ratio: 1;
-  border: 1px solid rgba(122, 165, 240, 0.45);
-  border-radius: 50%;
-  box-shadow: 0 0 0 56px rgba(122, 165, 240, 0.04), 0 0 90px rgba(122, 165, 240, 0.16);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 0 60px rgba(255, 255, 255, 0.02),
+    0 0 120px rgba(37, 99, 235, 0.25);
 }
 .nyr-quote {
-  border-left: 2px solid #7aa5f0;
-  padding-left: 1.4rem;
+  border-left: 2px solid var(--nyr-blue);
+  padding-left: 1.5rem;
 }
-.nyr-light .nyr-quote {
-  border-left-color: #5b7fc7;
+
+/* --- Scorecard (hero visual) -------------------------------- */
+.nyr-score-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+.nyr-score-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.nyr-score-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--nyr-blue);
+}
+
+/* ============================================================
+   Authenticated surfaces (admin / dashboard / billing)
+   ============================================================ */
+.nyr-admin {
+  --background: #ffffff;
+  --foreground: #0e1730;
+  --card: #ffffff;
+  --primary: #0e1730;
+  --primary-foreground: #ffffff;
+  --secondary: #eef3fb;
+  --muted: #eef3fb;
+  --muted-foreground: #5b6b85;
+  --accent: #eef3fb;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
+}
+.nyr-admin [data-slot="button"] {
+  border-radius: 999px;
+  font-weight: 600;
+}
+.nyr-admin [data-slot="card"] {
+  border-radius: 16px;
+  border-color: var(--border);
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(11, 26, 61, 0.05);
+}
+.nyr-admin [data-slot="input"],
+.nyr-admin [data-slot="textarea"] {
+  border-radius: 10px;
+  border-color: var(--border);
+}
+.nyr-admin [data-slot="input"]:focus-visible,
+.nyr-admin [data-slot="textarea"]:focus-visible {
+  outline: 2px solid rgba(37, 99, 235, 0.45);
+  outline-offset: 1px;
 }

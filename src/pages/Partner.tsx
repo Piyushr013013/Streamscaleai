@@ -82,26 +82,26 @@ export default function Partner() {
 
   if (submitted) {
     return (
-      <div className="nyr min-h-screen bg-white text-[#0e1730]">
+      <div className="nyr min-h-screen bg-white text-foreground">
         <NyrNav />
-        <section className="nyr-dark-section relative overflow-hidden">
-          <div className="nyr-grid-noise absolute inset-0" />
+        <section className="nyr-hero">
+          <div className="nyr-grid" />
           <div className="relative mx-auto max-w-2xl px-4 py-28 text-center sm:px-6">
             <div className="nyr-halo mx-auto mb-8 size-20" />
-            <CheckCircle className="mx-auto mb-6 size-14 text-[#5b7fc7]" />
-            <h1 className="nyr-display !text-[clamp(2.4rem,6vw,4rem)]">
+            <CheckCircle className="mx-auto mb-6 size-14 text-[var(--nyr-blue)]" />
+            <h1 className="nyr-display-md-md">
               Request <em>received.</em>
             </h1>
             <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">
               We got it. We'll follow up at{" "}
-              <span className="font-semibold text-[#0e1730]">{email}</span>{" "}
+              <span className="font-semibold text-foreground">{email}</span>{" "}
               within 1–2 business days to scope what you need.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-5 sm:flex-row">
-              <Link to="/" className="nyr-primary-btn">
+              <Link to="/" className="nyr-btn nyr-btn-primary">
                 Back to home <ArrowRight className="size-4" />
               </Link>
-              <Link to="/jobs" className="nyr-text-link">
+              <Link to="/jobs" className="nyr-link !text-white/80 hover:!text-white">
                 View open jobs <ArrowUpRight className="size-4" />
               </Link>
             </div>
@@ -113,19 +113,12 @@ export default function Partner() {
   }
 
   return (
-    <div className="nyr min-h-screen bg-white text-[#0e1730]">
+    <div className="nyr min-h-screen bg-white text-foreground">
       <NyrNav />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-white">
-        <div className="nyr-grid-noise absolute inset-0" />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(46,107,239,.16), transparent 60%)",
-          }}
-        />
+      <section className="nyr-hero">
+        <div className="nyr-grid" />
         <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
@@ -136,7 +129,7 @@ export default function Partner() {
               <span className="nyr-status-dot" />
               Partner with Streamscale
             </p>
-            <h1 className="nyr-display">
+            <h1 className="nyr-display-md">
               Tell us what to build, <em>test, or hire for.</em>
             </h1>
             <p className="nyr-lede mx-auto mt-5 max-w-[52ch]">
@@ -149,15 +142,15 @@ export default function Partner() {
       </section>
 
       {/* Form (light) */}
-      <section className="nyr-light bg-[#ffffff] text-[#0e1730]">
+      <section className="bg-white">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {/* Steps preview */}
-        <div className="mb-10 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(29,78,216,0.28)] bg-[rgba(29,78,216,0.28)]">
+        <div className="mb-10 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-border bg-white">
           {steps.map((step, i) => (
-            <div key={i} className="bg-[#ffffff] p-5 text-center">
-              <span className="nyr-step-number">0{i + 1}</span>
+            <div key={i} className="bg-white p-5 text-center">
+              <span className="nyr-step">0{i + 1}</span>
               <p className="mt-1 text-sm font-semibold">{step.title}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-[#44506b]">{step.desc}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -306,7 +299,7 @@ export default function Partner() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="h-12 w-full gap-2 rounded-full bg-white text-base font-bold text-[#0e1730] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
+                className="nyr-btn nyr-btn-primary !min-h-12 w-full text-base"
               >
                 {submitting ? "Sending request…" : "Send request"}
                 {!submitting && <ArrowRight className="size-4" />}
@@ -316,7 +309,7 @@ export default function Partner() {
         </Card>
         </motion.div>
 
-        <p className="mt-6 text-center text-xs text-[#44506b]/70">
+        <p className="mt-6 text-center text-xs text-muted-foreground/70">
           Your request goes directly to the Streamscale team. We'll reply within 1–2 business days.
         </p>
       </div>
