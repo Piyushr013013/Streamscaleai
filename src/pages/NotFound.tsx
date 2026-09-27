@@ -11,7 +11,7 @@ const suggestions = [
 
 export default function NotFound() {
   return (
-    <div className="nyr min-h-screen bg-[#0a1f44] text-[#ffffff]">
+    <div className="nyr min-h-screen bg-[#171827] text-[#ffffff]">
       <NyrNav />
 
       <section className="nyr-dark-section relative overflow-hidden">
@@ -53,7 +53,7 @@ export default function NotFound() {
         </div>
       </section>
 
-      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#171827]">
         <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
           <div className="border-t border-[rgba(29,78,216,0.28)]">
             {suggestions.map((item, i) => (
@@ -70,7 +70,7 @@ export default function NotFound() {
                 >
                   <div>
                     <span className="nyr-step-number mr-4">{`0${i + 1}`}</span>
-                    <span className="text-2xl font-semibold tracking-tight transition-colors group-hover:text-[#1d4ed8]">
+                    <span className="text-2xl font-semibold tracking-tight transition-colors group-hover:text-[#4b548b]">
                       {item.label}
                     </span>
                   </div>

@@ -173,13 +173,13 @@ export default function AdminDashboard() {
 
   if (!hasAnyAdminAccess) {
     return (
-      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#0a1f44] p-6 text-[#ffffff]">
-        <Card className="max-w-md border-[#dbe3ef]/15 bg-[#10294f]/90 text-[#ffffff]">
+      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#171827] p-6 text-[#ffffff]">
+        <Card className="max-w-md border-[#d9dced]/15 bg-[#1d1e33]/90 text-[#ffffff]">
           <CardContent className="pt-8 text-center">
-            <Shield className="mx-auto size-10 text-[#2e6bef]" />
+            <Shield className="mx-auto size-10 text-[#9fa5c8]" />
             <h1 className="mt-4 text-xl font-semibold">Admin access required</h1>
             <p className="mt-2 text-sm text-[#ffffff]/55">Sign in with an administrator account to continue.</p>
-            <Button className="mt-6 bg-[#2e6bef] text-[#0a1f44] hover:bg-[#5589f3]" onClick={() => navigate("/login")}>
+            <Button className="mt-6 bg-[#9fa5c8] text-[#171827] hover:bg-[#b8bdd6]" onClick={() => navigate("/login")}>
               Sign in
             </Button>
           </CardContent>
@@ -619,27 +619,27 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <main className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0a1f44]">
-      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a1f44]/95 text-[#ffffff] backdrop-blur">
+    <main className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#171827]">
+      <header className="sticky top-0 z-40 border-b border-white/5 bg-[#171827]/95 text-[#ffffff] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-[#2e6bef] text-sm font-bold text-[#0a1f44]">S</div>
+            <div className="flex size-9 items-center justify-center rounded-xl bg-[#9fa5c8] text-sm font-bold text-[#171827]">S</div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#2e6bef]">Streamscale</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#9fa5c8]">Streamscale</p>
               <h1 className="text-base font-semibold leading-tight">Admin workspace</h1>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/billing" className="hidden text-sm text-[#2e6bef] transition hover:text-[#ffffff] sm:inline">
+            <Link to="/billing" className="hidden text-sm text-[#9fa5c8] transition hover:text-[#ffffff] sm:inline">
               Accounting
             </Link>
-            <Link to="/" className="hidden text-sm text-[#2e6bef] transition hover:text-[#ffffff] sm:inline">
+            <Link to="/" className="hidden text-sm text-[#9fa5c8] transition hover:text-[#ffffff] sm:inline">
               View site
             </Link>
-            <span className="hidden max-w-[220px] truncate rounded-full border border-[#dbe3ef]/15 bg-[#dbe3ef]/10 px-3 py-1 text-xs text-[#ffffff]/70 md:inline">
+            <span className="hidden max-w-[220px] truncate rounded-full border border-[#d9dced]/15 bg-[#d9dced]/10 px-3 py-1 text-xs text-[#ffffff]/70 md:inline">
               {user && "email" in user ? user.email : ""}
             </span>
-            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#dbe3ef]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]">
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#d9dced]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#d9dced]/10 hover:text-[#ffffff]">
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1"/>
                 <path d="M16 12H8"/>
@@ -660,8 +660,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab(value)}
               className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
                 activeTab === value
-                  ? "bg-[#0a1f44] text-[#ffffff] shadow-sm"
-                  : "text-[#475569] hover:bg-[rgba(29,78,216,0.08)] hover:text-[#0a1f44]"
+                  ? "bg-[#171827] text-[#ffffff] shadow-sm"
+                  : "text-[#383a57] hover:bg-[rgba(29,78,216,0.08)] hover:text-[#171827]"
               }`}
             >
               {icon}
@@ -669,7 +669,7 @@ export default function AdminDashboard() {
               {count !== null && count > 0 && (
                 <span
                   className={`ml-0.5 rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${
-                    activeTab === value ? "bg-[#2e6bef]/30 text-[#ffffff]" : "bg-[rgba(29,78,216,0.12)] text-[#1d4ed8]"
+                    activeTab === value ? "bg-[#9fa5c8]/30 text-[#ffffff]" : "bg-[rgba(29,78,216,0.12)] text-[#4b548b]"
                   }`}
                 >
                   {count}

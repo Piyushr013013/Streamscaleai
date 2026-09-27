@@ -67,11 +67,11 @@ export default function Dashboard() {
   const applicationList = partnerRequests?.applications ?? [];
 
   return (
-    <div className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0a1f44]">
+    <div className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#171827]">
       <NyrNav />
       <main className="pb-16">
         {/* Page hero (dark, matches admin + benchmarks heroes) */}
-        <section className="relative overflow-hidden bg-[#0a1f44] text-[#ffffff]">
+        <section className="relative overflow-hidden bg-[#171827] text-[#ffffff]">
           <div className="nyr-grid-noise absolute inset-0" />
           <div
             className="absolute inset-0"
@@ -95,7 +95,7 @@ export default function Dashboard() {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               {showBillingLink && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#dbe3ef]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]"
+                  className="h-9 gap-2 rounded-full border border-[#d9dced]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#d9dced]/10 hover:text-[#ffffff]"
                   onClick={() => navigate("/billing")}
                 >
                   <Wallet className="size-4" />
@@ -104,7 +104,7 @@ export default function Dashboard() {
               )}
               {isMasterAdmin && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#dbe3ef]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]"
+                  className="h-9 gap-2 rounded-full border border-[#d9dced]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#d9dced]/10 hover:text-[#ffffff]"
                   onClick={() => navigate("/admin")}
                 >
                   <Shield className="size-4" />
@@ -112,14 +112,14 @@ export default function Dashboard() {
                 </Button>
               )}
               <Button
-                className="h-9 gap-2 rounded-full border border-[#dbe3ef]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]"
+                className="h-9 gap-2 rounded-full border border-[#d9dced]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#d9dced]/10 hover:text-[#ffffff]"
                 onClick={() => navigate("/profile")}
               >
                 <Settings className="size-4" />
                 Profile
               </Button>
               <Button
-                className="h-9 gap-2 rounded-full bg-[#2e6bef] px-4 text-sm font-bold text-[#0a1f44] shadow-[0_8px_22px_rgba(46,107,239,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#5589f3]"
+                className="h-9 gap-2 rounded-full bg-[#9fa5c8] px-4 text-sm font-bold text-[#171827] shadow-[0_8px_22px_rgba(46,107,239,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#b8bdd6]"
                 onClick={handleSignOut}
               >
                 <LogOut className="size-4" />
@@ -192,7 +192,7 @@ export default function Dashboard() {
                                 variant="outline"
                                 className={
                                   request.status === "contacted"
-                                    ? "border-[#1d4ed8] text-[#12296b]"
+                                    ? "border-[#4b548b] text-[#30375f]"
                                     : "border-[rgba(29,78,216,0.3)] text-[#6a7099]"
                                 }
                               >
@@ -205,7 +205,7 @@ export default function Dashboard() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="font-bold text-[#1d4ed8] hover:text-[#12296b]"
+                                    className="font-bold text-[#4b548b] hover:text-[#30375f]"
                                     onClick={() =>
                                       markContacted({ requestId: request._id, editorId: userId as Id<"users"> })
                                     }

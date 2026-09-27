@@ -1,84 +1,84 @@
 /* ============ ADMIN RESKIN ============
    Scoped to .nyr-admin: remaps shadcn tokens + the raw slate utilities the
-   admin interior uses onto the site palette, without touching content.
-   Palette: navy ink / pure white surfaces / blue accent / neutral slate text. */
+   admin interior uses onto the nyralux palette, without touching content.
+   Palette: ink #171827 / lavender #9fa5c8 / ivory #f0f0ea / periwinkle #4b548b */
 .nyr-admin {
-  --background: #ffffff;
-  --foreground: #0a1f44;
+  --background: #f0f0ea;
+  --foreground: #171827;
   --card: #ffffff;
-  --card-foreground: #0a1f44;
-  --primary: #0a1f44;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #12296b;
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0a1f44;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #2e6bef;
+  --card-foreground: #171827;
+  --primary: #171827;
+  --primary-foreground: #faf8f1;
+  --secondary: rgba(75, 84, 139, 0.08);
+  --secondary-foreground: #30375f;
+  --muted: rgba(75, 84, 139, 0.08);
+  --muted-foreground: #6a7099;
+  --accent: rgba(75, 84, 139, 0.08);
+  --accent-foreground: #171827;
+  --border: rgba(75, 84, 139, 0.22);
+  --input: rgba(75, 84, 139, 0.22);
+  --ring: #9fa5c8;
 }
 .nyr-admin .bg-white {
-  background-color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.72);
 }
 .nyr-admin .bg-slate-50 {
-  background-color: #f8fafc;
+  background-color: rgba(75, 84, 139, 0.05);
 }
 .nyr-admin .bg-slate-100,
 .nyr-admin .bg-slate-200 {
-  background-color: #eef2f7;
+  background-color: rgba(75, 84, 139, 0.1);
 }
 .nyr-admin .bg-slate-900 {
-  background-color: #0a1f44;
+  background-color: #171827;
 }
 .nyr-admin .bg-slate-800,
 .nyr-admin .hover\:bg-slate-800:hover {
-  background-color: #12296b;
+  background-color: #30375f;
 }
 .nyr-admin .text-slate-900,
 .nyr-admin .text-slate-800 {
-  color: #0a1f44;
+  color: #171827;
 }
 .nyr-admin .text-slate-700,
 .nyr-admin .text-slate-600 {
-  color: #334155;
+  color: #4b548b;
 }
 .nyr-admin .text-slate-500,
 .nyr-admin .text-slate-400 {
-  color: #64748b;
+  color: #6a7099;
 }
 .nyr-admin .border-slate-200,
 .nyr-admin .border-slate-100 {
-  border-color: #e2e8f0;
+  border-color: rgba(75, 84, 139, 0.18);
 }
 .nyr-admin .bg-red-50 {
-  background-color: #fef2f2;
+  background-color: rgba(190, 80, 90, 0.1);
 }
 .nyr-admin .bg-emerald-50 {
-  background-color: rgba(46, 107, 239, 0.06);
+  background-color: rgba(75, 84, 139, 0.06);
 }
 .nyr-admin .bg-emerald-100 {
-  background-color: rgba(46, 107, 239, 0.1);
+  background-color: rgba(75, 84, 139, 0.1);
 }
 .nyr-admin .text-emerald-800,
 .nyr-admin .text-emerald-700,
 .nyr-admin .text-emerald-600 {
-  color: #1d4ed8;
+  color: #30375f;
 }
 .nyr-admin .border-emerald-200 {
-  border-color: rgba(46, 107, 239, 0.3);
+  border-color: rgba(75, 84, 139, 0.28);
 }
 .nyr-admin .text-blue-600,
 .nyr-admin .text-blue-700,
 .nyr-admin .bg-blue-100 {
-  color: #1d4ed8;
-  background-color: rgba(46, 107, 239, 0.1);
+  color: #4b548b;
+  background-color: rgba(75, 84, 139, 0.1);
 }
 .nyr-admin .text-amber-600,
 .nyr-admin .bg-amber-100 {
-  color: #12296b;
-  background-color: rgba(46, 107, 239, 0.08);
+  color: #30375f;
+  background-color: rgba(75, 84, 139, 0.08);
 }
 /* Buttons: pill shape, consistent with the public site */
 .nyr-admin [data-slot="button"] {
@@ -86,28 +86,251 @@
   font-weight: 700;
 }
 .nyr-admin [data-slot="button"].bg-primary {
-  box-shadow: 0 8px 22px rgba(10, 31, 68, 0.16);
+  box-shadow: 0 8px 22px rgba(23, 24, 39, 0.16);
   transition: all 0.18s ease;
 }
 .nyr-admin [data-slot="button"].bg-primary:hover {
   transform: translateY(-1px);
-  background-color: #12296b;
+  background-color: #30375f;
 }
 /* Cards: soft border + gentle shadow like public cards */
 .nyr-admin [data-slot="card"] {
   border-radius: 16px;
-  border-color: #e2e8f0;
-  background-color: #ffffff;
-  box-shadow: 0 12px 36px rgba(10, 31, 68, 0.05);
+  border-color: rgba(75, 84, 139, 0.2);
+  background-color: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 12px 36px rgba(23, 24, 39, 0.05);
 }
-/* Inputs: blue ring on focus */
+/* Inputs: lavender ring on focus */
 .nyr-admin [data-slot="input"],
 .nyr-admin [data-slot="textarea"] {
   border-radius: 10px;
-  border-color: #e2e8f0;
+  border-color: rgba(75, 84, 139, 0.25);
 }
 .nyr-admin [data-slot="input"]:focus-visible,
 .nyr-admin [data-slot="textarea"]:focus-visible {
-  outline: 2px solid rgba(46, 107, 239, 0.5);
+  outline: 2px solid rgba(159, 165, 200, 0.55);
   outline-offset: 1px;
+}
+
+/* ============ NYRALUX THEME SYSTEM ============ */
+.nyr {
+  --nyr-ink: #171827;
+  --nyr-lavender: #9fa5c8;
+  --nyr-lavender-soft: #b8bdd6;
+  --nyr-ivory: #f0f0ea;
+  --nyr-ivory-warm: #faf8f1;
+  --nyr-periwinkle: #4b548b;
+  --nyr-periwinkle-dark: #30375f;
+  --nyr-ink-soft: #383a57;
+  --nyr-line: rgba(75, 84, 139, 0.18);
+  --nyr-line-strong: rgba(75, 84, 139, 0.28);
+}
+.nyr-dark-section {
+  background: var(--nyr-ink);
+  color: var(--nyr-ivory-warm);
+}
+.nyr-light {
+  background: var(--nyr-ivory);
+  color: var(--nyr-ink);
+}
+.nyr-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.54rem;
+  color: var(--nyr-periwinkle-dark);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.nyr-dark-section .nyr-eyebrow,
+.nyr .nyr-eyebrow {
+  color: var(--nyr-lavender);
+}
+.nyr-status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--nyr-lavender);
+  box-shadow: 0 0 0 4px rgba(159, 165, 200, 0.12);
+}
+.nyr h1.nyr-display {
+  font-size: clamp(3rem, 8vw, 6.2rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  font-weight: 600;
+}
+.nyr h1.nyr-display em {
+  color: var(--nyr-lavender);
+  font-style: normal;
+}
+.nyr-light h1.nyr-display,
+.nyr h2.nyr-display {
+  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+}
+.nyr-light h2.nyr-display {
+  font-size: clamp(2.4rem, 5.5vw, 4.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+}
+.nyr-light h1.nyr-display em,
+.nyr-light h2.nyr-display em,
+.nyr h2.nyr-display em {
+  color: var(--nyr-periwinkle);
+  font-style: normal;
+}
+.nyr-lede {
+  color: rgba(250, 248, 241, 0.78);
+  font-size: clamp(1rem, 1.4vw, 1.16rem);
+  line-height: 1.65;
+}
+.nyr-light .nyr-lede,
+.nyr .nyr-lede-light {
+  color: var(--nyr-ink-soft);
+}
+.nyr-grid-noise {
+  background-image: linear-gradient(rgba(159, 165, 200, 0.07) 1px, transparent 0),
+    linear-gradient(90deg, rgba(159, 165, 200, 0.07) 1px, transparent 0);
+  background-size: 56px 56px;
+}
+.nyr-primary-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  background: var(--nyr-lavender);
+  color: var(--nyr-ink);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(159, 165, 200, 0.25);
+  transition: all 0.18s ease;
+}
+.nyr-primary-btn:hover {
+  background: #c3c8e0;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(159, 165, 200, 0.35);
+}
+.nyr-primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 18px rgba(159, 165, 200, 0.25);
+}
+.nyr-ghost-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px;
+  padding: 0 1.6rem;
+  border-radius: 999px;
+  border: 1px solid rgba(217, 220, 237, 0.3);
+  color: var(--nyr-ivory-warm);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+.nyr-ghost-btn:hover {
+  background: rgba(217, 220, 237, 0.1);
+  border-color: rgba(217, 220, 237, 0.55);
+}
+.nyr-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 48px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  transition: all 0.18s ease;
+}
+.nyr-dark-section .nyr-text-link {
+  color: var(--nyr-lavender-soft);
+}
+.nyr-dark-section .nyr-text-link:hover {
+  color: #fff;
+}
+.nyr .nyr-text-link {
+  color: var(--nyr-periwinkle-dark);
+}
+.nyr .nyr-text-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.nyr-primary-btn.nyr-sm,
+.nyr-ghost-btn.nyr-sm,
+.nyr-text-link.nyr-sm {
+  min-height: 36px;
+  font-size: 0.8rem;
+  gap: 0.4rem;
+}
+.nyr-primary-btn.nyr-sm,
+.nyr-ghost-btn.nyr-sm {
+  padding: 0 1.15rem;
+}
+.nyr-primary-btn.nyr-ink {
+  background: var(--nyr-ink);
+  color: var(--nyr-ivory-warm);
+  box-shadow: 0 10px 30px rgba(23, 24, 39, 0.18);
+}
+.nyr-primary-btn.nyr-ink:hover {
+  background: #2a2c48;
+  box-shadow: 0 14px 36px rgba(23, 24, 39, 0.26);
+}
+.nyr-signal {
+  color: rgba(250, 248, 241, 0.56);
+  font-size: 0.78rem;
+}
+.nyr-light .nyr-signal {
+  color: var(--nyr-periwinkle-dark);
+  opacity: 0.75;
+}
+.nyr-card {
+  border: 1px solid rgba(217, 220, 237, 0.16);
+  border-radius: 14px;
+  background: rgba(217, 220, 237, 0.05);
+  transition: all 0.2s ease;
+}
+.nyr-card:hover {
+  background: rgba(217, 220, 237, 0.09);
+  border-color: rgba(217, 220, 237, 0.3);
+}
+.nyr-light .nyr-card {
+  border: 1px solid var(--nyr-line);
+  background: rgba(250, 248, 241, 0.7);
+}
+.nyr-light .nyr-card:hover {
+  background: #fff;
+  border-color: var(--nyr-line-strong);
+}
+.nyr-step-number {
+  color: var(--nyr-lavender);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.nyr-light .nyr-step-number {
+  color: var(--nyr-periwinkle);
+}
+.nyr-halo {
+  width: min(30vw, 460px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(159, 165, 200, 0.3);
+  border-radius: 50%;
+  box-shadow: 0 0 0 56px rgba(159, 165, 200, 0.04), 0 0 90px rgba(159, 165, 200, 0.16);
+}
+.nyr-quote {
+  border-left: 2px solid var(--nyr-periwinkle);
+  padding-left: 1.4rem;
+}
+.nyr-light .nyr-quote {
+  border-left-color: var(--nyr-periwinkle);
 }

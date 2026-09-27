@@ -65,7 +65,7 @@ export default function Login() {
   };
 
   return (
-    <div className="nyr relative flex min-h-screen flex-col bg-[#0a1f44] text-[#ffffff]">
+    <div className="nyr relative flex min-h-screen flex-col bg-[#171827] text-[#ffffff]">
       <div className="nyr-grid-noise absolute inset-0" />
       <div
         className="absolute inset-0"
@@ -88,7 +88,7 @@ export default function Login() {
           </p>
         </div>
 
-        <Card className="border-[#dbe3ef]/15 bg-[#10294f]/90 shadow-[0_30px_90px_rgba(0,0,0,0.4)] backdrop-blur">
+        <Card className="border-[#d9dced]/15 bg-[#1d1e33]/90 shadow-[0_30px_90px_rgba(0,0,0,0.4)] backdrop-blur">
           <CardHeader>
             <CardTitle className="text-[#ffffff]">Welcome back</CardTitle>
             <CardDescription className="text-[#ffffff]/55">
@@ -106,13 +106,13 @@ export default function Login() {
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-[#ffffff]/80">Email address</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#2e6bef]" />
+                  <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#9fa5c8]" />
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="h-11 border-[#dbe3ef]/15 bg-[#0a1f44]/70 pl-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
+                    className="h-11 border-[#d9dced]/15 bg-[#171827]/70 pl-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
                     placeholder="you@company.com"
                     autoComplete="off"
                     name="streamscale-login-email"
@@ -124,13 +124,13 @@ export default function Login() {
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-[#ffffff]/80">Password</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#2e6bef]" />
+                  <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#9fa5c8]" />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-10 border-[#dbe3ef]/15 bg-[#0a1f44]/70 px-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
+                    className="h-10 border-[#d9dced]/15 bg-[#171827]/70 px-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
                     placeholder="Your password"
                     autoComplete="new-password"
                     name="streamscale-login-password"
@@ -140,7 +140,7 @@ export default function Login() {
                     type="button"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2e6bef] hover:text-[#ffffff]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9fa5c8] hover:text-[#ffffff]"
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
@@ -150,7 +150,7 @@ export default function Login() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="h-12 w-full gap-2 rounded-full bg-[#2e6bef] text-base font-bold text-[#0a1f44] shadow-[0_10px_30px_rgba(46,107,239,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#5589f3]"
+                className="h-12 w-full gap-2 rounded-full bg-[#9fa5c8] text-base font-bold text-[#171827] shadow-[0_10px_30px_rgba(46,107,239,0.3)] transition-all hover:-translate-y-0.5 hover:bg-[#b8bdd6]"
               >
                 {isSubmitting ? (
                   <>

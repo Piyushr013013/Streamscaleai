@@ -11,12 +11,12 @@ const navAnchors = [
 
 export function NyrNav() {
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0a1f44]/90 text-[#ffffff] backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-white/5 bg-[#171827]/90 text-[#ffffff] backdrop-blur-xl">
       <div className="mx-auto flex h-[68px] max-w-6xl items-center justify-between px-4 sm:px-6">
         <Link to="/" className="text-base font-semibold tracking-tight">
           Streamscale
         </Link>
-        <nav className="hidden items-center gap-7 text-sm text-[#2e6bef] md:flex">
+        <nav className="hidden items-center gap-7 text-sm text-[#9fa5c8] md:flex">
           {navAnchors.map((a) => (
             <Link key={a.label} to={a.href} className="transition-colors hover:text-[#ffffff]">
               {a.label}
@@ -26,7 +26,7 @@ export function NyrNav() {
         <div className="flex items-center gap-4">
           <Link
             to="/login"
-            className="text-sm text-[#2e6bef] transition-colors hover:text-[#ffffff]"
+            className="text-sm text-[#9fa5c8] transition-colors hover:text-[#ffffff]"
           >
             Sign in
           </Link>
@@ -41,7 +41,7 @@ export function NyrNav() {
 
 export function NyrFooter() {
   return (
-    <footer className="nyr-dark-section border-t border-[#dbe3ef]/10">
+    <footer className="nyr-dark-section border-t border-[#d9dced]/10">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
@@ -52,7 +52,7 @@ export function NyrFooter() {
             </p>
           </div>
           <div>
-            <p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#2e6bef]">
+            <p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#9fa5c8]">
               Company
             </p>
             <div className="flex flex-col gap-2 text-sm text-[#ffffff]/65">
@@ -62,7 +62,7 @@ export function NyrFooter() {
             </div>
           </div>
           <div>
-            <p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#2e6bef]">
+            <p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#9fa5c8]">
               Get started
             </p>
             <div className="flex flex-col gap-2 text-sm text-[#ffffff]/65">
@@ -71,7 +71,7 @@ export function NyrFooter() {
             </div>
           </div>
           <div>
-            <p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#2e6bef]">
+            <p className="mb-3 text-[0.68rem] font-extrabold uppercase tracking-[0.14em] text-[#9fa5c8]">
               Legal
             </p>
             <div className="flex flex-col gap-2 text-sm text-[#ffffff]/65">
@@ -82,7 +82,7 @@ export function NyrFooter() {
             </div>
           </div>
         </div>
-        <div className="mt-12 border-t border-[#dbe3ef]/10 pt-6">
+        <div className="mt-12 border-t border-[#d9dced]/10 pt-6">
           <p className="nyr-signal">
             © {new Date().getFullYear()} Streamscale · Find the best. Send the 90+.
           </p>
