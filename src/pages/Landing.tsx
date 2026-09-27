@@ -69,25 +69,27 @@ const steps = [
 const audiences = [
   {
     icon: Building2,
-    title: "For companies",
+    title: "Startups hiring now",
+    body: "You need great people fast, but don't have the time or pipeline to sort hundreds of resumes. We handle the hunt and hand you a shortlist of only the strongest candidates.",
     points: [
-      "A shortlist of 90+ scorers — usually 3 to 5 people, not 300 resumes",
-      "Human-sourced, human-scored. Every candidate was read by a real recruiter",
-      "Transparent scoring: you see the breakdown, not just the verdict",
-      "We can build AI automation as an alternative when hiring isn't the answer",
+      "No in-house recruiter needed — we are your recruiting team",
+      "3 to 5 pre-scored candidates instead of a pile of maybes",
+      "Full scorecards attached so you know why each person made the cut",
+      "Works for engineering, ops, GTM — any role you'd trust a human with",
     ],
     cta: { label: "Start hiring", to: "/partner" },
   },
   {
     icon: Users,
-    title: "For candidates",
+    title: "Founders who've been burned",
+    body: "You've tried job boards, agencies, and AI tools. What showed up was noise. We built our scoring system so we could promise a bar instead of a volume discount.",
     points: [
-      "Get in front of companies that only see pre-vetted people",
-      "A fair, published rubric — resume, experience, technical skills",
-      "Score 90+ and you're sent directly to the hiring team",
-      "We hire too — check our open roles and join the bench",
+      "A published 100-point rubric, applied the same way to everyone",
+      "If AI can do part of the role, we'll tell you before you hire for it",
+      "One flat conversation about the role — not a sales funnel",
+      "We benchmark enterprise AI ourselves, so our bar is a working bar",
     ],
-    cta: { label: "View open jobs", to: "/jobs" },
+    cta: { label: "Partner with us", to: "/partner" },
   },
 ];
 
@@ -139,13 +141,13 @@ export default function Landing() {
       <NyrNav />
 
       {/* ============ HERO (dark) ============ */}
-      <section className="relative overflow-hidden bg-[#171827] text-[#faf8f1]">
+      <section className="relative overflow-hidden bg-[#0a1f44] text-[#ffffff]">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 60% 45% at 78% 12%, rgba(159,165,200,.22), transparent 60%)",
+              "radial-gradient(ellipse 60% 45% at 78% 12%, rgba(46,107,239,.22), transparent 60%)",
           }}
         />
         <div className="relative mx-auto grid min-h-[calc(100svh-68px)] max-w-6xl items-center gap-12 px-4 py-24 sm:px-6 lg:grid-cols-[1.05fr_.75fr] lg:py-16">
@@ -205,15 +207,15 @@ export default function Landing() {
             className="relative hidden min-h-[480px] place-items-center lg:grid"
           >
             <div className="nyr-halo" />
-            <div className="relative w-full max-w-xs rounded-2xl border border-[#d9dced]/20 bg-[#171827]/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
-              <div className="flex items-center justify-between text-[0.63rem] text-[#faf8f1]/60">
+            <div className="relative w-full max-w-xs rounded-2xl border border-[#c9d9f2]/20 bg-[#0a1f44]/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center justify-between text-[0.63rem] text-[#ffffff]/60">
                 <span>9:41</span>
                 <span>● ● ●</span>
               </div>
-              <p className="mt-6 text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[#9fa5c8]">
+              <p className="mt-6 text-[0.62rem] font-extrabold uppercase tracking-[0.12em] text-[#2e6bef]">
                 Candidate scorecard
               </p>
-              <h3 className="mt-2 text-xl font-semibold leading-snug text-[#faf8f1]">
+              <h3 className="mt-2 text-xl font-semibold leading-snug text-[#ffffff]">
                 Senior AI Engineer
               </h3>
               <div className="mt-4 space-y-2.5">
@@ -223,29 +225,29 @@ export default function Landing() {
                   ["Technical", 96],
                 ].map(([label, score]) => (
                   <div key={label as string}>
-                    <div className="mb-1 flex justify-between text-[0.68rem] text-[#faf8f1]/70">
+                    <div className="mb-1 flex justify-between text-[0.68rem] text-[#ffffff]/70">
                       <span>{label}</span>
-                      <span className="font-semibold text-[#9fa5c8]">
+                      <span className="font-semibold text-[#2e6bef]">
                         {score}
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-[#d9dced]/10">
+                    <div className="h-1.5 rounded-full bg-[#c9d9f2]/10">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${score}%` }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.9, delay: 0.4 }}
-                        className="h-full rounded-full bg-[#9fa5c8]"
+                        className="h-full rounded-full bg-[#2e6bef]"
                       />
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#d9dced]/10 px-3 py-2.5 text-[0.72rem] text-[#faf8f1]/80">
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#c9d9f2]/10 px-3 py-2.5 text-[0.72rem] text-[#ffffff]/80">
                 <span>Overall</span>
-                <span className="font-bold text-[#9fa5c8]">94 · sent</span>
+                <span className="font-bold text-[#2e6bef]">94 · sent</span>
               </div>
-              <p className="mt-3 text-[0.62rem] text-[#faf8f1]/45">
+              <p className="mt-3 text-[0.62rem] text-[#ffffff]/45">
                 Candidates below 90 never reach your inbox.
               </p>
             </div>
@@ -254,7 +256,7 @@ export default function Landing() {
       </section>
 
       {/* ============ STATS STRIP (dark) ============ */}
-      <section className="border-t border-[#d9dced]/10 bg-[#171827] text-[#faf8f1]">
+      <section className="border-t border-[#c9d9f2]/10 bg-[#0a1f44] text-[#ffffff]">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:px-6 md:grid-cols-4">
           {[
             { v: "90+", l: "The only score we send" },
@@ -268,7 +270,7 @@ export default function Landing() {
               transition={{ duration: 0.5, delay: i * 0.06, ease: "easeOut" }}
               className="px-2 py-10 text-center md:py-14"
             >
-              <p className="nyr-display !text-[clamp(2.2rem,5vw,3.4rem)] text-[#9fa5c8]">
+              <p className="nyr-display !text-[clamp(2.2rem,5vw,3.4rem)] text-[#2e6bef]">
                 {s.v}
               </p>
               <p className="nyr-signal mt-2">{s.l}</p>
@@ -278,7 +280,7 @@ export default function Landing() {
       </section>
 
       {/* ============ HOW IT WORKS (light) ============ */}
-      <section id="protocol" className="nyr-light bg-[#f0f0ea] text-[#171827]">
+      <section id="protocol" className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div
             {...reveal}
@@ -290,25 +292,25 @@ export default function Landing() {
                 Find. Score. <em>Send.</em>
               </h2>
             </div>
-            <p className="text-[0.95rem] leading-relaxed text-[#383a57]">
+            <p className="text-[0.95rem] leading-relaxed text-[#33415c]">
               Four steps. No noise. You meet only the candidates worth your
               time — and we stay until the offer is signed.
             </p>
           </motion.div>
 
-          <div className="mt-14 border-t border-[rgba(75,84,139,0.28)]">
+          <div className="mt-14 border-t border-[rgba(29,78,216,0.28)]">
             {steps.map((step, i) => (
               <motion.div
                 key={step.n}
                 {...reveal}
                 transition={{ duration: 0.5, delay: i * 0.06, ease: "easeOut" }}
-                className="grid gap-3 border-b border-[rgba(75,84,139,0.28)] py-8 md:grid-cols-[80px_220px_1fr] md:items-baseline md:gap-8"
+                className="grid gap-3 border-b border-[rgba(29,78,216,0.28)] py-8 md:grid-cols-[80px_220px_1fr] md:items-baseline md:gap-8"
               >
                 <span className="nyr-step-number">{step.n}</span>
                 <h3 className="text-2xl font-semibold tracking-tight">
                   {step.title}
                 </h3>
-                <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-[#383a57]">
+                <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-[#33415c]">
                   {step.body}
                 </p>
               </motion.div>
@@ -323,7 +325,7 @@ export default function Landing() {
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div {...reveal} className="max-w-2xl">
             <p className="nyr-eyebrow mb-4">The rubric</p>
-            <h2 className="nyr-display text-[#faf8f1]">
+            <h2 className="nyr-display text-[#ffffff]">
               100 points. <em>Zero guessing.</em>
             </h2>
             <p className="nyr-lede mt-5">
@@ -342,17 +344,17 @@ export default function Landing() {
                 className="nyr-card p-7"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#d9dced]/15 bg-[#d9dced]/5">
-                    <r.icon className="size-5 text-[#9fa5c8]" />
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#c9d9f2]/15 bg-[#c9d9f2]/5">
+                    <r.icon className="size-5 text-[#2e6bef]" />
                   </div>
-                  <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#9fa5c8]">
+                  <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#2e6bef]">
                     {r.weight}
                   </span>
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-[#faf8f1]">
+                <h3 className="mt-5 text-xl font-semibold text-[#ffffff]">
                   {r.name}
                 </h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#faf8f1]/65">
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#ffffff]/65">
                   {r.body}
                 </p>
               </motion.div>
@@ -360,7 +362,7 @@ export default function Landing() {
           </div>
 
           <motion.div {...reveal} className="nyr-quote mt-16">
-            <p className="text-xl font-medium leading-relaxed text-[#faf8f1] sm:text-2xl">
+            <p className="text-xl font-medium leading-relaxed text-[#ffffff] sm:text-2xl">
               The best recruiting firms don't send you more candidates. They
               send you fewer — and every one is right.
             </p>
@@ -370,12 +372,12 @@ export default function Landing() {
       </section>
 
       {/* ============ WHO IT'S FOR (light) ============ */}
-      <section id="who" className="nyr-light bg-[#f0f0ea] text-[#171827]">
+      <section id="who" className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div {...reveal} className="mx-auto max-w-2xl text-center">
             <p className="nyr-eyebrow mb-4">Who it's for</p>
             <h2 className="nyr-display">
-              Built for both sides <em>of the table.</em>
+              Who we <em>work with.</em>
             </h2>
           </motion.div>
 
@@ -385,18 +387,21 @@ export default function Landing() {
                 key={a.title}
                 {...reveal}
                 transition={{ duration: 0.55, delay: i * 0.1, ease: "easeOut" }}
-                className="flex flex-col rounded-2xl border border-[rgba(75,84,139,0.28)] bg-white/60 p-8 shadow-[0_20px_60px_rgba(23,24,39,0.06)]"
+                className="flex flex-col rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white/60 p-8 shadow-[0_20px_60px_rgba(10,31,68,0.06)]"
               >
-                <div className="flex size-12 items-center justify-center rounded-xl bg-[#171827]">
-                  <a.icon className="size-5 text-[#9fa5c8]" />
+                <div className="flex size-12 items-center justify-center rounded-xl bg-[#0a1f44]">
+                  <a.icon className="size-5 text-[#2e6bef]" />
                 </div>
                 <h3 className="mt-5 text-2xl font-semibold tracking-tight">
                   {a.title}
                 </h3>
+                <p className="mt-3 text-[0.95rem] leading-relaxed text-[#33415c]">
+                  {a.body}
+                </p>
                 <ul className="mt-5 flex-1 space-y-3">
                   {a.points.map((p) => (
-                    <li key={p} className="flex items-start gap-3 text-[0.92rem] leading-relaxed text-[#383a57]">
-                      <Check className="mt-0.5 size-4 shrink-0 text-[#4b548b]" />
+                    <li key={p} className="flex items-start gap-3 text-[0.92rem] leading-relaxed text-[#33415c]">
+                      <Check className="mt-0.5 size-4 shrink-0 text-[#1d4ed8]" />
                       {p}
                     </li>
                   ))}
@@ -418,7 +423,7 @@ export default function Landing() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 55% 50% at 50% 0%, rgba(159,165,200,.14), transparent 60%)",
+              "radial-gradient(ellipse 55% 50% at 50% 0%, rgba(46,107,239,.14), transparent 60%)",
           }}
         />
         <div className="relative mx-auto max-w-6xl px-4 py-24 sm:px-6">
@@ -428,11 +433,11 @@ export default function Landing() {
           >
             <div>
               <p className="nyr-eyebrow mb-4">Beyond recruiting</p>
-              <h2 className="nyr-display text-[#faf8f1]">
+              <h2 className="nyr-display text-[#ffffff]">
                 We build and test <em>enterprise AI.</em>
               </h2>
             </div>
-            <p className="text-[0.95rem] leading-relaxed text-[#faf8f1]/65">
+            <p className="text-[0.95rem] leading-relaxed text-[#ffffff]/65">
               It's not a side project — it's the reason our 90+ means
               something. We evaluate people the same way we evaluate machines.
             </p>
@@ -446,11 +451,11 @@ export default function Landing() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
                 className="nyr-card p-7"
               >
-                <p.icon className="size-6 text-[#9fa5c8]" />
-                <h3 className="mt-4 text-lg font-semibold text-[#faf8f1]">
+                <p.icon className="size-6 text-[#2e6bef]" />
+                <h3 className="mt-4 text-lg font-semibold text-[#ffffff]">
                   {p.title}
                 </h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#faf8f1]/65">
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-[#ffffff]/65">
                   {p.body}
                 </p>
               </motion.div>
@@ -469,7 +474,7 @@ export default function Landing() {
       </section>
 
       {/* ============ FAQ (light) ============ */}
-      <section className="nyr-light bg-[#f0f0ea] text-[#171827]">
+      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
         <div className="mx-auto max-w-4xl px-4 py-24 sm:px-6">
           <motion.div {...reveal}>
             <p className="nyr-eyebrow mb-4">Questions</p>
@@ -478,13 +483,13 @@ export default function Landing() {
             </h2>
           </motion.div>
 
-          <div className="mt-12 border-t border-[rgba(75,84,139,0.28)]">
+          <div className="mt-12 border-t border-[rgba(29,78,216,0.28)]">
             {faqs.map((f, i) => (
               <motion.details
                 key={f.q}
                 {...reveal}
                 transition={{ duration: 0.4, delay: i * 0.05, ease: "easeOut" }}
-                className="group border-b border-[rgba(75,84,139,0.28)] py-6"
+                className="group border-b border-[rgba(29,78,216,0.28)] py-6"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-lg font-semibold tracking-tight [&::-webkit-details-marker]:hidden">
                   {f.q}
@@ -492,7 +497,7 @@ export default function Landing() {
                     +
                   </span>
                 </summary>
-                <p className="mt-3 max-w-[62ch] text-[0.95rem] leading-relaxed text-[#383a57]">
+                <p className="mt-3 max-w-[62ch] text-[0.95rem] leading-relaxed text-[#33415c]">
                   {f.a}
                 </p>
               </motion.details>
@@ -507,13 +512,13 @@ export default function Landing() {
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 50% 60% at 50% 110%, rgba(159,165,200,.18), transparent 60%)",
+              "radial-gradient(ellipse 50% 60% at 50% 110%, rgba(46,107,239,.18), transparent 60%)",
           }}
         />
         <div className="relative mx-auto max-w-4xl px-4 py-28 text-center sm:px-6">
           <motion.h2
             {...reveal}
-            className="nyr-display mx-auto max-w-[12ch] text-[#faf8f1]"
+            className="nyr-display mx-auto max-w-[12ch] text-[#ffffff]"
           >
             A better way <em>to hire.</em>
           </motion.h2>

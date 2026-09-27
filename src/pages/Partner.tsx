@@ -82,19 +82,19 @@ export default function Partner() {
 
   if (submitted) {
     return (
-      <div className="nyr min-h-screen bg-[#171827] text-[#faf8f1]">
+      <div className="nyr min-h-screen bg-[#0a1f44] text-[#ffffff]">
         <NyrNav />
         <section className="nyr-dark-section relative overflow-hidden">
           <div className="nyr-grid-noise absolute inset-0" />
           <div className="relative mx-auto max-w-2xl px-4 py-28 text-center sm:px-6">
             <div className="nyr-halo mx-auto mb-8 size-20" />
-            <CheckCircle className="mx-auto mb-6 size-14 text-[#9fa5c8]" />
+            <CheckCircle className="mx-auto mb-6 size-14 text-[#2e6bef]" />
             <h1 className="nyr-display !text-[clamp(2.4rem,6vw,4rem)]">
               Request <em>received.</em>
             </h1>
             <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">
               We got it. We'll follow up at{" "}
-              <span className="font-semibold text-[#faf8f1]">{email}</span>{" "}
+              <span className="font-semibold text-[#ffffff]">{email}</span>{" "}
               within 1–2 business days to scope what you need.
             </p>
             <div className="mt-9 flex flex-col items-center justify-center gap-5 sm:flex-row">
@@ -113,17 +113,17 @@ export default function Partner() {
   }
 
   return (
-    <div className="nyr min-h-screen bg-[#171827] text-[#faf8f1]">
+    <div className="nyr min-h-screen bg-[#0a1f44] text-[#ffffff]">
       <NyrNav />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#171827]">
+      <section className="relative overflow-hidden bg-[#0a1f44]">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(159,165,200,.16), transparent 60%)",
+              "radial-gradient(ellipse 55% 50% at 80% 0%, rgba(46,107,239,.16), transparent 60%)",
           }}
         />
         <div className="relative mx-auto max-w-3xl px-4 py-20 text-center sm:px-6">
@@ -149,15 +149,15 @@ export default function Partner() {
       </section>
 
       {/* Form (light) */}
-      <section className="nyr-light bg-[#f0f0ea] text-[#171827]">
+      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {/* Steps preview */}
-        <div className="mb-10 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(75,84,139,0.28)] bg-[rgba(75,84,139,0.28)]">
+        <div className="mb-10 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(29,78,216,0.28)] bg-[rgba(29,78,216,0.28)]">
           {steps.map((step, i) => (
-            <div key={i} className="bg-[#f0f0ea] p-5 text-center">
+            <div key={i} className="bg-[#f5f8ff] p-5 text-center">
               <span className="nyr-step-number">0{i + 1}</span>
               <p className="mt-1 text-sm font-semibold">{step.title}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-[#383a57]">{step.desc}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-[#33415c]">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -306,7 +306,7 @@ export default function Partner() {
               <Button
                 type="submit"
                 disabled={submitting}
-                className="h-12 w-full gap-2 rounded-full bg-[#171827] text-base font-bold text-[#faf8f1] shadow-[0_10px_30px_rgba(23,24,39,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#30375f]"
+                className="h-12 w-full gap-2 rounded-full bg-[#0a1f44] text-base font-bold text-[#ffffff] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#12296b]"
               >
                 {submitting ? "Sending request…" : "Send request"}
                 {!submitting && <ArrowRight className="size-4" />}
@@ -316,7 +316,7 @@ export default function Partner() {
         </Card>
         </motion.div>
 
-        <p className="mt-6 text-center text-xs text-[#383a57]/70">
+        <p className="mt-6 text-center text-xs text-[#33415c]/70">
           Your request goes directly to the Streamscale team. We'll reply within 1–2 business days.
         </p>
       </div>
