@@ -181,11 +181,11 @@ export default function Jobs() {
   };
 
   return (
-    <div className="nyr min-h-screen bg-[#171827] text-[#ffffff]">
+    <div className="nyr min-h-screen bg-[#0e1730] text-[#ffffff]">
       <NyrNav />
 
       {/* Hero band */}
-      <section className="relative overflow-hidden bg-[#171827]">
+      <section className="relative overflow-hidden bg-[#0e1730]">
         <div className="nyr-grid-noise absolute inset-0" />
         <div
           className="absolute inset-0"
@@ -226,12 +226,12 @@ export default function Jobs() {
       </section>
 
       {/* Jobs list (light) */}
-      <section id="openings" className="nyr-light bg-[#ffffff] text-[#171827]">
+      <section id="openings" className="nyr-light bg-[#ffffff] text-[#0e1730]">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           {!jobs || jobs.length === 0 ? (
             <div className="border-y border-[rgba(29,78,216,0.28)] py-16 text-center">
               <h3 className="text-2xl font-semibold tracking-tight">No open positions</h3>
-              <p className="mt-2 text-[0.95rem] text-[#383a57]">
+              <p className="mt-2 text-[0.95rem] text-[#44506b]">
                 Check back later for new opportunities.
               </p>
             </div>
@@ -245,37 +245,37 @@ export default function Jobs() {
                   transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
                 >
                 <Card
-                  className="border border-[rgba(29,78,216,0.28)] bg-white shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-all hover:border-[#4b548b]/50 group"
+                  className="border border-[rgba(29,78,216,0.28)] bg-white shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-all hover:border-[#5b7fc7]/50 group"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between mb-2">
-                      <Badge className="border border-[#4b548b]/30 bg-[#4b548b]/10 text-[#30375f] hover:bg-[#4b548b]/15">
+                      <Badge className="border border-[#5b7fc7]/30 bg-[#5b7fc7]/10 text-[#3c5a99] hover:bg-[#5b7fc7]/15">
                         {job.role}
                       </Badge>
-                      <span className="text-sm text-[#383a57]/60">
+                      <span className="text-sm text-[#44506b]/60">
                         {new Date(job._creationTime).toLocaleDateString()}
                       </span>
                     </div>
-                    <CardTitle className="text-xl text-[#171827] transition-colors group-hover:text-[#4b548b]">
+                    <CardTitle className="text-xl text-[#0e1730] transition-colors group-hover:text-[#5b7fc7]">
                       {job.title}
                     </CardTitle>
-                    <CardDescription className="mt-1 text-[#383a57]">
+                    <CardDescription className="mt-1 text-[#44506b]">
                       {job.companyName} · {job.jobType} · {job.salary}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="mb-4 line-clamp-2 text-sm text-[#383a57]/80">
+                    <p className="mb-4 line-clamp-2 text-sm text-[#44506b]/80">
                       {job.requirements}
                     </p>
-                    {job.benefits && <p className="mb-2 text-xs text-[#4b548b]">Benefits: {job.benefits}</p>}
+                    {job.benefits && <p className="mb-2 text-xs text-[#5b7fc7]">Benefits: {job.benefits}</p>}
                     {job.extraInfo && (
-                      <p className="mb-4 text-xs text-[#383a57]/60">
+                      <p className="mb-4 text-xs text-[#44506b]/60">
                         {job.extraInfo}
                       </p>
                     )}
                     <Button
                       onClick={() => handleApply(job)}
-                      className="h-11 w-full gap-2 rounded-full bg-[#171827] text-[0.9rem] font-bold text-[#ffffff] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#30375f]"
+                      className="h-11 w-full gap-2 rounded-full bg-[#0e1730] text-[0.9rem] font-bold text-[#ffffff] shadow-[0_10px_30px_rgba(10,31,68,0.18)] transition-all hover:-translate-y-0.5 hover:bg-[#3c5a99]"
                     >
                       Apply now <ArrowRight className="size-4" />
                     </Button>
@@ -292,10 +292,10 @@ export default function Jobs() {
 
       {/* Apply Modal */}
       {showApplyForm && (
-        <div className="fixed inset-0 z-50 bg-[#171827]/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-[#0e1730]/60 backdrop-blur-sm flex items-center justify-center p-4">
           <Card className="w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <CardHeader className="pb-4">
-              <CardTitle className="text-lg text-[#171827]">Apply for {applyingTo?.title}</CardTitle>
+              <CardTitle className="text-lg text-[#0e1730]">Apply for {applyingTo?.title}</CardTitle>
               <CardDescription>
                 Share your details and a PDF or Word (.docx) resume so the team can review your fit.
               </CardDescription>
@@ -437,7 +437,7 @@ export default function Jobs() {
                     <Button
                       type="submit"
                       disabled={applying}
-                      className="h-11 flex-1 rounded-full bg-[#171827] font-bold text-[#ffffff] hover:bg-[#30375f]"
+                      className="h-11 flex-1 rounded-full bg-[#0e1730] font-bold text-[#ffffff] hover:bg-[#3c5a99]"
                     >
                       {applying ? "Submitting..." : "Submit application"}
                     </Button>

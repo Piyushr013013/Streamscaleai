@@ -1,23 +1,23 @@
 /* ============ ADMIN RESKIN ============
    Scoped to .nyr-admin: remaps shadcn tokens + the raw slate utilities the
    admin interior uses onto the nyralux palette, without touching content.
-   Palette: ink #171827 / lavender #9fa5c8 / ivory #f0f0ea / periwinkle #4b548b */
+   Palette: ink #0e1730 / lavender #7aa5f0 / ivory #ffffff / periwinkle #5b7fc7 */
 .nyr-admin {
-  --background: #f0f0ea;
-  --foreground: #171827;
+  --background: #ffffff;
+  --foreground: #0e1730;
   --card: #ffffff;
-  --card-foreground: #171827;
-  --primary: #171827;
-  --primary-foreground: #faf8f1;
+  --card-foreground: #0e1730;
+  --primary: #0e1730;
+  --primary-foreground: #ffffff;
   --secondary: rgba(75, 84, 139, 0.08);
-  --secondary-foreground: #30375f;
+  --secondary-foreground: #3c5a99;
   --muted: rgba(75, 84, 139, 0.08);
-  --muted-foreground: #6a7099;
+  --muted-foreground: #7d88a3;
   --accent: rgba(75, 84, 139, 0.08);
-  --accent-foreground: #171827;
+  --accent-foreground: #0e1730;
   --border: rgba(75, 84, 139, 0.22);
   --input: rgba(75, 84, 139, 0.22);
-  --ring: #9fa5c8;
+  --ring: #7aa5f0;
 }
 .nyr-admin .bg-white {
   background-color: rgba(255, 255, 255, 0.72);
@@ -30,23 +30,23 @@
   background-color: rgba(75, 84, 139, 0.1);
 }
 .nyr-admin .bg-slate-900 {
-  background-color: #171827;
+  background-color: #0e1730;
 }
 .nyr-admin .bg-slate-800,
 .nyr-admin .hover\:bg-slate-800:hover {
-  background-color: #30375f;
+  background-color: #3c5a99;
 }
 .nyr-admin .text-slate-900,
 .nyr-admin .text-slate-800 {
-  color: #171827;
+  color: #0e1730;
 }
 .nyr-admin .text-slate-700,
 .nyr-admin .text-slate-600 {
-  color: #4b548b;
+  color: #5b7fc7;
 }
 .nyr-admin .text-slate-500,
 .nyr-admin .text-slate-400 {
-  color: #6a7099;
+  color: #7d88a3;
 }
 .nyr-admin .border-slate-200,
 .nyr-admin .border-slate-100 {
@@ -64,7 +64,7 @@
 .nyr-admin .text-emerald-800,
 .nyr-admin .text-emerald-700,
 .nyr-admin .text-emerald-600 {
-  color: #30375f;
+  color: #3c5a99;
 }
 .nyr-admin .border-emerald-200 {
   border-color: rgba(75, 84, 139, 0.28);
@@ -72,12 +72,12 @@
 .nyr-admin .text-blue-600,
 .nyr-admin .text-blue-700,
 .nyr-admin .bg-blue-100 {
-  color: #4b548b;
+  color: #5b7fc7;
   background-color: rgba(75, 84, 139, 0.1);
 }
 .nyr-admin .text-amber-600,
 .nyr-admin .bg-amber-100 {
-  color: #30375f;
+  color: #3c5a99;
   background-color: rgba(75, 84, 139, 0.08);
 }
 /* Buttons: pill shape, consistent with the public site */
@@ -91,7 +91,7 @@
 }
 .nyr-admin [data-slot="button"].bg-primary:hover {
   transform: translateY(-1px);
-  background-color: #30375f;
+  background-color: #3c5a99;
 }
 /* Cards: soft border + gentle shadow like public cards */
 .nyr-admin [data-slot="card"] {
@@ -114,14 +114,14 @@
 
 /* ============ NYRALUX THEME SYSTEM ============ */
 .nyr {
-  --nyr-ink: #171827;
-  --nyr-lavender: #9fa5c8;
-  --nyr-lavender-soft: #b8bdd6;
-  --nyr-ivory: #f0f0ea;
-  --nyr-ivory-warm: #faf8f1;
-  --nyr-periwinkle: #4b548b;
-  --nyr-periwinkle-dark: #30375f;
-  --nyr-ink-soft: #383a57;
+  --nyr-ink: #0e1730;
+  --nyr-lavender: #7aa5f0;
+  --nyr-lavender-soft: #a9c1f5;
+  --nyr-ivory: #ffffff;
+  --nyr-ivory-warm: #ffffff;
+  --nyr-periwinkle: #5b7fc7;
+  --nyr-periwinkle-dark: #3c5a99;
+  --nyr-ink-soft: #44506b;
   --nyr-line: rgba(75, 84, 139, 0.18);
   --nyr-line-strong: rgba(75, 84, 139, 0.28);
 }
@@ -214,7 +214,7 @@
   transition: all 0.18s ease;
 }
 .nyr-primary-btn:hover {
-  background: #c3c8e0;
+  background: #93b5f3;
   transform: translateY(-2px);
   box-shadow: 0 14px 36px rgba(159, 165, 200, 0.35);
 }
@@ -282,7 +282,7 @@
   box-shadow: 0 10px 30px rgba(23, 24, 39, 0.18);
 }
 .nyr-primary-btn.nyr-ink:hover {
-  background: #2a2c48;
+  background: #1c2b52;
   box-shadow: 0 14px 36px rgba(23, 24, 39, 0.26);
 }
 .nyr-signal {
