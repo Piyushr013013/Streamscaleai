@@ -105,21 +105,21 @@
   color: var(--foreground);
 }
 
-/* --- Hero / dark band ------------------------------------- */
+/* --- Hero / light band ------------------------------------ */
 .nyr-hero {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(ellipse 60% 45% at 78% 10%, rgba(37, 99, 235, 0.28), transparent 60%),
-    linear-gradient(180deg, var(--nyr-ink) 0%, var(--nyr-ink-deep) 100%);
-  color: #ffffff;
+    radial-gradient(ellipse 60% 50% at 78% 8%, rgba(37, 99, 235, 0.1), transparent 60%),
+    #ffffff;
+  color: var(--nyr-ink);
 }
 .nyr-hero .nyr-lede,
 .nyr-hero .nyr-signal {
-  color: var(--nyr-body);
+  color: var(--muted-foreground);
 }
 .nyr-hero .nyr-eyebrow {
-  color: var(--nyr-blue-soft);
+  color: var(--nyr-blue);
 }
 
 /* --- Typography ------------------------------------------- */
@@ -199,22 +199,22 @@
   box-shadow: 0 14px 34px rgba(37, 99, 235, 0.4);
 }
 .nyr-btn-ghost {
-  border: 1px solid rgba(147, 180, 245, 0.45);
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.04);
-}
-.nyr-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(147, 180, 245, 0.8);
-}
-.nyr-btn-light {
-  border: 1px solid rgba(37, 99, 235, 0.35);
+  border: 1px solid rgba(37, 99, 235, 0.28);
   color: var(--nyr-blue);
   background: #ffffff;
 }
-.nyr-btn-light:hover {
-  background: #f4f7ff;
+.nyr-btn-ghost:hover {
+  background: rgba(37, 99, 235, 0.06);
   border-color: var(--nyr-blue);
+}
+.nyr-btn-light {
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  background: #ffffff;
+}
+.nyr-btn-light:hover {
+  background: var(--muted);
+  border-color: rgba(37, 99, 235, 0.4);
 }
 .nyr-btn-sm {
   min-height: 38px;
@@ -251,15 +251,6 @@
   border-color: rgba(37, 99, 235, 0.4);
   box-shadow: 0 14px 40px rgba(11, 26, 61, 0.07);
 }
-.nyr-hero .nyr-card {
-  border-color: rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.05);
-}
-.nyr-hero .nyr-card:hover {
-  border-color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: none;
-}
 .nyr-divide > * + * {
   border-top: 1px solid var(--border);
 }
@@ -269,8 +260,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
   background-size: 56px 56px;
 }
 .nyr-halo {
@@ -278,10 +269,10 @@
   width: min(34vw, 480px);
   aspect-ratio: 1;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.16);
   box-shadow:
-    0 0 0 60px rgba(255, 255, 255, 0.02),
-    0 0 120px rgba(37, 99, 235, 0.25);
+    0 0 0 60px rgba(37, 99, 235, 0.03),
+    0 0 120px rgba(37, 99, 235, 0.12);
 }
 .nyr-quote {
   border-left: 2px solid var(--nyr-blue);
@@ -294,12 +285,12 @@
   align-items: center;
   justify-content: space-between;
   font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--muted-foreground);
 }
 .nyr-score-track {
   height: 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(37, 99, 235, 0.12);
   overflow: hidden;
 }
 .nyr-score-fill {

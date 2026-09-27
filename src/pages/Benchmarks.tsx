@@ -218,11 +218,11 @@ export default function Benchmarks() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-white/10 md:grid-cols-4"
+            className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-border bg-muted md:grid-cols-4"
           >
             {benchmarkStats.map((stat) => (
               <div key={stat.label} className="bg-white/95 px-6 py-8">
-                <div className="nyr-display-md-md text-[var(--nyr-blue)]">
+                <div className="nyr-display-md text-[var(--nyr-blue)]">
                   {stat.value}
                 </div>
                 <div className="nyr-signal mt-2">{stat.label}</div>
@@ -245,7 +245,7 @@ export default function Benchmarks() {
                 transition={{ duration: 0.4, delay: index * 0.08 }}
                 className="rounded-2xl border border-border bg-white p-6"
               >
-                <div className="nyr-display-md-md text-[var(--nyr-blue)]">{item.value}</div>
+                <div className="nyr-display-md text-[var(--nyr-blue)]">{item.value}</div>
                 <p className="mt-2 text-sm font-medium leading-relaxed text-foreground">
                   {item.source}
                 </p>
@@ -263,7 +263,7 @@ export default function Benchmarks() {
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <div className="mb-10">
             <p className="nyr-eyebrow mb-4">Results by industry</p>
-            <h2 className="nyr-display-md-md">
+            <h2 className="nyr-display-md">
               Where agents <em>hold up.</em>
             </h2>
             <p className="mt-4 max-w-[60ch] text-[0.95rem] leading-relaxed text-muted-foreground">
@@ -333,7 +333,7 @@ export default function Benchmarks() {
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <div className="mb-12 max-w-3xl">
             <p className="nyr-eyebrow mb-4">Methodology</p>
-            <h2 className="nyr-display-md-md text-foreground">
+            <h2 className="nyr-display-md text-foreground">
               How a benchmark <em>actually runs.</em>
             </h2>
             <p className="nyr-lede mt-5 max-w-[56ch]">
@@ -355,7 +355,7 @@ export default function Benchmarks() {
                 className="nyr-card p-6"
               >
                 <span className="nyr-step">0{index + 1}</span>
-                <div className="mt-3 mb-4 flex size-10 items-center justify-center rounded-lg border border-border bg-white/5 text-[var(--nyr-blue)]">
+                <div className="mt-3 mb-4 flex size-10 items-center justify-center rounded-lg border border-border bg-white text-[var(--nyr-blue)]">
                   <step.icon className="size-5" />
                 </div>
                 <h3 className="font-semibold text-foreground">
@@ -375,7 +375,7 @@ export default function Benchmarks() {
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
             <div>
-              <h2 className="nyr-display-md-md">
+              <h2 className="nyr-display-md">
                 Scoutly Axis <em>leaderboard.</em>
               </h2>
               <p className="mt-5 max-w-[52ch] text-[0.95rem] leading-relaxed text-muted-foreground">
@@ -434,7 +434,7 @@ export default function Benchmarks() {
       {/* CTA */}
       <section className="nyr-hero">
         <div className="relative mx-auto max-w-3xl px-4 py-24 text-center sm:px-6">
-          <h2 className="nyr-display-md-md text-foreground">
+          <h2 className="nyr-display-md text-foreground">
             Want your agent <em>tested?</em>
           </h2>
           <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">
@@ -445,7 +445,7 @@ export default function Benchmarks() {
             <Link to="/partner" className="nyr-btn nyr-btn-primary">
               Partner with us <ArrowRight className="size-4" />
             </Link>
-            <Link to="/jobs" className="nyr-link !text-white/80 hover:!text-white">
+            <Link to="/jobs" className="nyr-link ">
               View open jobs <ArrowUpRight className="size-4" />
             </Link>
           </div>

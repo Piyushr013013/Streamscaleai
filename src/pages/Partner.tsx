@@ -89,7 +89,7 @@ export default function Partner() {
           <div className="relative mx-auto max-w-2xl px-4 py-28 text-center sm:px-6">
             <div className="nyr-halo mx-auto mb-8 size-20" />
             <CheckCircle className="mx-auto mb-6 size-14 text-[var(--nyr-blue)]" />
-            <h1 className="nyr-display-md-md">
+            <h1 className="nyr-display-md">
               Request <em>received.</em>
             </h1>
             <p className="nyr-lede mx-auto mt-5 max-w-[46ch]">
@@ -101,7 +101,7 @@ export default function Partner() {
               <Link to="/" className="nyr-btn nyr-btn-primary">
                 Back to home <ArrowRight className="size-4" />
               </Link>
-              <Link to="/jobs" className="nyr-link !text-white/80 hover:!text-white">
+              <Link to="/jobs" className="nyr-link ">
                 View open jobs <ArrowUpRight className="size-4" />
               </Link>
             </div>

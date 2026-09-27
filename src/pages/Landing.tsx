@@ -181,7 +181,7 @@ export default function Landing() {
               <Link to="/partner" className="nyr-btn nyr-btn-primary">
                 Find your next hire <ArrowRight className="size-4" />
               </Link>
-              <a href="#scoring" className="nyr-link text-white/80 hover:text-white">
+              <a href="#scoring" className="nyr-link">
                 See how we score <span aria-hidden>↓</span>
               </a>
             </motion.div>
@@ -211,14 +211,14 @@ export default function Landing() {
               </div>
 
               <p className="nyr-eyebrow mt-7 !text-[0.62rem]">Candidate scorecard</p>
-              <h3 className="mt-2 text-xl font-semibold text-white">Senior AI Engineer</h3>
+              <h3 className="mt-2 text-xl font-semibold text-foreground">Senior AI Engineer</h3>
 
               <div className="mt-6 space-y-4">
                 {scores.map((score, i) => (
                   <div key={score.label}>
                     <div className="nyr-score-row mb-1.5">
                       <span>{score.label}</span>
-                      <span className="font-semibold text-[#93b4f5]">{score.value}</span>
+                      <span className="font-semibold text-[var(--nyr-blue)]">{score.value}</span>
                     </div>
                     <div className="nyr-score-track">
                       <motion.div
@@ -233,9 +233,9 @@ export default function Landing() {
                 ))}
               </div>
 
-              <div className="mt-6 flex items-center justify-between rounded-xl bg-white/10 px-4 py-3 text-[0.78rem] text-white/80">
+              <div className="mt-6 flex items-center justify-between rounded-xl bg-muted px-4 py-3 text-[0.78rem] text-muted-foreground">
                 <span>Overall</span>
-                <span className="font-semibold text-[#93b4f5]">94 · sent</span>
+                <span className="font-semibold text-[var(--nyr-blue)]">94 · sent</span>
               </div>
 
               <p className="nyr-signal mt-4 !text-[0.68rem]">
@@ -329,19 +329,19 @@ export default function Landing() {
                 className="nyr-card p-7"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-white/15 bg-white/5">
-                    <item.icon className="size-5 text-[#93b4f5]" />
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-border bg-white">
+                    <item.icon className="size-5 text-[var(--nyr-blue)]" />
                   </div>
-                  <span className="nyr-step !text-[#93b4f5]">{item.weight}</span>
+                  <span className="nyr-step !text-[var(--nyr-blue)]">{item.weight}</span>
                 </div>
-                <h3 className="mt-5 text-xl font-semibold text-white">{item.name}</h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-white/65">{item.body}</p>
+                <h3 className="mt-5 text-xl font-semibold text-foreground">{item.name}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">{item.body}</p>
               </motion.div>
             ))}
           </div>
 
           <motion.div {...reveal} className="nyr-quote mt-20 max-w-3xl">
-            <p className="text-xl font-medium leading-relaxed text-white sm:text-2xl">
+            <p className="text-xl font-medium leading-relaxed text-foreground sm:text-2xl">
               The best recruiting firms don't send you more candidates. They
               send you fewer — and every one is right.
             </p>
@@ -369,7 +369,7 @@ export default function Landing() {
                 className="nyr-card flex flex-col p-8"
               >
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[var(--nyr-ink)]">
-                  <audience.icon className="size-5 text-[#93b4f5]" />
+                  <audience.icon className="size-5 text-[var(--nyr-blue)]" />
                 </div>
                 <h3 className="mt-5 text-2xl font-semibold tracking-tight">
                   {audience.title}
@@ -425,9 +425,9 @@ export default function Landing() {
                 transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
                 className="nyr-card p-7"
               >
-                <point.icon className="size-6 text-[#93b4f5]" />
-                <h3 className="mt-4 text-lg font-semibold text-white">{point.title}</h3>
-                <p className="mt-2 text-[0.9rem] leading-relaxed text-white/65">{point.body}</p>
+                <point.icon className="size-6 text-[var(--nyr-blue)]" />
+                <h3 className="mt-4 text-lg font-semibold text-foreground">{point.title}</h3>
+                <p className="mt-2 text-[0.9rem] leading-relaxed text-muted-foreground">{point.body}</p>
               </motion.div>
             ))}
           </div>
@@ -436,7 +436,7 @@ export default function Landing() {
             <Link to="/benchmarks" className="nyr-btn nyr-btn-primary">
               See the benchmarks <ArrowUpRight className="size-4" />
             </Link>
-            <a href="#protocol" className="nyr-link text-white/80 hover:text-white">
+            <a href="#protocol" className="nyr-link">
               Back to the process <span aria-hidden>↑</span>
             </a>
           </motion.div>
@@ -491,7 +491,7 @@ export default function Landing() {
             <Link to="/partner" className="nyr-btn nyr-btn-primary">
               Start hiring <ArrowRight className="size-4" />
             </Link>
-            <Link to="/jobs" className="nyr-link text-white/80 hover:text-white">
+            <Link to="/jobs" className="nyr-link">
               View open jobs <ArrowUpRight className="size-4" />
             </Link>
           </motion.div>

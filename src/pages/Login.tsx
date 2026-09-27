@@ -81,23 +81,23 @@ export default function Login() {
           </p>
         </div>
 
-        <Card className="border-white/10 bg-white/5 backdrop-blur">
+        <Card className="border-border bg-white backdrop-blur">
           <CardHeader>
-            <CardTitle className="text-white">Welcome back</CardTitle>
-            <CardDescription className="text-white/60">
+            <CardTitle className="text-foreground">Welcome back</CardTitle>
+            <CardDescription className="text-muted-foreground">
               Use the email and password assigned to you by Streamscale.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5">
               {error && (
-                <div className="rounded-lg border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-300">
+                <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
                   {error}
                 </div>
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-white/70">Email address</Label>
+                <Label htmlFor="email" className="text-foreground/70">Email address</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[var(--nyr-blue)]" />
                   <Input
@@ -105,7 +105,7 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="h-11 border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/35"
+                    className="h-11 border-border bg-white pl-10 text-foreground placeholder:text-muted-foreground"
                     placeholder="you@company.com"
                     autoComplete="off"
                     name="streamscale-login-email"
@@ -115,7 +115,7 @@ export default function Login() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-white/70">Password</Label>
+                <Label htmlFor="password" className="text-foreground/70">Password</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[var(--nyr-blue)]" />
                   <Input
@@ -123,7 +123,7 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-11 border-white/15 bg-white/5 px-10 text-white placeholder:text-white/35"
+                    className="h-11 border-border bg-white px-10 text-foreground placeholder:text-muted-foreground"
                     placeholder="Your password"
                     autoComplete="new-password"
                     name="streamscale-login-password"
@@ -133,7 +133,7 @@ export default function Login() {
                     type="button"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     onClick={() => setShowPassword((visible) => !visible)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#93b4f5] hover:text-white"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--nyr-blue)] hover:text-foreground"
                   >
                     {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                   </button>
@@ -164,7 +164,7 @@ export default function Login() {
         <button
           type="button"
           onClick={() => navigate("/")}
-          className="nyr-link mt-8 self-center !text-white/80 hover:!text-white"
+          className="nyr-link mt-8 self-center "
         >
           <ArrowLeft className="size-4" />
           Back to home

@@ -210,7 +210,7 @@ export default function Jobs() {
               <Link to="/partner" className="nyr-btn nyr-btn-primary nyr-btn-sm">
                 Post a job for your startup <ArrowRight className="size-4" />
               </Link>
-              <a href="#openings" className="nyr-link !text-white/80 hover:!text-white">
+              <a href="#openings" className="nyr-link ">
                 Browse openings <span aria-hidden>↓</span>
               </a>
             </div>
