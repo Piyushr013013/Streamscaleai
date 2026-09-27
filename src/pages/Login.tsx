@@ -88,7 +88,7 @@ export default function Login() {
           </p>
         </div>
 
-        <Card className="border-[#c9d9f2]/15 bg-[#10294f]/90 shadow-[0_30px_90px_rgba(0,0,0,0.4)] backdrop-blur">
+        <Card className="border-[#dbe3ef]/15 bg-[#10294f]/90 shadow-[0_30px_90px_rgba(0,0,0,0.4)] backdrop-blur">
           <CardHeader>
             <CardTitle className="text-[#ffffff]">Welcome back</CardTitle>
             <CardDescription className="text-[#ffffff]/55">
@@ -112,7 +112,7 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="h-11 border-[#c9d9f2]/15 bg-[#0a1f44]/70 pl-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
+                    className="h-11 border-[#dbe3ef]/15 bg-[#0a1f44]/70 pl-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
                     placeholder="you@company.com"
                     autoComplete="off"
                     name="streamscale-login-email"
@@ -130,7 +130,7 @@ export default function Login() {
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    className="h-10 border-[#c9d9f2]/15 bg-[#0a1f44]/70 px-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
+                    className="h-10 border-[#dbe3ef]/15 bg-[#0a1f44]/70 px-10 text-[#ffffff] placeholder:text-[#ffffff]/35"
                     placeholder="Your password"
                     autoComplete="new-password"
                     name="streamscale-login-password"

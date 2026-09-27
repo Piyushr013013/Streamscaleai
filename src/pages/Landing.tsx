@@ -207,7 +207,7 @@ export default function Landing() {
             className="relative hidden min-h-[480px] place-items-center lg:grid"
           >
             <div className="nyr-halo" />
-            <div className="relative w-full max-w-xs rounded-2xl border border-[#c9d9f2]/20 bg-[#0a1f44]/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
+            <div className="relative w-full max-w-xs rounded-2xl border border-[#dbe3ef]/20 bg-[#0a1f44]/95 p-5 shadow-[0_30px_90px_rgba(0,0,0,0.35)]">
               <div className="flex items-center justify-between text-[0.63rem] text-[#ffffff]/60">
                 <span>9:41</span>
                 <span>● ● ●</span>
@@ -231,7 +231,7 @@ export default function Landing() {
                         {score}
                       </span>
                     </div>
-                    <div className="h-1.5 rounded-full bg-[#c9d9f2]/10">
+                    <div className="h-1.5 rounded-full bg-[#dbe3ef]/10">
                       <motion.div
                         initial={{ width: 0 }}
                         whileInView={{ width: `${score}%` }}
@@ -243,7 +243,7 @@ export default function Landing() {
                   </div>
                 ))}
               </div>
-              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#c9d9f2]/10 px-3 py-2.5 text-[0.72rem] text-[#ffffff]/80">
+              <div className="mt-4 flex items-center justify-between rounded-xl bg-[#dbe3ef]/10 px-3 py-2.5 text-[0.72rem] text-[#ffffff]/80">
                 <span>Overall</span>
                 <span className="font-bold text-[#2e6bef]">94 · sent</span>
               </div>
@@ -256,7 +256,7 @@ export default function Landing() {
       </section>
 
       {/* ============ STATS STRIP (dark) ============ */}
-      <section className="border-t border-[#c9d9f2]/10 bg-[#0a1f44] text-[#ffffff]">
+      <section className="border-t border-[#dbe3ef]/10 bg-[#0a1f44] text-[#ffffff]">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-px px-4 sm:px-6 md:grid-cols-4">
           {[
             { v: "90+", l: "The only score we send" },
@@ -280,7 +280,7 @@ export default function Landing() {
       </section>
 
       {/* ============ HOW IT WORKS (light) ============ */}
-      <section id="protocol" className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section id="protocol" className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div
             {...reveal}
@@ -292,7 +292,7 @@ export default function Landing() {
                 Find. Score. <em>Send.</em>
               </h2>
             </div>
-            <p className="text-[0.95rem] leading-relaxed text-[#33415c]">
+            <p className="text-[0.95rem] leading-relaxed text-[#475569]">
               Four steps. No noise. You meet only the candidates worth your
               time — and we stay until the offer is signed.
             </p>
@@ -310,7 +310,7 @@ export default function Landing() {
                 <h3 className="text-2xl font-semibold tracking-tight">
                   {step.title}
                 </h3>
-                <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-[#33415c]">
+                <p className="max-w-[58ch] text-[0.95rem] leading-relaxed text-[#475569]">
                   {step.body}
                 </p>
               </motion.div>
@@ -344,7 +344,7 @@ export default function Landing() {
                 className="nyr-card p-7"
               >
                 <div className="flex items-center justify-between">
-                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#c9d9f2]/15 bg-[#c9d9f2]/5">
+                  <div className="flex size-11 items-center justify-center rounded-xl border border-[#dbe3ef]/15 bg-[#dbe3ef]/5">
                     <r.icon className="size-5 text-[#2e6bef]" />
                   </div>
                   <span className="text-[0.7rem] font-extrabold uppercase tracking-[0.14em] text-[#2e6bef]">
@@ -372,7 +372,7 @@ export default function Landing() {
       </section>
 
       {/* ============ WHO IT'S FOR (light) ============ */}
-      <section id="who" className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section id="who" className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-24 sm:px-6">
           <motion.div {...reveal} className="mx-auto max-w-2xl text-center">
             <p className="nyr-eyebrow mb-4">Who it's for</p>
@@ -387,7 +387,7 @@ export default function Landing() {
                 key={a.title}
                 {...reveal}
                 transition={{ duration: 0.55, delay: i * 0.1, ease: "easeOut" }}
-                className="flex flex-col rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white/60 p-8 shadow-[0_20px_60px_rgba(10,31,68,0.06)]"
+                className="flex flex-col rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white p-8 shadow-[0_20px_60px_rgba(10,31,68,0.06)]"
               >
                 <div className="flex size-12 items-center justify-center rounded-xl bg-[#0a1f44]">
                   <a.icon className="size-5 text-[#2e6bef]" />
@@ -395,12 +395,12 @@ export default function Landing() {
                 <h3 className="mt-5 text-2xl font-semibold tracking-tight">
                   {a.title}
                 </h3>
-                <p className="mt-3 text-[0.95rem] leading-relaxed text-[#33415c]">
+                <p className="mt-3 text-[0.95rem] leading-relaxed text-[#475569]">
                   {a.body}
                 </p>
                 <ul className="mt-5 flex-1 space-y-3">
                   {a.points.map((p) => (
-                    <li key={p} className="flex items-start gap-3 text-[0.92rem] leading-relaxed text-[#33415c]">
+                    <li key={p} className="flex items-start gap-3 text-[0.92rem] leading-relaxed text-[#475569]">
                       <Check className="mt-0.5 size-4 shrink-0 text-[#1d4ed8]" />
                       {p}
                     </li>
@@ -474,7 +474,7 @@ export default function Landing() {
       </section>
 
       {/* ============ FAQ (light) ============ */}
-      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-4xl px-4 py-24 sm:px-6">
           <motion.div {...reveal}>
             <p className="nyr-eyebrow mb-4">Questions</p>
@@ -497,7 +497,7 @@ export default function Landing() {
                     +
                   </span>
                 </summary>
-                <p className="mt-3 max-w-[62ch] text-[0.95rem] leading-relaxed text-[#33415c]">
+                <p className="mt-3 max-w-[62ch] text-[0.95rem] leading-relaxed text-[#475569]">
                   {f.a}
                 </p>
               </motion.details>

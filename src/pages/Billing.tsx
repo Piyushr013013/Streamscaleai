@@ -161,7 +161,7 @@ export default function Billing() {
 
   if (access === undefined) {
     return (
-      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#f5f8ff]">
+      <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#ffffff]">
         <Loader2 className="size-6 animate-spin text-[#6a7099]" />
       </main>
     );
@@ -169,7 +169,7 @@ export default function Billing() {
 
   if (isPerson && myEarnings) {
     return (
-      <main className="nyr nyr-admin min-h-screen bg-[#f5f8ff] text-[#0a1f44]">
+      <main className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0a1f44]">
         <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a1f44]/95 text-[#ffffff] backdrop-blur">
           <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
             <div className="flex items-center gap-3">
@@ -179,7 +179,7 @@ export default function Billing() {
                 <h1 className="text-base font-semibold leading-tight">Your earnings</h1>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="rounded-full border-[#c9d9f2]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]" onClick={signOut}>Sign out</Button>
+            <Button variant="outline" size="sm" className="rounded-full border-[#dbe3ef]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]" onClick={signOut}>Sign out</Button>
           </div>
         </header>
         <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 space-y-6">
@@ -248,7 +248,7 @@ export default function Billing() {
   if (!isCfo && !isMaster) {
     return (
       <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#0a1f44] p-6 text-[#ffffff]">
-        <Card className="max-w-md border-[#c9d9f2]/15 bg-[#10294f]/90 text-[#ffffff]">
+        <Card className="max-w-md border-[#dbe3ef]/15 bg-[#10294f]/90 text-[#ffffff]">
           <CardContent className="pt-8 text-center">
             <Shield className="mx-auto size-10 text-[#2e6bef]" />
             <h1 className="mt-4 text-xl font-semibold">Billing access required</h1>
@@ -467,7 +467,7 @@ export default function Billing() {
   ];
 
   return (
-    <main className="nyr nyr-admin min-h-screen bg-[#f5f8ff] text-[#0a1f44]">
+    <main className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0a1f44]">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a1f44]/95 text-[#ffffff] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
@@ -480,8 +480,8 @@ export default function Billing() {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="rounded-full border-[#c9d9f2]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]" onClick={() => navigate("/dashboard")}>Back to dashboard</Button>
-            <Button variant="outline" size="sm" className="rounded-full border-[#c9d9f2]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]" onClick={signOut}>Sign out</Button>
+            <Button variant="outline" size="sm" className="rounded-full border-[#dbe3ef]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]" onClick={() => navigate("/dashboard")}>Back to dashboard</Button>
+            <Button variant="outline" size="sm" className="rounded-full border-[#dbe3ef]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]" onClick={signOut}>Sign out</Button>
           </div>
         </div>
       </header>

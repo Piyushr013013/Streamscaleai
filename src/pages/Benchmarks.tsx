@@ -142,7 +142,7 @@ function ScoreBar({ label, value }: { label: string; value: string }) {
   const pct = parseInt(value, 10);
   return (
     <div className="flex items-center gap-3">
-      <span className="w-28 shrink-0 text-sm text-[#33415c]">{label}</span>
+      <span className="w-28 shrink-0 text-sm text-[#475569]">{label}</span>
       <div className="h-2 flex-1 overflow-hidden rounded-full bg-[rgba(29,78,216,0.15)]">
         <motion.div
           initial={{ width: 0 }}
@@ -154,7 +154,7 @@ function ScoreBar({ label, value }: { label: string; value: string }) {
       </div>
       <span
         className={`w-10 shrink-0 text-right text-sm font-medium ${
-          label === "Human baseline" ? "text-[#0a1f44]" : "text-[#33415c]"
+          label === "Human baseline" ? "text-[#0a1f44]" : "text-[#475569]"
         }`}
       >
         {value}
@@ -225,7 +225,7 @@ export default function Benchmarks() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#c9d9f2]/15 bg-[#c9d9f2]/15 md:grid-cols-4"
+            className="mt-14 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[#dbe3ef]/15 bg-[#dbe3ef]/15 md:grid-cols-4"
           >
             {benchmarkStats.map((stat) => (
               <div key={stat.label} className="bg-[#0a1f44]/95 px-6 py-8">
@@ -240,7 +240,7 @@ export default function Benchmarks() {
       </section>
 
       {/* Real-world context band */}
-      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
             {contextStats.map((item, index) => (
@@ -250,13 +250,13 @@ export default function Benchmarks() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.08 }}
-                className="rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white/60 p-6"
+                className="rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white p-6"
               >
                 <div className="nyr-display !text-[clamp(2rem,4vw,3rem)] text-[#1d4ed8]">{item.value}</div>
                 <p className="mt-2 text-sm font-medium leading-relaxed text-[#0a1f44]">
                   {item.source}
                 </p>
-                <p className="mt-2 text-xs leading-relaxed text-[#33415c]/70">
+                <p className="mt-2 text-xs leading-relaxed text-[#475569]/70">
                   {item.sourceDetail}
                 </p>
               </motion.div>
@@ -266,14 +266,14 @@ export default function Benchmarks() {
       </section>
 
       {/* Benchmark cards by industry */}
-      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <div className="mb-10">
             <p className="nyr-eyebrow mb-4">Results by industry</p>
             <h2 className="nyr-display !text-[clamp(2.2rem,5vw,3.6rem)]">
               Where agents <em>hold up.</em>
             </h2>
-            <p className="mt-4 max-w-[60ch] text-[0.95rem] leading-relaxed text-[#33415c]">
+            <p className="mt-4 max-w-[60ch] text-[0.95rem] leading-relaxed text-[#475569]">
               The headline number is the latest agent pass rate in that
               industry. Open an industry to see what we test in detail.
             </p>
@@ -288,7 +288,7 @@ export default function Benchmarks() {
                 viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.05 }}
               >
-                <Card className="border border-[rgba(29,78,216,0.28)] bg-white/70 shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-colors hover:border-[#1d4ed8]/50">
+                <Card className="border border-[rgba(29,78,216,0.28)] bg-white shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-colors hover:border-[#1d4ed8]/50">
                   <CardContent className="p-6 md:p-8">
                     <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
                       <div className="max-w-xl">
@@ -300,10 +300,10 @@ export default function Benchmarks() {
                             Latest pass rate {b.passRate}
                           </span>
                         </div>
-                        <p className="mt-3 text-sm leading-relaxed text-[#33415c]">
+                        <p className="mt-3 text-sm leading-relaxed text-[#475569]">
                           {b.description}
                         </p>
-                        <p className="mt-4 text-xs uppercase tracking-wider text-[#33415c]/60">
+                        <p className="mt-4 text-xs uppercase tracking-wider text-[#475569]/60">
                           {b.tasksRun} tasks run in this industry
                         </p>
                         <Link
@@ -327,7 +327,7 @@ export default function Benchmarks() {
             ))}
           </div>
 
-          <p className="mt-8 text-center text-xs text-[#33415c]/60">
+          <p className="mt-8 text-center text-xs text-[#475569]/60">
             Illustrative data to show the shape of a report. Not a live or real
             result.
           </p>
@@ -362,7 +362,7 @@ export default function Benchmarks() {
                 className="nyr-card p-6"
               >
                 <span className="nyr-step-number">0{index + 1}</span>
-                <div className="mt-3 mb-4 flex size-10 items-center justify-center rounded-lg border border-[#c9d9f2]/15 bg-[#c9d9f2]/5 text-[#2e6bef]">
+                <div className="mt-3 mb-4 flex size-10 items-center justify-center rounded-lg border border-[#dbe3ef]/15 bg-[#dbe3ef]/5 text-[#2e6bef]">
                   <step.icon className="size-5" />
                 </div>
                 <h3 className="font-semibold text-[#ffffff]">
@@ -378,23 +378,23 @@ export default function Benchmarks() {
       </section>
 
       {/* Leaderboard */}
-      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-start">
             <div>
               <h2 className="nyr-display !text-[clamp(2.2rem,5vw,3.6rem)]">
                 Scoutly Axis <em>leaderboard.</em>
               </h2>
-              <p className="mt-5 max-w-[52ch] text-[0.95rem] leading-relaxed text-[#33415c]">
+              <p className="mt-5 max-w-[52ch] text-[0.95rem] leading-relaxed text-[#475569]">
                 Each Scoutly Axis is the leading model we run in that industry.
                 Scores climb as agent versions improve — the gap to the human
                 baseline is exactly what our reports quantify.
               </p>
-              <div className="mt-6 rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white/60 p-6">
+              <div className="mt-6 rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white p-6">
                 <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#1d4ed8]">
                   What you get in a benchmark report
                 </p>
-                <ul className="mt-4 space-y-3 text-sm text-[#33415c]">
+                <ul className="mt-4 space-y-3 text-sm text-[#475569]">
                   <li className="flex items-start gap-2">
                     <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[#1d4ed8]" />
                     Pass rate per task category, with the human baseline beside it
@@ -415,7 +415,7 @@ export default function Benchmarks() {
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white/60">
+            <div className="overflow-hidden rounded-2xl border border-[rgba(29,78,216,0.28)] bg-white">
               <div className="border-b border-[rgba(29,78,216,0.28)] px-6 py-4 text-xs font-extrabold uppercase tracking-[0.14em] text-[#1d4ed8]">
                 Current scores by industry
               </div>
@@ -427,7 +427,7 @@ export default function Benchmarks() {
                   >
                     <div>
                       <p className="text-sm font-medium text-[#0a1f44]">{agent.name}</p>
-                      <p className="text-xs text-[#33415c]/70">{agent.trend}</p>
+                      <p className="text-xs text-[#475569]/70">{agent.trend}</p>
                     </div>
                     <span className="text-lg font-semibold text-[#1d4ed8]">{agent.score}</span>
                   </div>

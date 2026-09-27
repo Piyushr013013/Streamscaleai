@@ -53,7 +53,7 @@ export default function NotFound() {
         </div>
       </section>
 
-      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
           <div className="border-t border-[rgba(29,78,216,0.28)]">
             {suggestions.map((item, i) => (

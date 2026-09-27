@@ -41,7 +41,7 @@ export function NyrNav() {
 
 export function NyrFooter() {
   return (
-    <footer className="nyr-dark-section border-t border-[#c9d9f2]/10">
+    <footer className="nyr-dark-section border-t border-[#dbe3ef]/10">
       <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6">
         <div className="grid gap-10 md:grid-cols-[1.2fr_1fr_1fr_1fr]">
           <div>
@@ -82,7 +82,7 @@ export function NyrFooter() {
             </div>
           </div>
         </div>
-        <div className="mt-12 border-t border-[#c9d9f2]/10 pt-6">
+        <div className="mt-12 border-t border-[#dbe3ef]/10 pt-6">
           <p className="nyr-signal">
             © {new Date().getFullYear()} Streamscale · Find the best. Send the 90+.
           </p>

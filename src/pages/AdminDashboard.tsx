@@ -174,7 +174,7 @@ export default function AdminDashboard() {
   if (!hasAnyAdminAccess) {
     return (
       <main className="nyr nyr-admin flex min-h-screen items-center justify-center bg-[#0a1f44] p-6 text-[#ffffff]">
-        <Card className="max-w-md border-[#c9d9f2]/15 bg-[#10294f]/90 text-[#ffffff]">
+        <Card className="max-w-md border-[#dbe3ef]/15 bg-[#10294f]/90 text-[#ffffff]">
           <CardContent className="pt-8 text-center">
             <Shield className="mx-auto size-10 text-[#2e6bef]" />
             <h1 className="mt-4 text-xl font-semibold">Admin access required</h1>
@@ -619,7 +619,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <main className="nyr nyr-admin min-h-screen bg-[#f5f8ff] text-[#0a1f44]">
+    <main className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0a1f44]">
       <header className="sticky top-0 z-40 border-b border-white/5 bg-[#0a1f44]/95 text-[#ffffff] backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6">
           <div className="flex items-center gap-3">
@@ -636,10 +636,10 @@ export default function AdminDashboard() {
             <Link to="/" className="hidden text-sm text-[#2e6bef] transition hover:text-[#ffffff] sm:inline">
               View site
             </Link>
-            <span className="hidden max-w-[220px] truncate rounded-full border border-[#c9d9f2]/15 bg-[#c9d9f2]/10 px-3 py-1 text-xs text-[#ffffff]/70 md:inline">
+            <span className="hidden max-w-[220px] truncate rounded-full border border-[#dbe3ef]/15 bg-[#dbe3ef]/10 px-3 py-1 text-xs text-[#ffffff]/70 md:inline">
               {user && "email" in user ? user.email : ""}
             </span>
-            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#c9d9f2]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]">
+            <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5 border-[#dbe3ef]/20 bg-transparent text-[#ffffff]/80 hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]">
               <svg className="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M16 16v1a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h1"/>
                 <path d="M16 12H8"/>
@@ -652,7 +652,7 @@ export default function AdminDashboard() {
       </header>
 
       <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-[rgba(29,78,216,0.28)] bg-white/70 p-1.5 shadow-sm">
+        <div className="mb-6 flex flex-wrap gap-1 rounded-xl border border-[rgba(29,78,216,0.28)] bg-white p-1.5 shadow-sm">
           {tabs.map(([value, label, icon, count]) => (
             <button
               key={value}
@@ -661,7 +661,7 @@ export default function AdminDashboard() {
               className={`flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-sm font-medium transition-all ${
                 activeTab === value
                   ? "bg-[#0a1f44] text-[#ffffff] shadow-sm"
-                  : "text-[#33415c] hover:bg-[rgba(29,78,216,0.08)] hover:text-[#0a1f44]"
+                  : "text-[#475569] hover:bg-[rgba(29,78,216,0.08)] hover:text-[#0a1f44]"
               }`}
             >
               {icon}

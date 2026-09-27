@@ -67,7 +67,7 @@ export default function Dashboard() {
   const applicationList = partnerRequests?.applications ?? [];
 
   return (
-    <div className="nyr nyr-admin min-h-screen bg-[#f5f8ff] text-[#0a1f44]">
+    <div className="nyr nyr-admin min-h-screen bg-[#ffffff] text-[#0a1f44]">
       <NyrNav />
       <main className="pb-16">
         {/* Page hero (dark, matches admin + benchmarks heroes) */}
@@ -95,7 +95,7 @@ export default function Dashboard() {
             <div className="mt-7 flex flex-wrap items-center gap-3">
               {showBillingLink && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#c9d9f2]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]"
+                  className="h-9 gap-2 rounded-full border border-[#dbe3ef]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]"
                   onClick={() => navigate("/billing")}
                 >
                   <Wallet className="size-4" />
@@ -104,7 +104,7 @@ export default function Dashboard() {
               )}
               {isMasterAdmin && (
                 <Button
-                  className="h-9 gap-2 rounded-full border border-[#c9d9f2]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]"
+                  className="h-9 gap-2 rounded-full border border-[#dbe3ef]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]"
                   onClick={() => navigate("/admin")}
                 >
                   <Shield className="size-4" />
@@ -112,7 +112,7 @@ export default function Dashboard() {
                 </Button>
               )}
               <Button
-                className="h-9 gap-2 rounded-full border border-[#c9d9f2]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#c9d9f2]/10 hover:text-[#ffffff]"
+                className="h-9 gap-2 rounded-full border border-[#dbe3ef]/20 bg-transparent px-4 text-sm font-bold text-[#ffffff]/80 shadow-none hover:bg-[#dbe3ef]/10 hover:text-[#ffffff]"
                 onClick={() => navigate("/profile")}
               >
                 <Settings className="size-4" />

@@ -149,15 +149,15 @@ export default function Partner() {
       </section>
 
       {/* Form (light) */}
-      <section className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section className="nyr-light bg-[#ffffff] text-[#0a1f44]">
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
         {/* Steps preview */}
         <div className="mb-10 grid grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[rgba(29,78,216,0.28)] bg-[rgba(29,78,216,0.28)]">
           {steps.map((step, i) => (
-            <div key={i} className="bg-[#f5f8ff] p-5 text-center">
+            <div key={i} className="bg-[#ffffff] p-5 text-center">
               <span className="nyr-step-number">0{i + 1}</span>
               <p className="mt-1 text-sm font-semibold">{step.title}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-[#33415c]">{step.desc}</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-[#475569]">{step.desc}</p>
             </div>
           ))}
         </div>
@@ -316,7 +316,7 @@ export default function Partner() {
         </Card>
         </motion.div>
 
-        <p className="mt-6 text-center text-xs text-[#33415c]/70">
+        <p className="mt-6 text-center text-xs text-[#475569]/70">
           Your request goes directly to the Streamscale team. We'll reply within 1–2 business days.
         </p>
       </div>

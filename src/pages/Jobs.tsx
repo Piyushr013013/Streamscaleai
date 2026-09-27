@@ -226,12 +226,12 @@ export default function Jobs() {
       </section>
 
       {/* Jobs list (light) */}
-      <section id="openings" className="nyr-light bg-[#f5f8ff] text-[#0a1f44]">
+      <section id="openings" className="nyr-light bg-[#ffffff] text-[#0a1f44]">
         <div className="mx-auto max-w-6xl px-4 py-20 sm:px-6">
           {!jobs || jobs.length === 0 ? (
             <div className="border-y border-[rgba(29,78,216,0.28)] py-16 text-center">
               <h3 className="text-2xl font-semibold tracking-tight">No open positions</h3>
-              <p className="mt-2 text-[0.95rem] text-[#33415c]">
+              <p className="mt-2 text-[0.95rem] text-[#475569]">
                 Check back later for new opportunities.
               </p>
             </div>
@@ -245,31 +245,31 @@ export default function Jobs() {
                   transition={{ duration: 0.35, delay: Math.min(index * 0.06, 0.3) }}
                 >
                 <Card
-                  className="border border-[rgba(29,78,216,0.28)] bg-white/70 shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-all hover:border-[#1d4ed8]/50 group"
+                  className="border border-[rgba(29,78,216,0.28)] bg-white shadow-[0_20px_60px_rgba(10,31,68,0.06)] transition-all hover:border-[#1d4ed8]/50 group"
                 >
                   <CardHeader className="pb-4">
                     <div className="flex items-start justify-between mb-2">
                       <Badge className="border border-[#1d4ed8]/30 bg-[#1d4ed8]/10 text-[#12296b] hover:bg-[#1d4ed8]/15">
                         {job.role}
                       </Badge>
-                      <span className="text-sm text-[#33415c]/60">
+                      <span className="text-sm text-[#475569]/60">
                         {new Date(job._creationTime).toLocaleDateString()}
                       </span>
                     </div>
                     <CardTitle className="text-xl text-[#0a1f44] transition-colors group-hover:text-[#1d4ed8]">
                       {job.title}
                     </CardTitle>
-                    <CardDescription className="mt-1 text-[#33415c]">
+                    <CardDescription className="mt-1 text-[#475569]">
                       {job.companyName} · {job.jobType} · {job.salary}
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="mb-4 line-clamp-2 text-sm text-[#33415c]/80">
+                    <p className="mb-4 line-clamp-2 text-sm text-[#475569]/80">
                       {job.requirements}
                     </p>
                     {job.benefits && <p className="mb-2 text-xs text-[#1d4ed8]">Benefits: {job.benefits}</p>}
                     {job.extraInfo && (
-                      <p className="mb-4 text-xs text-[#33415c]/60">
+                      <p className="mb-4 text-xs text-[#475569]/60">
                         {job.extraInfo}
                       </p>
                     )}
