@@ -208,7 +208,7 @@ export default function Jobs() {
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-6">
               <Link to="/partner" className="nyr-btn nyr-btn-primary nyr-btn-sm">
-                Post a job for your startup <ArrowRight className="size-4" />
+                Request partnership <ArrowRight className="size-4" />
               </Link>
               <a href="#openings" className="nyr-link ">
                 Browse openings <span aria-hidden>↓</span>

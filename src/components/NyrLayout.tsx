@@ -34,7 +34,7 @@ export function NyrNav() {
             Sign in
           </Link>
           <Link to="/partner" className="nyr-btn nyr-btn-ghost nyr-btn-sm">
-            Start hiring <ArrowUpRight className="size-3.5" />
+            Request partnership <ArrowUpRight className="size-3.5" />
           </Link>
         </div>
       </div>
@@ -67,7 +67,7 @@ export function NyrFooter() {
           <div>
             <p className="nyr-eyebrow mb-4 !text-[0.65rem]">Get started</p>
             <ul className="space-y-2.5 text-sm text-muted-foreground">
-              <li><Link className="hover:text-[var(--nyr-blue)]" to="/partner">Start hiring</Link></li>
+              <li><Link className="hover:text-[var(--nyr-blue)]" to="/partner">Request partnership</Link></li>
               <li><Link className="hover:text-[var(--nyr-blue)]" to="/jobs">Post a job</Link></li>
             </ul>
           </div>

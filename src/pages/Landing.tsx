@@ -76,7 +76,7 @@ const audiences = [
       "Full scorecards attached so you know why each person made the cut",
       "Works for engineering, ops, GTM — any role you'd trust a human with",
     ],
-    cta: { label: "Start hiring", to: "/partner" },
+    cta: { label: "Request partnership", to: "/partner" },
   },
   {
     icon: Sparkles,
@@ -88,7 +88,7 @@ const audiences = [
       "One flat conversation about the role — not a sales funnel",
       "We benchmark enterprise AI ourselves, so our bar is a working bar",
     ],
-    cta: { label: "Partner with us", to: "/partner" },
+    cta: { label: "Request partnership", to: "/partner" },
   },
 ];
 
@@ -179,7 +179,7 @@ export default function Landing() {
               className="flex flex-wrap items-center gap-6"
             >
               <Link to="/partner" className="nyr-btn nyr-btn-primary">
-                Find your next hire <ArrowRight className="size-4" />
+                Request partnership <ArrowRight className="size-4" />
               </Link>
               <a href="#scoring" className="nyr-link">
                 See how we score <span aria-hidden>↓</span>
@@ -489,7 +489,7 @@ export default function Landing() {
             className="mt-10 flex flex-wrap items-center justify-center gap-6"
           >
             <Link to="/partner" className="nyr-btn nyr-btn-primary">
-              Start hiring <ArrowRight className="size-4" />
+              Request partnership <ArrowRight className="size-4" />
             </Link>
             <Link to="/jobs" className="nyr-link">
               View open jobs <ArrowUpRight className="size-4" />

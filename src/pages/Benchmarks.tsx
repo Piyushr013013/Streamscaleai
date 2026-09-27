@@ -443,7 +443,7 @@ export default function Benchmarks() {
           </p>
           <div className="mt-9 flex flex-col items-center justify-center gap-6 sm:flex-row">
             <Link to="/partner" className="nyr-btn nyr-btn-primary">
-              Partner with us <ArrowRight className="size-4" />
+              Request partnership <ArrowRight className="size-4" />
             </Link>
             <Link to="/jobs" className="nyr-link ">
               View open jobs <ArrowUpRight className="size-4" />
